@@ -1,0 +1,156 @@
+From cfc221d511b0c9416ff9dbf4bbd7123c7bbdc60c Mon Sep 17 00:00:00 2001
+From: Thomas Martitz <kugel@rockbox.org>
+Date: Sat, 29 Aug 2015 00:16:27 +0200
+Subject: [PATCH] filechooser: restore pre-3.16 type-ahead-find with setting
+ (off by default)
+
+The previous type-ahead-find was loved by many people, so removing it without
+possibility to restore was not nice to them. This commit re-introduces it again
+with a default-off seting so that the new default search-as-you-type is
+untouched, for those who don't consider the new search a viable replacement.
+---
+ gtk/gtkfilechooserwidget.c                   | 35 +++++++++++++++++++++++++---
+ gtk/org.gtk.Settings.FileChooser.gschema.xml |  7 ++++++
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+
+diff --git a/gtk/gtkfilechooserwidget.c b/gtk/gtkfilechooserwidget.c
+index 94d051f..8d41775 100644
+--- a/gtk/gtkfilechooserwidget.c
++++ b/gtk/gtkfilechooserwidget.c
+@@ -354,6 +354,7 @@ struct _GtkFileChooserWidgetPrivate {
+   guint show_size_column : 1;
+   guint create_folders : 1;
+   guint auto_selecting_first_row : 1;
++  guint use_type_ahead_find : 1;
+ };
+ 
+ #define MAX_LOADING_TIME 500
+@@ -589,6 +590,7 @@ static void     clear_model_cache            (GtkFileChooserWidget *impl,
+ static void     set_model_filter             (GtkFileChooserWidget *impl,
+                                               GtkFileFilter        *filter);
+ 
++static void     set_sort_column              (GtkFileChooserWidget *impl);
+ 
+ 
+ G_DEFINE_TYPE_WITH_CODE (GtkFileChooserWidget, gtk_file_chooser_widget, GTK_TYPE_BOX,
+@@ -2437,7 +2439,11 @@ file_list_set_sort_column_ids (GtkFileChooserWidget *impl)
+ {
+   GtkFileChooserWidgetPrivate *priv = impl->priv;
+ 
+-  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), -1);
++  fprintf(stderr, "file_list_set_sort_column_ids use-type-ahead: %d\n", priv->use_type_ahead_find);
++  if (priv->use_type_ahead_find)
++    gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), MODEL_COL_NAME);
++  else
++    gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), -1);
+ 
+   gtk_tree_view_column_set_sort_column_id (priv->list_name_column, MODEL_COL_NAME);
+   gtk_tree_view_column_set_sort_column_id (priv->list_time_column, MODEL_COL_TIME);
+@@ -3693,6 +3699,16 @@ change_icon_theme (GtkFileChooserWidget *impl)
+   profile_end ("end", NULL);
+ }
+ 
++static void
++change_type_ahead (GtkFileChooserWidget *impl, gboolean value)
++{
++  GtkFileChooserWidgetPrivate *priv = impl->priv;
++  priv->use_type_ahead_find = value;
++
++  file_list_set_sort_column_ids(impl);
++   set_sort_column(impl);
++}
++
+ /* Callback used when a GtkSettings value changes */
+ static void
+ settings_notify_cb (GObject               *object,
+@@ -3700,6 +3716,7 @@ settings_notify_cb (GObject               *object,
+                     GtkFileChooserWidget *impl)
+ {
+   const char *name;
++  gboolean value;
+ 
+   profile_start ("start", NULL);
+ 
+@@ -3707,7 +3724,11 @@ settings_notify_cb (GObject               *object,
+ 
+   if (strcmp (name, "gtk-icon-theme-name") == 0)
+     change_icon_theme (impl);
+-
++  if (strcmp (name, "use-type-ahead") == 0)
++    {
++      g_object_get (object, name, &value, NULL);
++      change_type_ahead (impl, value);
++    }
+   profile_end ("end", NULL);
+ }
+ 
+@@ -3806,6 +3827,7 @@ settings_load (GtkFileChooserWidget *impl)
+   gboolean show_hidden;
+   gboolean show_size_column;
+   gboolean sort_directories_first;
++  gboolean use_type_ahead_find;
+   DateFormat date_format;
+   gint sort_column;
+   GtkSortType sort_order;
+@@ -3823,10 +3845,12 @@ settings_load (GtkFileChooserWidget *impl)
+   startup_mode = g_settings_get_enum (settings, SETTINGS_KEY_STARTUP_MODE);
+   sort_directories_first = g_settings_get_boolean (settings, SETTINGS_KEY_SORT_DIRECTORIES_FIRST);
+   date_format = g_settings_get_enum (settings, SETTINGS_KEY_DATE_FORMAT);
++  use_type_ahead_find = g_settings_get_boolean (settings, "use-type-ahead");
+ 
+   if (!priv->show_hidden_set)
+     set_show_hidden (impl, show_hidden);
+   priv->show_size_column = show_size_column;
++  priv->use_type_ahead_find = use_type_ahead_find;
+   gtk_tree_view_column_set_visible (priv->list_size_column, show_size_column);
+ 
+   priv->sort_column = sort_column;
+@@ -4332,6 +4356,7 @@ load_set_model (GtkFileChooserWidget *impl)
+   gtk_tree_view_set_model (GTK_TREE_VIEW (priv->browse_files_tree_view),
+                            GTK_TREE_MODEL (priv->browse_files_model));
+   update_columns (impl, FALSE, _("Modified"));
++  g_object_set(priv->browse_files_tree_view, "enable-search", priv->use_type_ahead_find, NULL);
+   file_list_set_sort_column_ids (impl);
+   set_sort_column (impl);
+   profile_msg ("    gtk_tree_view_set_model end", NULL);
+@@ -7412,7 +7437,10 @@ recent_idle_cleanup (gpointer data)
+ 
+   gtk_tree_view_set_model (GTK_TREE_VIEW (priv->browse_files_tree_view),
+                            GTK_TREE_MODEL (priv->recent_model));
+-  gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), -1);
++  if (priv->use_type_ahead_find)
++    gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), MODEL_COL_NAME);
++  else
++    gtk_tree_view_set_search_column (GTK_TREE_VIEW (priv->browse_files_tree_view), -1);
+ 
+   gtk_tree_view_column_set_sort_column_id (priv->list_name_column, -1);
+   gtk_tree_view_column_set_sort_column_id (priv->list_time_column, -1);
+@@ -8556,6 +8584,7 @@ gtk_file_chooser_widget_init (GtkFileChooserWidget *impl)
+   priv->recent_manager = gtk_recent_manager_get_default ();
+   priv->create_folders = TRUE;
+   priv->auto_selecting_first_row = FALSE;
++  priv->use_type_ahead_find = FALSE;
+ 
+   /* Ensure GTK+ private types used by the template
+    * definition before calling gtk_widget_init_template()
+diff --git a/gtk/org.gtk.Settings.FileChooser.gschema.xml b/gtk/org.gtk.Settings.FileChooser.gschema.xml
+index c3753f2..bdba1b0 100644
+--- a/gtk/org.gtk.Settings.FileChooser.gschema.xml
++++ b/gtk/org.gtk.Settings.FileChooser.gschema.xml
+@@ -148,6 +148,13 @@
+         The amount of detail to show in the Modified column.
+       </description>
+     </key>
++    <key name="use-type-ahead" type='b'>
++      <default>false</default>
++      <summary>Enable type-ahead find</summary>
++      <description>
++        Whether to use new search method or previous type-ahead find.
++      </description>
++    </key>
+   </schema>
+ 
+ </schemalist>
+-- 
+2.5.0
+
