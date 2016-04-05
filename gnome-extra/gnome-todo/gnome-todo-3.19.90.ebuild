@@ -10,7 +10,7 @@ HOMEPAGE="https://wiki.gnome.org/Apps/Todo"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="*"
 
 IUSE=""
 
