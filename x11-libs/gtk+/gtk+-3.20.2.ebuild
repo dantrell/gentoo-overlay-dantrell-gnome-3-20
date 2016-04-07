@@ -10,10 +10,10 @@ DESCRIPTION="Gimp ToolKit +"
 HOMEPAGE="http://www.gtk.org/"
 
 LICENSE="LGPL-2+"
-SLOT="3"
+SLOT="3/20" # From WebKit: http://trac.webkit.org/changeset/195811
 KEYWORDS="*"
 
-IUSE="aqua broadway cloudprint colord cups examples +introspection test vim-syntax wayland X xinerama typeahead"
+IUSE="aqua broadway cloudprint colord cups examples +introspection test vanilla vim-syntax wayland X xinerama"
 REQUIRED_USE="
 	|| ( aqua wayland X )
 	xinerama? ( X )
@@ -38,10 +38,10 @@ COMMON_DEPEND="
 	cups? ( >=net-print/cups-1.2[${MULTILIB_USEDEP}] )
 	introspection? ( >=dev-libs/gobject-introspection-1.39:= )
 	wayland? (
-		>=dev-libs/wayland-1.5.91[${MULTILIB_USEDEP}]
+		>=dev-libs/wayland-1.9.91[${MULTILIB_USEDEP}]
+		>=dev-libs/wayland-protocols-1.0.0[${MULTILIB_USEDEP}]
 		media-libs/mesa[wayland,${MULTILIB_USEDEP}]
 		>=x11-libs/libxkbcommon-0.2[${MULTILIB_USEDEP}]
-		>=dev-libs/wayland-protocols-1.0[${MULTILIB_USEDEP}]
 	)
 	X? (
 		>=app-accessibility/at-spi2-atk-2.5.3[${MULTILIB_USEDEP}]
@@ -108,8 +108,10 @@ strip_builddir() {
 }
 
 src_prepare() {
-	if use typeahead; then
-		epatch "${FILESDIR}"/gtk-typeahead.patch
+	if ! use vanilla; then
+		# From Thomas Martitz:
+		# 	https://bugzilla.gnome.org/show_bug.cgi?id=754302
+		epatch "${FILESDIR}"/${PN}-3.16.0-filechooser-restore-pre-3-16-type-ahead-find-with-setting-off-by-default.patch
 	fi
 
 	# -O3 and company cause random crashes in applications. Bug #133469
@@ -130,8 +132,11 @@ src_prepare() {
 		strip_builddir SRC_SUBDIRS demos Makefile.{am,in}
 		strip_builddir SRC_SUBDIRS examples Makefile.{am,in}
 	fi
-	# https://bugzilla.gnome.org/show_bug.cgi?id=764174
-	epatch "${FILESDIR}"/${P}-gtkwindow.patch
+
+	# From Upstream:
+	# 	https://git.gnome.org/browse/gtk+/commit/?h=gtk-3-20&id=b4143c6af95d7864b8bc9f120061e41d1987f00f
+	epatch "${FILESDIR}"/${P}-gtkwindow-dont-allow-unresizable-windows-to-be-smaller-than.patch
+
 	# gtk-update-icon-cache is installed by dev-util/gtk-update-icon-cache
 	epatch "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
 

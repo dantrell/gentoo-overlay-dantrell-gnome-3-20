@@ -38,6 +38,8 @@ DEPEND="${COMMON_DEPEND}
 	gnome? ( app-text/docbook-xml-dtd:4.3 )
 "
 
+DOCS="AUTHORS ChangeLog NEWS TODO"
+
 src_prepare() {
 	# Fix SVG detection and usage
 	epatch "${FILESDIR}"/${PN}-3.16.2-detect-svg.patch

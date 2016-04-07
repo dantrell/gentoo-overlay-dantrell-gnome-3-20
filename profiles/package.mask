@@ -7,9 +7,12 @@ app-crypt/seahorse::gentoo
 app-dicts/gnome-dictionary::gentoo
 app-editors/gedit-plugins::gentoo
 app-editors/gedit::gentoo
+app-editors/latexila::gentoo
 app-misc/bijiben::gentoo
+app-misc/gnote::gentoo
 app-misc/tracker::gentoo
 app-text/evince::gentoo
+dev-cpp/glibmm::gentoo
 dev-cpp/gtkmm::gentoo
 dev-libs/atk::gentoo
 dev-libs/gdl::gentoo
@@ -26,6 +29,7 @@ dev-util/devhelp::gentoo
 dev-util/gdbus-codegen::gentoo
 dev-util/glade::gentoo
 dev-util/gnome-devel-docs::gentoo
+dev-util/gtk-update-icon-cache::gentoo
 dev-vcs/gitg::gentoo
 games-arcade/gnome-nibbles::gentoo
 games-arcade/gnome-robots::gentoo
@@ -93,6 +97,7 @@ gnome-extra/yelp::gentoo
 mail-client/evolution::gentoo
 media-gfx/eog::gentoo
 media-gfx/gnome-photos::gentoo
+media-gfx/simple-scan::gentoo
 media-libs/clutter-gtk::gentoo
 media-libs/clutter::gentoo
 media-sound/gnome-music::gentoo
@@ -117,6 +122,7 @@ www-client/epiphany::gentoo
 x11-libs/gtk+::gentoo
 x11-libs/gtksourceview::gentoo
 x11-libs/vte::gentoo
+x11-misc/notification-daemon::gentoo
 x11-terms/gnome-terminal::gentoo
 x11-themes/adwaita-icon-theme::gentoo
 x11-themes/gnome-backgrounds::gentoo

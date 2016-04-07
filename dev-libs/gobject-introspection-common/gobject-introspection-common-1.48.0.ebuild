@@ -6,7 +6,7 @@ GNOME_ORG_MODULE="gobject-introspection"
 inherit gnome.org
 
 DESCRIPTION="Build infrastructure for GObject Introspection"
-HOMEPAGE="https://live.gnome.org/GObjectIntrospection/"
+HOMEPAGE="https://wiki.gnome.org/Projects/GObjectIntrospection"
 
 LICENSE="HPND"
 SLOT="0"

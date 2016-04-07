@@ -58,7 +58,7 @@ RDEPEND="
 	builder? ( >=gnome-extra/gnome-builder-${PV} )
 	california? ( >=gnome-extra/california-0.4.0 )
 	epiphany? ( >=www-client/epiphany-${PV} )
-	evolution? ( >=mail-client/evolution-3.18.2 )
+	evolution? ( >=mail-client/evolution-${PV} )
 	fonts? (
 		>=media-fonts/noto-2015.04
 		>=media-fonts/symbola-8.00
@@ -87,7 +87,7 @@ RDEPEND="
 	geary? ( >=mail-client/geary-0.10.0 )
 	share? ( >=gnome-extra/gnome-user-share-3.18.0 )
 	shotwell? ( >=media-gfx/shotwell-0.22 )
-	todo? ( >=gnome-extra/gnome-todo-${PV} )
+	todo? ( >=gnome-extra/gnome-todo-3.19.90 )
 	tracker? (
 		>=app-misc/tracker-1.8
 		>=gnome-extra/gnome-documents-${PV}

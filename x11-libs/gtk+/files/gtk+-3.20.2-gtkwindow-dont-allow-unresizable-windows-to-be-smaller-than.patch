@@ -1,8 +1,24 @@
+From b4143c6af95d7864b8bc9f120061e41d1987f00f Mon Sep 17 00:00:00 2001
+From: Rui Matos <tiagomatos@gmail.com>
+Date: Thu, 31 Mar 2016 20:56:01 +0200
+Subject: gtkwindow: Don't allow unresizable windows to be smaller than
+ required
+
+Commit cdc580463e409a9b7e5f1480afa68d875ff3ff65 made it so that
+unresizable windows can't be smaller than a set default size but it
+lost the logic to ensure these windows remain at least big enough to
+comply with their requisition.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=764174
+---
+ gtk/gtkwindow.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
 diff --git a/gtk/gtkwindow.c b/gtk/gtkwindow.c
-index 31086ed..f1d736c 100644
+index a7f86de..5922415 100644
 --- a/gtk/gtkwindow.c
 +++ b/gtk/gtkwindow.c
-@@ -9983,14 +9983,16 @@ gtk_window_update_fixed_size (GtkWindow   *window,
+@@ -10036,14 +10036,16 @@ gtk_window_update_fixed_size (GtkWindow   *window,
  
        if (info->default_width > -1)
          {
@@ -23,3 +39,6 @@ index 31086ed..f1d736c 100644
          }
      }
  }
+-- 
+cgit v0.12
+
