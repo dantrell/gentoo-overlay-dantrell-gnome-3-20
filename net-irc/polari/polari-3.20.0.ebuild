@@ -17,7 +17,7 @@ IUSE=""
 COMMON_DEPEND="
 	dev-libs/gjs
 	>=dev-libs/glib-2.43.4:2
-	>=dev-libs/gobject-introspection-0.9.6
+	>=dev-libs/gobject-introspection-0.9.6:=
 	net-libs/telepathy-glib[introspection]
 	>=x11-libs/gtk+-3.15.6:3[introspection]
 "
