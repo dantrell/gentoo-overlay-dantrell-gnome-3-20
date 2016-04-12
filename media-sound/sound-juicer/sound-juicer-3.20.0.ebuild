@@ -17,13 +17,13 @@ IUSE="flac test vorbis"
 COMMON_DEPEND="
 	app-text/iso-codes
 	>=dev-libs/glib-2.38:2[dbus]
-	>=x11-libs/gtk+-3.4:3
+	>=x11-libs/gtk+-3.19.6:3
 	media-libs/libcanberra[gtk3]
 	>=app-cdr/brasero-2.90
 	sys-apps/dbus
 	gnome-base/gsettings-desktop-schemas
 
-	media-libs/libdiscid
+	>=media-libs/libdiscid-0.4.0
 	>=media-libs/musicbrainz-5.0.1:5
 
 	media-libs/gstreamer:1.0

@@ -36,6 +36,7 @@ RDEPEND="${COMMON_DEPEND}
 	dev-libs/atk[introspection]
 	dev-python/pyatspi[${PYTHON_USEDEP}]
 	dev-python/setproctitle[${PYTHON_USEDEP}]
+	media-libs/gstreamer:1.0=
 	x11-libs/libwnck:3[introspection]
 	x11-libs/pango[introspection]
 "

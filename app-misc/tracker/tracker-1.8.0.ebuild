@@ -26,7 +26,7 @@ REQUIRED_USE="
 
 # According to NEWS, introspection is non-optional
 # glibc-2.12 needed for SCHED_IDLE (see bug #385003)
-# sqlite-3.7.16 for FTS4 support
+# sqlite-3.7.16 for FTS5 support
 RDEPEND="
 	>=app-i18n/enca-1.9
 	>=dev-db/sqlite-3.7.16:=

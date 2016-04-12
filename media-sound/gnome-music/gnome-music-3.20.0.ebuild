@@ -20,14 +20,14 @@ COMMON_DEPEND="
 	${PYTHON_DEPS}
 	>=dev-libs/glib-2.28:2
 	>=dev-libs/gobject-introspection-1.35.9:=
-	>=media-libs/grilo-0.3:0.3[introspection]
+	>=media-libs/grilo-0.3.0:0.3[introspection]
 	media-libs/libmediaart:2.0
 	>=x11-libs/gtk+-3.13.2:3[introspection]
 "
 # xdg-user-dirs-update needs to be there to create needed dirs
 # https://bugzilla.gnome.org/show_bug.cgi?id=731613
 RDEPEND="${COMMON_DEPEND}
-	app-misc/tracker[introspection(+)]
+	>=app-misc/tracker-1.7.1
 	|| (
 		app-misc/tracker[gstreamer]
 		app-misc/tracker[ffmpeg]
