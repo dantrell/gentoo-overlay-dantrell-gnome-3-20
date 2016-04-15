@@ -18,16 +18,16 @@ IUSE="glade +introspection vala"
 REQUIRED_USE="vala? ( introspection )"
 
 RDEPEND="
-	>=dev-libs/glib-2.44:2
+	>=dev-libs/glib-2.47:2
 	>=dev-libs/libxml2-2.6:2
-	>=x11-libs/gtk+-3.16:3[introspection?]
+	>=x11-libs/gtk+-3.19.6:3[introspection?]
 	glade? ( >=dev-util/glade-3.9:3.10 )
 	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.24
-	>=dev-util/intltool-0.50
-	>=sys-devel/gettext-0.17
+	>=sys-devel/gettext-0.19.4
+	dev-util/itstool
 	virtual/pkgconfig
 	vala? ( $(vala_depend) )
 "

@@ -3,7 +3,7 @@
 EAPI="5"
 GCONF_DEBUG="no"
 
-inherit autotools eutils gnome2
+inherit gnome2
 
 DESCRIPTION="Note editor designed to remain simple to use"
 HOMEPAGE="https://wiki.gnome.org/Apps/Bijiben"
@@ -32,19 +32,7 @@ DEPEND="${RDEPEND}
 	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
-
-	app-text/yelp-tools
 "
-# Needed by eautoreconf:
-#	app-text/yelp-tools
-
-src_prepare() {
-	# Fix zeitgeist automagic dependency
-	# https://bugzilla.gnome.org/show_bug.cgi?id=756013
-	epatch "${FILESDIR}"/${PN}-3.18.2-zeitgeist-automagic.patch
-	eautoreconf
-	gnome2_src_prepare
-}
 
 src_configure() {
 	gnome2_src_configure \

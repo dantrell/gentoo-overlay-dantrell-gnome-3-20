@@ -94,8 +94,10 @@ gnome-extra/nautilus-tracker-tags::gentoo
 gnome-extra/sushi::gentoo
 gnome-extra/yelp-xsl::gentoo
 gnome-extra/yelp::gentoo
+gnome-extra/zenity::gentoo
 mail-client/evolution::gentoo
 media-gfx/eog::gentoo
+media-gfx/gnome-font-viewer::gentoo
 media-gfx/gnome-photos::gentoo
 media-gfx/simple-scan::gentoo
 media-libs/clutter-gtk::gentoo
