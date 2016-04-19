@@ -11,7 +11,7 @@ HOMEPAGE="http://www.gtk.org/"
 
 LICENSE="LGPL-2+"
 SLOT="3/20" # From WebKit: http://trac.webkit.org/changeset/195811
-KEYWORDS="~*"
+KEYWORDS="*"
 
 IUSE="aqua broadway cloudprint colord cups examples +introspection test vanilla vim-syntax wayland X xinerama"
 REQUIRED_USE="
