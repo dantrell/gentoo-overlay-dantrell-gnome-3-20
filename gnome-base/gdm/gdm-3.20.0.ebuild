@@ -33,7 +33,7 @@ COMMON_DEPEND="
 	>=gnome-base/dconf-0.20
 	>=gnome-base/gnome-settings-daemon-3.1.4
 	gnome-base/gsettings-desktop-schemas
-	>=media-libs/fontconfig-2.5.0
+	>=media-libs/fontconfig-2.5.0:1.0
 	>=media-libs/libcanberra-0.4[gtk3]
 	sys-apps/dbus
 	>=sys-apps/accountsservice-0.6.12
@@ -70,9 +70,7 @@ COMMON_DEPEND="
 RDEPEND="${COMMON_DEPEND}
 	>=gnome-base/gnome-session-3.6
 	>=gnome-base/gnome-shell-3.1.90
-	gnome-extra/polkit-gnome:0
 	x11-apps/xhost
-	x11-themes/gnome-icon-theme-symbolic
 
 	accessibility? (
 		>=app-accessibility/orca-3.10

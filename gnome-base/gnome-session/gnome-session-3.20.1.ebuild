@@ -81,8 +81,6 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.16.0-restore-deprecated-code.patch
 	fi
 
-	epatch "${FILESDIR}"/${PN}-3.20.0-main-fix-starting-gnome-session-via-startx.patch
-
 	epatch_user
 
 	eautoreconf
