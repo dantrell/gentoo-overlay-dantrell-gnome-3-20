@@ -24,13 +24,14 @@ COMMON_DEPEND="
 	>=dev-libs/gobject-introspection-0.9.6:=
 	>=media-libs/clutter-1.11.4:1.0[introspection]
 	>=media-libs/clutter-gtk-1.0.1:1.0[introspection]
+	>=media-libs/harfbuzz-0.9.9
 	>=x11-libs/gtk+-3.13.2:3[introspection]
 
 	>=app-text/evince-3.0[introspection]
 	media-libs/freetype:2
 	media-libs/gstreamer:1.0[introspection]
 	media-libs/gst-plugins-base:1.0[introspection]
-	media-libs/clutter-gst:2.0[introspection]
+	media-libs/clutter-gst:3.0[introspection]
 	media-libs/musicbrainz:5
 	net-libs/webkit-gtk:4[introspection]
 	x11-libs/gtksourceview:3.0[introspection]
