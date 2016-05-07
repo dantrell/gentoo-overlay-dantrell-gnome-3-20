@@ -123,6 +123,9 @@ src_prepare() {
 	# gdbus-codegen is a separate package
 	epatch "${FILESDIR}"/${PN}-2.40.0-external-gdbus-codegen.patch
 
+	# crash in Firefox when choosing default application, fixed in 2.48.1; bug #577686
+	epatch "${FILESDIR}"/${PN}-2.48.0-GContextSpecificGroup.patch
+
 	# missing from 2.48.0 tarball, should be fixed in 2.48.1; bug #578238
 	cp "${FILESDIR}"/${P}-gobject.stp.in gobject/gobject.stp.in || die
 
