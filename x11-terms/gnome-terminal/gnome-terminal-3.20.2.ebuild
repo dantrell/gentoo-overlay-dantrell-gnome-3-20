@@ -19,7 +19,7 @@ IUSE="debug +deprecated +gnome-shell +nautilus vanilla"
 RDEPEND="
 	>=dev-libs/glib-2.42:2[dbus]
 	>=x11-libs/gtk+-3.12:3[X]
-	>=x11-libs/vte-0.44.0:2.91
+	>=x11-libs/vte-0.44.2:2.91
 	>=gnome-base/dconf-0.14
 	>=gnome-base/gsettings-desktop-schemas-0.1.0
 	sys-apps/util-linux
@@ -49,8 +49,8 @@ src_prepare() {
 	if use deprecated; then
 		# From Fedora:
 		# 	http://pkgs.fedoraproject.org/cgit/rpms/gnome-terminal.git/tree/?h=f24
-		epatch "${FILESDIR}"/${PN}-3-18-2-build-dont-treat-warnings-as-errors.patch
-		epatch "${FILESDIR}"/${PN}-3.20.1-transparency.patch
+		epatch "${FILESDIR}"/${PN}-3.18.2-build-dont-treat-warnings-as-errors.patch
+		epatch "${FILESDIR}"/${PN}-3.20.2-transparency.patch
 
 		# From GNOME:
 		# 	https://git.gnome.org/browse/gnome-terminal/commit/?id=b3c270b3612acd45f309521cf1167e1abd561c09
