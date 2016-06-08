@@ -12,7 +12,7 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="deprecated-background +introspection kms test wayland"
+IUSE="+deprecated-background +introspection kms test wayland"
 
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
@@ -78,7 +78,7 @@ RDEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	if use deprecated-background; then
-		epatch "${FILESDIR}"/${P}-restore-deprecated-background-code.patch
+		epatch "${FILESDIR}"/${PN}-3.18.4-restore-deprecated-background-code.patch
 	fi
 
 	epatch_user

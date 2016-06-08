@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes" # Needed with USE 'sendto'
 
-inherit gnome2 readme.gentoo virtualx
+inherit eutils gnome2 readme.gentoo versionator virtualx
 
 DESCRIPTION="A file manager for the GNOME desktop"
 HOMEPAGE="https://wiki.gnome.org/Apps/Nautilus"
@@ -13,7 +13,7 @@ LICENSE="GPL-2+ LGPL-2+ FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="exif gnome +introspection packagekit +previewer selinux sendto tracker xmp"
+IUSE="exif gnome +introspection packagekit +previewer selinux sendto tracker vanilla xmp"
 
 # FIXME: tests fails under Xvfb, but pass when building manually
 # "FAIL: check failed in nautilus-file.c, line 8307"
@@ -25,7 +25,7 @@ RESTRICT="test"
 COMMON_DEPEND="
 	>=dev-libs/glib-2.45.7:2[dbus]
 	>=x11-libs/pango-1.28.3
-	>=x11-libs/gtk+-3.19.12:3[introspection?]
+	>=x11-libs/gtk+-3.19.12:3[introspection?,vanilla?]
 	>=dev-libs/libxml2-2.7.8:2
 	>=gnome-base/gnome-desktop-3:3=
 
@@ -64,7 +64,9 @@ PDEPEND="
 		>=x11-themes/gnome-icon-theme-1.1.91
 		x11-themes/gnome-icon-theme-symbolic )
 	tracker? ( >=gnome-extra/nautilus-tracker-tags-0.12 )
-	previewer? ( >=gnome-extra/sushi-0.1.9 )
+	previewer? (
+		>=gnome-extra/sushi-0.1.9
+		>=media-video/totem-$(get_version_component_range 1-2) )
 	sendto? ( >=gnome-extra/nautilus-sendto-3.0.1 )
 	>=gnome-base/gvfs-1.14[gtk]
 "
@@ -76,6 +78,20 @@ src_prepare() {
 			To activate the previewer, select a file and press space; to
 			close the previewer, press space again."
 	fi
+
+	if ! use vanilla; then
+		epatch "${FILESDIR}"/${PN}-3.20.1-reorder-context-menu.patch
+		epatch "${FILESDIR}"/${PN}-3.20.1-support-slow-double-click-to-rename.patch
+		#epatch "${FILESDIR}"/${PN}-3.20.1-use-old-icon-grid-and-text-width-proportions.patch
+
+		# From Dr. Amr Osman:
+		# 	https://bugs.launchpad.net/ubuntu/+source/nautilus/+bug/1164016/comments/31
+		epatch "${FILESDIR}"/${PN}-3.20.1-support-alternative-search.patch
+	fi
+
+	# From GNOME
+	# 	https://git.gnome.org/browse/nautilus/commit/?id=e96f73cf1589c023ade74e4aeb16a0c422790161
+	epatch "${FILESDIR}"/${PN}-3.20.2-do-not-reset-double-click-status-on-pointer-movement.patch
 
 	# Remove -D*DEPRECATED flags. Don't leave this for eclass! (bug #448822)
 	sed -e 's/DISABLE_DEPRECATED_CFLAGS=.*/DISABLE_DEPRECATED_CFLAGS=/' \

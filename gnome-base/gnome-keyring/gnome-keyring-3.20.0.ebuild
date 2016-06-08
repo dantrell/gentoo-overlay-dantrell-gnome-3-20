@@ -24,8 +24,7 @@ COMMON_DEPEND="
 	>=dev-libs/libgcrypt-1.2.2:0=
 	caps? ( sys-libs/libcap-ng )
 	pam? ( virtual/pam )
-
-	>=app-crypt/gnupg-2.0.28
+	>=app-crypt/gnupg-2.0.28:=
 "
 RDEPEND="${COMMON_DEPEND}
 	app-crypt/pinentry[gnome-keyring]

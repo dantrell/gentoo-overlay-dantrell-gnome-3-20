@@ -12,14 +12,11 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="examples"
+IUSE="+deprecated-background examples"
 
-COMMON_DEPEND="
-	>=dev-libs/glib-2.26:2
+PDEPEND="
 	>=gnome-base/libgtop-2.28.3[introspection]
 	>=app-eselect/eselect-gnome-shell-extensions-20111211
-"
-RDEPEND="${COMMON_DEPEND}
 	>=dev-libs/gjs-1.29
 	dev-libs/gobject-introspection:=
 	dev-libs/atk[introspection]
@@ -32,7 +29,8 @@ RDEPEND="${COMMON_DEPEND}
 	x11-libs/pango[introspection]
 	x11-themes/adwaita-icon-theme
 "
-DEPEND="${COMMON_DEPEND}
+DEPEND="
+	>=dev-libs/glib-2.26:2
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig
@@ -48,6 +46,16 @@ Alternatively, to enable/disable extensions on a per-user basis,
 you can use the https://extensions.gnome.org/ web interface, the
 gnome-extra/gnome-tweak-tool GUI, or modify the org.gnome.shell
 enabled-extensions gsettings key from the command line or a script."
+
+src_prepare() {
+	if use deprecated-background; then
+		# Provided by GNOME Shell with minimal divergence
+		sed -e '/.*calendar-today.svg.*/d' \
+			-i data/Makefile.in || die "sed failed"
+	fi
+
+	gnome2_src_prepare
+}
 
 src_configure() {
 	gnome2_src_configure --enable-extensions=all

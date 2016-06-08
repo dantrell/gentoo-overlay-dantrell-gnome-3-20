@@ -4,7 +4,7 @@ EAPI="5"
 GCONF_DEBUG="no"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 virtualx
+inherit eutils gnome2 virtualx
 
 DESCRIPTION="Clutter is a library for creating graphical user interfaces"
 HOMEPAGE="https://wiki.gnome.org/Projects/Clutter"
@@ -65,6 +65,10 @@ DEPEND="${RDEPEND}
 "
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/clutter/commit/?id=be8602fbb491c30c1e2febb92553375b2f4ce584
+	epatch "${FILESDIR}"/${PN}-1.26.0-reorganize-backends.patch
+
 	# We only need conformance tests, the rest are useless for us
 	sed -e 's/^\(SUBDIRS =\).*/\1 accessibility conform/g' \
 		-i tests/Makefile.am || die "am tests sed failed"
