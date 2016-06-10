@@ -13,7 +13,7 @@ LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="debug +deprecated +gnome-shell +nautilus vanilla"
+IUSE="debug +deprecated-transparency +gnome-shell +nautilus vanilla-hotkeys"
 
 # FIXME: automagic dependency on gtk+[X]
 RDEPEND="
@@ -46,7 +46,7 @@ DOC_CONTENTS="To get previous working directory inherited in new opened
 	. /etc/profile.d/vte.sh"
 
 src_prepare() {
-	if use deprecated; then
+	if use deprecated-transparency; then
 		# From Fedora:
 		# 	http://pkgs.fedoraproject.org/cgit/rpms/gnome-terminal.git/tree/?h=f24
 		epatch "${FILESDIR}"/${PN}-3.18.2-build-dont-treat-warnings-as-errors.patch
@@ -57,7 +57,7 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.14.3-fix-broken-transparency-on-startup.patch
 	fi
 
-	if ! use vanilla; then
+	if ! use vanilla-hotkeys; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1652
 		epatch "${FILESDIR}"/${PN}-3.16.2-disable-function-keys.patch

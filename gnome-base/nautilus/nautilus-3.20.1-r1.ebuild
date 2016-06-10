@@ -13,7 +13,8 @@ LICENSE="GPL-2+ LGPL-2+ FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="exif gnome +introspection packagekit +previewer selinux sendto tracker vanilla xmp"
+IUSE="exif gnome +introspection packagekit +previewer selinux sendto tracker vanilla-icon vanilla-icon-grid vanilla-menu vanilla-rename vanilla-search xmp"
+REQUIRED_USE="!vanilla-icon-grid? ( !vanilla-icon )"
 
 # FIXME: tests fails under Xvfb, but pass when building manually
 # "FAIL: check failed in nautilus-file.c, line 8307"
@@ -25,7 +26,7 @@ RESTRICT="test"
 COMMON_DEPEND="
 	>=dev-libs/glib-2.45.7:2[dbus]
 	>=x11-libs/pango-1.28.3
-	>=x11-libs/gtk+-3.19.12:3[introspection?,vanilla?]
+	>=x11-libs/gtk+-3.19.12:3[introspection?]
 	>=dev-libs/libxml2-2.7.8:2
 	>=gnome-base/gnome-desktop-3:3=
 
@@ -79,11 +80,21 @@ src_prepare() {
 			close the previewer, press space again."
 	fi
 
-	if ! use vanilla; then
-		epatch "${FILESDIR}"/${PN}-3.20.1-reorder-context-menu.patch
-		epatch "${FILESDIR}"/${PN}-3.20.1-support-slow-double-click-to-rename.patch
-		#epatch "${FILESDIR}"/${PN}-3.20.1-use-old-icon-grid-and-text-width-proportions.patch
+	#if ! use vanilla-icon; then
+	#	if ! use vanilla-icon-grid; then
+	#		epatch "${FILESDIR}"/${PN}-3.20.1-use-old-icon-grid-and-text-width-proportions.patch
+	#	fi
+	#fi
 
+	if ! use vanilla-menu; then
+		epatch "${FILESDIR}"/${PN}-3.20.1-reorder-context-menu.patch
+	fi
+
+	if ! use vanilla-rename; then
+		epatch "${FILESDIR}"/${PN}-3.20.1-support-slow-double-click-to-rename.patch
+	fi
+
+	if ! use vanilla-search; then
 		# From Dr. Amr Osman:
 		# 	https://bugs.launchpad.net/ubuntu/+source/nautilus/+bug/1164016/comments/31
 		epatch "${FILESDIR}"/${PN}-3.20.1-support-alternative-search.patch

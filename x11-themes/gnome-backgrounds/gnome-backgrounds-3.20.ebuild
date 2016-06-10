@@ -12,7 +12,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="vanilla"
+IUSE="vanilla-live"
 
 RDEPEND="!<x11-themes/gnome-themes-standard-3.14"
 DEPEND="
@@ -21,7 +21,7 @@ DEPEND="
 "
 
 src_compile() {
-	if ! use vanilla; then
+	if ! use vanilla-live; then
 		cp "${FILESDIR}"/"${PN}"-3.14.1-restore-3.10-backgrounds/* "${S}"/backgrounds
 	fi
 

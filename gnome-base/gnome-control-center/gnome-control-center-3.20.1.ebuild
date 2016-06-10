@@ -13,7 +13,7 @@ LICENSE="GPL-2+"
 SLOT="2"
 KEYWORDS="*"
 
-IUSE="+bluetooth +colord +cups +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos networkmanager systemd v4l wayland"
+IUSE="+bluetooth +colord +cups +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos networkmanager systemd v4l vanilla-datetime vanilla-hostname wayland"
 
 # False positives caused by nested configure scripts
 QA_CONFIGURE_OPTIONS=".*"
@@ -142,13 +142,17 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.16.3-restore-deprecated-code.patch
 	fi
 
-	# From Funtoo:
-	# 	https://bugs.funtoo.org/browse/FL-1389
-	epatch "${FILESDIR}"/${PN}-3.18.2-disable-automatic-datetime-and-timezone-options.patch
+	if ! use vanilla-datetime; then
+		# From Funtoo:
+		# 	https://bugs.funtoo.org/browse/FL-1389
+		epatch "${FILESDIR}"/${PN}-3.18.2-disable-automatic-datetime-and-timezone-options.patch
+	fi
 
-	# From Funtoo:
-	# 	https://bugs.funtoo.org/browse/FL-1391
-	epatch "${FILESDIR}"/${PN}-3.18.2-disable-changing-hostname.patch
+	if ! use vanilla-hostname; then
+		# From Funtoo:
+		# 	https://bugs.funtoo.org/browse/FL-1391
+		epatch "${FILESDIR}"/${PN}-3.18.2-disable-changing-hostname.patch
+	fi
 
 	epatch_user
 

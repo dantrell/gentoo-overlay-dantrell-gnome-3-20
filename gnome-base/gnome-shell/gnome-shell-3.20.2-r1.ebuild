@@ -14,7 +14,7 @@ LICENSE="GPL-2+ LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+bluetooth +deprecated +deprecated-background +networkmanager +nls systemd vanilla"
+IUSE="+bluetooth +deprecated +deprecated-background +networkmanager +nls systemd vanilla-motd vanilla-screen"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # libXfixes-5.0 needed for pointer barriers
@@ -136,9 +136,12 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.20.2-restore-deprecated-background-code.patch
 	fi
 
-	if ! use vanilla; then
-		epatch "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
+	if ! use vanilla-motd; then
 		epatch "${FILESDIR}"/${PN}-3.16.4-improve-motd-handling.patch
+	fi
+
+	if ! use vanilla-screen; then
+		epatch "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
 	fi
 
 	# Change favorites defaults, bug #479918
