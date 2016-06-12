@@ -144,6 +144,10 @@ src_prepare() {
 		epatch "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
 	fi
 
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=35cc224240ec4fc8159fc689fe3e093a81f97dc9
+	epatch "${FILESDIR}"/${PN}-3.20.3-st-init-framebuffer-early-to-fix-gnome-shell-crash-on-nvidia-drivers.patch
+
 	# Change favorites defaults, bug #479918
 	epatch "${FILESDIR}"/${PN}-3.16.0-defaults.patch
 
@@ -153,10 +157,6 @@ src_prepare() {
 	# Fix silent bluetooth linking failure with ld.gold, bug #503952
 	# https://bugzilla.gnome.org/show_bug.cgi?id=726435
 	epatch "${FILESDIR}"/${PN}-3.14.0-bluetooth-gold.patch
-
-	# Fix crash with nvidia-drivers, bug #578216
-	# https://bugzilla.gnome.org/show_bug.cgi?id=764898
-	epatch "${FILESDIR}"/${PN}-3.20-fix-nvidia-crash.patch
 
 	epatch_user
 
