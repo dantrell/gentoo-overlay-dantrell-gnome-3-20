@@ -17,7 +17,7 @@ LICENSE="
 	branding? ( CC-Sampling-Plus-1.0 )
 "
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 IUSE="accessibility audit branding +deprecated fprint +introspection ipv6 plymouth selinux smartcard systemd tcpd test wayland xinerama"
 REQUIRED_USE="wayland? ( systemd )"
