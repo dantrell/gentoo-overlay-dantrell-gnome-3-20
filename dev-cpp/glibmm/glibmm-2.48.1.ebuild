@@ -9,13 +9,13 @@ DESCRIPTION="C++ interface for glib2"
 HOMEPAGE="http://www.gtkmm.org"
 
 LICENSE="LGPL-2.1+ GPL-2+" # GPL-2+ applies only to the build system
-SLOT="2/3.20"
+SLOT="2"
 KEYWORDS="*"
 
 IUSE="doc debug examples test"
 
 RDEPEND="
-	>=dev-libs/libsigc++-2.8.0:2=[${MULTILIB_USEDEP}]
+	>=dev-libs/libsigc++-2.8.0:2[${MULTILIB_USEDEP}]
 	>=dev-libs/glib-2.46.0:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
