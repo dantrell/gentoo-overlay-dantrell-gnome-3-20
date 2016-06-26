@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome-games
+inherit gnome2
 
 DESCRIPTION="Make lines of the same color to win"
 HOMEPAGE="https://wiki.gnome.org/Apps/Four-in-a-row"

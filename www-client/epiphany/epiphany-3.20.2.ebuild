@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2 virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="GNOME webbrowser based on Webkit"
 HOMEPAGE="https://wiki.gnome.org/Apps/Web"
@@ -16,7 +15,7 @@ KEYWORDS="*"
 IUSE="nss test"
 
 COMMON_DEPEND="
-	>=app-crypt/gcr-3.5.5
+	>=app-crypt/gcr-3.5.5:=
 	>=app-crypt/libsecret-0.14
 	>=app-text/iso-codes-0.35
 	>=dev-libs/glib-2.38:2[dbus]
@@ -56,10 +55,10 @@ DEPEND="${COMMON_DEPEND}
 src_prepare() {
 	# Fix unittests
 	# https://bugzilla.gnome.org/show_bug.cgi?id=751591
-	epatch "${FILESDIR}"/${PN}-3.16.0-unittest-1.patch
+	eapply "${FILESDIR}"/${PN}-3.16.0-unittest-1.patch
 
 	# https://bugzilla.gnome.org/show_bug.cgi?id=751593
-	epatch "${FILESDIR}"/${PN}-3.14.0-unittest-2.patch
+	eapply "${FILESDIR}"/${PN}-3.14.0-unittest-2.patch
 
 	gnome2_src_prepare
 }
@@ -73,15 +72,7 @@ src_configure() {
 		$(use_enable test tests)
 }
 
-src_compile() {
-	# needed to avoid "Command line `dbus-launch ...' exited with non-zero exit status 1"
-	unset DISPLAY
-	gnome2_src_compile
-}
-
 src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
-
-	unset DISPLAY
-	GSETTINGS_SCHEMA_DIR="${S}/data" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/data" virtx emake check
 }

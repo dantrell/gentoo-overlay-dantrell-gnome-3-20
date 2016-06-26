@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit eutils gnome2 multilib-minimal
+inherit gnome2 multilib-minimal virtualx
 
 DESCRIPTION="C++ interface for GTK+"
 HOMEPAGE="http://www.gtkmm.org"
@@ -16,12 +15,12 @@ IUSE="aqua doc examples test wayland X"
 REQUIRED_USE="|| ( aqua wayland X )"
 
 RDEPEND="
-	>=dev-cpp/glibmm-2.46.1:2[${MULTILIB_USEDEP}]
-	>=x11-libs/gtk+-3.18.0:3[aqua?,wayland?,X?,${MULTILIB_USEDEP}]
+	>=dev-cpp/glibmm-2.48.0:2[${MULTILIB_USEDEP}]
+	>=x11-libs/gtk+-3.20.0:3[aqua?,wayland?,X?,${MULTILIB_USEDEP}]
 	>=x11-libs/gdk-pixbuf-2.28:2[${MULTILIB_USEDEP}]
-	>=dev-cpp/atkmm-2.24.1[${MULTILIB_USEDEP}]
+	>=dev-cpp/atkmm-2.24.2[${MULTILIB_USEDEP}]
 	>=dev-cpp/cairomm-1.12.0[${MULTILIB_USEDEP}]
-	>=dev-cpp/pangomm-2.38.1:1.4[${MULTILIB_USEDEP}]
+	>=dev-cpp/pangomm-2.38.2:1.4[${MULTILIB_USEDEP}]
 	>=dev-libs/libsigc++-2.3.2:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
@@ -60,11 +59,10 @@ multilib_src_configure() {
 		$(use_enable X x11-backend)
 }
 
-multilib_src_install() {
-	gnome2_src_install
+multilib_src_test() {
+	virtx emake check
 }
 
-multilib_src_install_all() {
-	DOCS="AUTHORS ChangeLog PORTING NEWS README"
-	einstalldocs
+multilib_src_install() {
+	gnome2_src_install
 }

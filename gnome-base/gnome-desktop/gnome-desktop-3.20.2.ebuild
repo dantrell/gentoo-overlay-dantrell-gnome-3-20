@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
 inherit gnome2 virtualx
 
@@ -12,7 +11,7 @@ LICENSE="GPL-2+ FDL-1.1+ LGPL-2+"
 SLOT="3/12" # subslot = libgnome-desktop-3 soname version
 KEYWORDS="*"
 
-IUSE="+introspection"
+IUSE="debug +introspection"
 
 # cairo[X] needed for gnome-bg
 COMMON_DEPEND="
@@ -48,18 +47,18 @@ DEPEND="${COMMON_DEPEND}
 # eventually libXrandr shouldn't RDEPEND on randrproto)
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog HACKING NEWS README"
 	# Note: do *not* use "--with-pnp-ids-path" argument. Otherwise, the pnp.ids
 	# file (needed by other packages such as >=gnome-settings-daemon-3.1.2)
 	# will not get installed in ${pnpdatadir} (/usr/share/libgnome-desktop-3.0).
 	gnome2_src_configure \
-		--disable-debug-tools \
 		--disable-static \
 		--with-gnome-distributor=Gentoo \
 		--enable-desktop-docs \
+		$(usex debug --enable-debug=yes ' ') \
+		$(use_enable debug debug-tools) \
 		$(use_enable introspection)
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }

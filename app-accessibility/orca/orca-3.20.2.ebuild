@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python3_{3,4,5} )
 PYTHON_REQ_USE="threads"
@@ -26,6 +25,7 @@ COMMON_DEPEND="${PYTHON_DEPS}
 	>=dev-libs/atk-2.10
 	>=dev-libs/glib-2.28:2
 	>=dev-python/pygobject-3.10:3[${PYTHON_USEDEP}]
+	media-libs/gstreamer:1.0
 	>=x11-libs/gtk+-3.6.2:3[introspection]
 	braille? (
 		>=app-accessibility/brltty-5.0-r3[python,${PYTHON_USEDEP}]
@@ -36,7 +36,6 @@ RDEPEND="${COMMON_DEPEND}
 	dev-libs/atk[introspection]
 	dev-python/pyatspi[${PYTHON_USEDEP}]
 	dev-python/setproctitle[${PYTHON_USEDEP}]
-	media-libs/gstreamer:1.0=
 	x11-libs/libwnck:3[introspection]
 	x11-libs/pango[introspection]
 "
@@ -62,7 +61,6 @@ src_compile() {
 }
 
 src_install() {
-	DOCS="AUTHORS ChangeLog MAINTAINERS NEWS README TODO"
 	installing() {
 		gnome2_src_install
 		# Massage shebang to make python_doscript happy

@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 # gedit-3.8 is python3 only, this also per:
 # https://bugzilla.redhat.com/show_bug.cgi?id=979450
 PYTHON_COMPAT=( python{3_3,3_4,3_5} )
@@ -20,7 +19,7 @@ REQUIRED_USE="gedit? ( ${PYTHON_REQUIRED_USE} )"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.37.3:2[dbus]
-	>=x11-libs/gtk+-3.13.4:3
+	>=x11-libs/gtk+-3.19.3:3
 	>=net-libs/webkit-gtk-2.6.0:4
 "
 RDEPEND="${COMMON_DEPEND}

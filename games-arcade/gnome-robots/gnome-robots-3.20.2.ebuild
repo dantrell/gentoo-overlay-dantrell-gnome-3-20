@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome-games
+inherit gnome2
 
 DESCRIPTION="Avoid the robots and make them crash into each other"
 HOMEPAGE="https://wiki.gnome.org/Apps/Robots"
@@ -15,8 +14,8 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-	>=dev-libs/libgames-support-1.0:1.0
 	>=dev-libs/glib-2.32:2
+	>=dev-libs/libgames-support-1.0:1.0
 	>=gnome-base/librsvg-2.36.2:2
 	>=media-libs/libcanberra-0.26[gtk3]
 	>=x11-libs/gtk+-3.15:3

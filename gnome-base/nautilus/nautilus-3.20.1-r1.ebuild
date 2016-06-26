@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes" # Needed with USE 'sendto'
 
-inherit eutils gnome2 readme.gentoo versionator virtualx
+inherit gnome2 readme.gentoo-r1 versionator virtualx
 
 DESCRIPTION="A file manager for the GNOME desktop"
 HOMEPAGE="https://wiki.gnome.org/Apps/Nautilus"
@@ -61,9 +60,7 @@ RDEPEND="${COMMON_DEPEND}
 #	dev-util/gtk-doc-am"
 
 PDEPEND="
-	gnome? (
-		>=x11-themes/gnome-icon-theme-1.1.91
-		x11-themes/gnome-icon-theme-symbolic )
+	gnome? ( x11-themes/adwaita-icon-theme )
 	tracker? ( >=gnome-extra/nautilus-tracker-tags-0.12 )
 	previewer? (
 		>=gnome-extra/sushi-0.1.9
@@ -82,27 +79,27 @@ src_prepare() {
 
 	#if ! use vanilla-icon; then
 	#	if ! use vanilla-icon-grid; then
-	#		epatch "${FILESDIR}"/${PN}-3.20.1-use-old-icon-grid-and-text-width-proportions.patch
+	#		eapply "${FILESDIR}"/${PN}-3.20.1-use-old-icon-grid-and-text-width-proportions.patch
 	#	fi
 	#fi
 
 	if ! use vanilla-menu; then
-		epatch "${FILESDIR}"/${PN}-3.20.1-reorder-context-menu.patch
+		eapply "${FILESDIR}"/${PN}-3.20.1-reorder-context-menu.patch
 	fi
 
 	if ! use vanilla-rename; then
-		epatch "${FILESDIR}"/${PN}-3.20.1-support-slow-double-click-to-rename.patch
+		eapply "${FILESDIR}"/${PN}-3.20.1-support-slow-double-click-to-rename.patch
 	fi
 
 	if ! use vanilla-search; then
 		# From Dr. Amr Osman:
 		# 	https://bugs.launchpad.net/ubuntu/+source/nautilus/+bug/1164016/comments/31
-		epatch "${FILESDIR}"/${PN}-3.20.1-support-alternative-search.patch
+		eapply "${FILESDIR}"/${PN}-3.20.1-support-alternative-search.patch
 	fi
 
 	# From GNOME
 	# 	https://git.gnome.org/browse/nautilus/commit/?id=e96f73cf1589c023ade74e4aeb16a0c422790161
-	epatch "${FILESDIR}"/${PN}-3.20.2-do-not-reset-double-click-status-on-pointer-movement.patch
+	eapply "${FILESDIR}"/${PN}-3.20.2-do-not-reset-double-click-status-on-pointer-movement.patch
 
 	# Remove -D*DEPRECATED flags. Don't leave this for eclass! (bug #448822)
 	sed -e 's/DISABLE_DEPRECATED_CFLAGS=.*/DISABLE_DEPRECATED_CFLAGS=/' \
@@ -112,7 +109,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="AUTHORS HACKING MAINTAINERS NEWS README* THANKS"
 	gnome2_src_configure \
 		--disable-profiling \
 		--disable-update-mimedb \
@@ -126,8 +122,7 @@ src_configure() {
 }
 
 src_test() {
-	gnome2_environment_reset
-	Xemake check
+	virtx emake check
 }
 
 src_install() {

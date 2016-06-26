@@ -1,15 +1,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 # libanjuta-language-vala.so links to a specific slot of libvala; we want to
 # avoid automagic behavior.
-VALA_MIN_API_VERSION="0.28"
+VALA_MIN_API_VERSION="0.32"
 VALA_MAX_API_VERSION="${VALA_MIN_API_VERSION}"
 
-inherit gnome2 flag-o-matic readme.gentoo python-single-r1 vala
+inherit gnome2 flag-o-matic readme.gentoo-r1 python-single-r1 vala
 
 DESCRIPTION="A versatile IDE for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/Anjuta"
@@ -87,9 +86,6 @@ will need to:
 2. Add 'VALAC=/usr/bin/valac-X.XX' (respecting quotes) to
 'Configure options'."
 	fi
-
-	# COPYING is used in Anjuta's help/about entry
-	DOCS="AUTHORS ChangeLog COPYING FUTURE MAINTAINERS NEWS README ROADMAP THANKS TODO"
 
 	# Conflicts with -pg in a plugin, bug #266777
 	filter-flags -fomit-frame-pointer

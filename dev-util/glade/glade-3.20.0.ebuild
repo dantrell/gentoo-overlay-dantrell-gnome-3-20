@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools eutils gnome2 python-single-r1 versionator virtualx
+inherit gnome2 python-single-r1 versionator virtualx
 
 DESCRIPTION="A user interface designer for GTK+ and GNOME"
 HOMEPAGE="https://glade.gnome.org/"
@@ -14,7 +13,7 @@ LICENSE="GPL-2+ FDL-1.1+"
 SLOT="3.10/6" # subslot = suffix of libgladeui-2.so
 KEYWORDS="*"
 
-IUSE="+introspection python"
+IUSE="debug +introspection python"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND="
@@ -23,7 +22,7 @@ RDEPEND="
 	>=dev-libs/libxml2-2.4.0:2
 	x11-libs/cairo:=
 	x11-libs/gdk-pixbuf:2[introspection?]
-	>=x11-libs/gtk+-3.20:3[introspection?]
+	>=x11-libs/gtk+-3.20.0:3[introspection?]
 	x11-libs/pango[introspection?]
 	introspection? ( >=dev-libs/gobject-introspection-1.32:= )
 	python? (
@@ -36,6 +35,7 @@ DEPEND="${RDEPEND}
 	dev-libs/libxslt
 	>=dev-util/gtk-doc-am-1.13
 	>=dev-util/intltool-0.41.0
+	dev-util/itstool
 	virtual/pkgconfig
 
 	dev-libs/gobject-introspection-common
@@ -45,18 +45,14 @@ DEPEND="${RDEPEND}
 #	dev-libs/gobject-introspection-common
 #	gnome-base/gnome-common
 
-pkg_setup() {
-	use python && python-single-r1_pkg_setup
-}
-
-src_prepare() {
+PATCHES=(
 	# To avoid file collison with other slots, rename help module.
 	# Prevent the UI from loading glade:3's gladeui devhelp documentation.
-	epatch "${FILESDIR}"/${PN}-3.14.1-doc-version.patch
+	"${FILESDIR}"/${PN}-3.14.1-doc-version.patch
+)
 
-	eautoreconf
-
-	gnome2_src_prepare
+pkg_setup() {
+	use python && python-single-r1_pkg_setup
 }
 
 src_configure() {
@@ -64,13 +60,13 @@ src_configure() {
 		--disable-static \
 		--enable-gladeui \
 		--enable-libtool-lock \
+		$(usex debug --enable-debug ' ') \
 		$(use_enable introspection) \
-		$(use_enable python) \
-		ITSTOOL=$(type -P true)
+		$(use_enable python)
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }
 
 src_install() {

@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
 inherit gnome2 multilib-minimal
@@ -14,6 +13,9 @@ SLOT="2"
 KEYWORDS="*"
 
 IUSE="test"
+
+# tests fail on multilib setups
+RESTRICT="test"
 
 COMMON_DEPEND="
 	>=app-accessibility/at-spi2-core-2.17.90[${MULTILIB_USEDEP}]
@@ -35,8 +37,7 @@ multilib_src_configure() {
 }
 
 multilib_src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
-	dbus-run-session -- emake check
+	dbus-run-session -- emake -j1 check
 }
 
 multilib_src_compile() { gnome2_src_compile; }

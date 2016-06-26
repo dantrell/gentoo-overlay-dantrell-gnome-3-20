@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="Gnome session manager"
 HOMEPAGE="https://git.gnome.org/browse/gnome-session"
@@ -48,7 +47,7 @@ COMMON_DEPEND="
 RDEPEND="${COMMON_DEPEND}
 	gnome-base/gnome-settings-daemon
 	>=gnome-base/gsettings-desktop-schemas-0.1.7
-	>=x11-themes/gnome-themes-standard-2.91.92
+	x11-themes/adwaita-icon-theme
 	sys-apps/dbus[X]
 
 	!deprecated? (
@@ -78,10 +77,8 @@ src_prepare() {
 	if use deprecated; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
-		epatch "${FILESDIR}"/${PN}-3.16.0-restore-deprecated-code.patch
+		eapply "${FILESDIR}"/${PN}-3.16.0-restore-deprecated-code.patch
 	fi
-
-	epatch_user
 
 	eautoreconf
 	gnome2_src_prepare

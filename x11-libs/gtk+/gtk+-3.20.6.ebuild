@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils flag-o-matic gnome2 multilib virtualx multilib-minimal
+inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal
 
 DESCRIPTION="Gimp ToolKit +"
 HOMEPAGE="http://www.gtk.org/"
@@ -19,7 +18,8 @@ REQUIRED_USE="
 	xinerama? ( X )
 "
 
-# FIXME: introspection data is built against system installation of gtk+:3
+# FIXME: introspection data is built against system installation of gtk+:3,
+# bug #????
 # NOTE: cairo[svg] dep is due to bug 291283 (not patched to avoid eautoreconf)
 COMMON_DEPEND="
 	>=dev-libs/atk-2.15[introspection?,${MULTILIB_USEDEP}]
@@ -39,7 +39,7 @@ COMMON_DEPEND="
 	introspection? ( >=dev-libs/gobject-introspection-1.39:= )
 	wayland? (
 		>=dev-libs/wayland-1.9.91[${MULTILIB_USEDEP}]
-		>=dev-libs/wayland-protocols-1.0.0[${MULTILIB_USEDEP}]
+		>=dev-libs/wayland-protocols-1.0[${MULTILIB_USEDEP}]
 		media-libs/mesa[wayland,${MULTILIB_USEDEP}]
 		>=x11-libs/libxkbcommon-0.2[${MULTILIB_USEDEP}]
 	)
@@ -111,7 +111,7 @@ src_prepare() {
 	if ! use vanilla; then
 		# From Thomas Martitz:
 		# 	https://bugzilla.gnome.org/show_bug.cgi?id=754302
-		epatch "${FILESDIR}"/${PN}-3.16.0-filechooser-restore-pre-3-16-type-ahead-find-with-setting-off-by-default.patch
+		eapply "${FILESDIR}"/${PN}-3.16.0-filechooser-restore-pre-3-16-type-ahead-find-with-setting-off-by-default.patch
 	fi
 
 	# -O3 and company cause random crashes in applications. Bug #133469
@@ -134,9 +134,7 @@ src_prepare() {
 	fi
 
 	# gtk-update-icon-cache is installed by dev-util/gtk-update-icon-cache
-	epatch "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
-
-	epatch_user
+	eapply "${FILESDIR}"/${PN}-3.16.2-remove_update-icon-cache.patch
 
 	eautoreconf
 	gnome2_src_prepare
@@ -179,9 +177,7 @@ multilib_src_configure() {
 
 multilib_src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/gtk" || die
-
-	unset DISPLAY #527682
-	GSETTINGS_SCHEMA_DIR="${S}/gtk" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/gtk" virtx emake check
 }
 
 multilib_src_install() {
@@ -191,8 +187,7 @@ multilib_src_install() {
 multilib_src_install_all() {
 	insinto /etc/gtk-3.0
 	doins "${FILESDIR}"/settings.ini
-
-	dodoc AUTHORS ChangeLog* HACKING NEWS* README*
+	einstalldocs
 }
 
 pkg_preinst() {

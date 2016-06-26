@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2
 
@@ -16,7 +15,7 @@ IUSE=""
 
 # Need gdk-pixbuf-2.25 for gdk_pixbuf_get_pixels_with_length
 COMMON_DEPEND="
-	>=app-misc/tracker-1:=
+	>=app-misc/tracker-1:=[miner-fs]
 	>=app-text/evince-3.13.3[introspection]
 	dev-libs/gjs
 	>=dev-libs/glib-2.39.3:2
@@ -37,7 +36,7 @@ RDEPEND="${COMMON_DEPEND}
 	media-libs/clutter[introspection]
 	net-misc/gnome-online-miners
 	sys-apps/dbus
-	x11-themes/gnome-icon-theme-symbolic
+	x11-themes/adwaita-icon-theme
 "
 DEPEND="${COMMON_DEPEND}
 	dev-libs/libxslt
@@ -46,9 +45,3 @@ DEPEND="${COMMON_DEPEND}
 	virtual/pkgconfig
 "
 # eautoreconf requires yelp-tools
-
-src_prepare() {
-	# Prevent sandbox violation, https://bugzilla.gnome.org/show_bug.cgi?id=758097
-	sed -i -e '/-rm -f $(appdir)\/org.gnome.Books.data.gresource/d' data/Makefile.{am,in} || die
-	gnome2_src_prepare
-}

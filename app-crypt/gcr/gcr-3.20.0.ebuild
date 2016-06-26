@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_USE_DEPEND="vapigen"
 PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 
@@ -62,7 +61,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog HACKING NEWS README"
 	gnome2_src_configure \
 		$(use_with gtk) \
 		$(use_enable introspection) \
@@ -73,6 +71,5 @@ src_configure() {
 }
 
 src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
-	Xemake check
+	virtx emake check
 }

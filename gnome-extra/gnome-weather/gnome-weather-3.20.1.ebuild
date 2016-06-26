@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 virtualx
 
@@ -20,6 +19,7 @@ RDEPEND="
 	>=dev-libs/glib-2.32:2
 	>=dev-libs/gobject-introspection-1.35.9:=
 	>=dev-libs/libgweather-3.17.2:=
+	gnome-base/gsettings-desktop-schemas
 	>=x11-libs/gtk+-3.11.4:3
 "
 DEPEND="${RDEPEND}
@@ -34,5 +34,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check TESTS_ENVIRONMENT="dbus-run-session"
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session"
 }

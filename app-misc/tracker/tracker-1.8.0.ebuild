@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools bash-completion-r1 eutils gnome2 linux-info multilib python-any-r1 vala versionator virtualx
+inherit autotools bash-completion-r1 gnome2 linux-info multilib python-any-r1 vala versionator virtualx
 
 DESCRIPTION="A tagging metadata database, search tool and indexer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Tracker"
@@ -14,7 +13,7 @@ LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0/100"
 KEYWORDS="*"
 
-IUSE="cue eds elibc_glibc exif ffmpeg firefox-bookmarks flac gif gsf
+IUSE="cue elibc_glibc exif ffmpeg firefox-bookmarks flac gif gsf
 gstreamer gtk iptc +iso +jpeg libav +miner-fs mp3 nautilus networkmanager
 pdf playlist rss stemmer test thunderbird +tiff upnp-av upower +vorbis +xml xmp xps"
 REQUIRED_USE="
@@ -42,11 +41,6 @@ RDEPEND="
 	sys-apps/util-linux
 
 	cue? ( media-libs/libcue )
-	eds? (
-		>=mail-client/evolution-3.3.5:=
-		>=gnome-extra/evolution-data-server-3.3.5:=
-		<mail-client/evolution-3.5.3
-		<gnome-extra/evolution-data-server-3.5.3 )
 	elibc_glibc? ( >=sys-libs/glibc-2.12 )
 	exif? ( >=media-libs/libexif-0.6 )
 	ffmpeg? (
@@ -162,8 +156,10 @@ src_configure() {
 	# According to NEWS, introspection is required
 	# is not being generated
 	# nautilus extension is in a separate package, nautilus-tracker-tags
+	# miner-evolution disabled as it's incompatible with current eds
 	gnome2_src_configure \
 		--disable-hal \
+		--disable-miner-evolution \
 		--disable-nautilus-extension \
 		--disable-static \
 		--enable-abiword \
@@ -185,7 +181,6 @@ src_configure() {
 		--with-unicode-support=libicu \
 		--with-bash-completion-dir="$(get_bashcompdir)" \
 		$(use_enable cue libcue) \
-		$(use_enable eds miner-evolution) \
 		$(use_enable exif libexif) \
 		$(use_enable firefox-bookmarks miner-firefox) \
 		$(use_with firefox-bookmarks firefox-plugin-dir "${EPREFIX}"/usr/$(get_libdir)/firefox/extensions) \
@@ -222,7 +217,7 @@ src_configure() {
 
 src_test() {
 	# G_MESSAGES_DEBUG, upstream bug #699401#c1
-	Xemake check TESTS_ENVIRONMENT="dbus-run-session" G_MESSAGES_DEBUG="all"
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session" G_MESSAGES_DEBUG="all"
 }
 
 src_install() {

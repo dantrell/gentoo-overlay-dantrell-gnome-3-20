@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome-games
+inherit gnome2
 
 DESCRIPTION="Beat the odds in a poker-style dice game"
 HOMEPAGE="https://wiki.gnome.org/Apps/Tali"

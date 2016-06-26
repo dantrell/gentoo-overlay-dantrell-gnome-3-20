@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI="6"
 GNOME_ORG_MODULE="tracker"
 
 inherit gnome.org toolchain-funcs
@@ -34,6 +34,7 @@ pkg_setup() {
 }
 
 src_prepare() {
+	default
 	cp "${FILESDIR}/0.12.5-Makefile" Makefile || die "cp failed"
 	# config.h is not used, but is included in every source file...
 	sed -e 's:#include "config.h"::' -i *.c *.h || die "sed failed"

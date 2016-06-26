@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit eutils gnome2 multilib-minimal
+inherit gnome2 multilib-minimal
 
 DESCRIPTION="C++ interface for glib2"
 HOMEPAGE="http://www.gtkmm.org"
@@ -16,7 +15,7 @@ IUSE="doc debug examples test"
 
 RDEPEND="
 	>=dev-libs/libsigc++-2.8.0:2[${MULTILIB_USEDEP}]
-	>=dev-libs/glib-2.46.0:2[${MULTILIB_USEDEP}]
+	>=dev-libs/glib-2.48.0:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
 	virtual/pkgconfig

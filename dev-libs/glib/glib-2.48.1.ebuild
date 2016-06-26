@@ -4,17 +4,13 @@
 # adding new dependencies end up making stage3 to grow. Every addition needs
 # then to be think very closely.
 
-EAPI="5"
+EAPI="6"
 PYTHON_COMPAT=( python2_7 )
-# Building with --disable-debug highly unrecommended.  It will build glib in
-# an unusable form as it disables some commonly used API.  Please do not
-# convert this to the use_enable form, as it results in a broken build.
-GCONF_DEBUG="yes"
 # Completely useless with or without USE static-libs, people need to use
 # pkg-config
 GNOME2_LA_PUNT="yes"
 
-inherit autotools bash-completion-r1 gnome2 libtool eutils flag-o-matic	multilib \
+inherit autotools bash-completion-r1 gnome2 libtool flag-o-matic multilib \
 	pax-utils python-r1 toolchain-funcs versionator virtualx linux-info multilib-minimal
 
 DESCRIPTION="The GLib library of C routines"
@@ -26,7 +22,7 @@ LICENSE="LGPL-2+"
 SLOT="2"
 KEYWORDS="*"
 
-IUSE="dbus fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
+IUSE="dbus debug fam kernel_linux +mime selinux static-libs systemtap test utils xattr"
 REQUIRED_USE="
 	utils? ( ${PYTHON_REQUIRED_USE} )
 	test? ( ${PYTHON_REQUIRED_USE} )
@@ -34,6 +30,7 @@ REQUIRED_USE="
 
 RDEPEND="
 	!<dev-util/gdbus-codegen-${PV}
+	>=dev-libs/libpcre-8.13:3[${MULTILIB_USEDEP}]
 	>=virtual/libiconv-0-r1[${MULTILIB_USEDEP}]
 	>=virtual/libffi-3.0.13-r1[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]
@@ -59,9 +56,6 @@ DEPEND="${RDEPEND}
 		>=sys-apps/dbus-1.2.14 )
 	!<dev-util/gtk-doc-1.15-r2
 "
-# gobject-introspection blocker to ensure people don't mix
-# different g-i and glib major versions
-
 PDEPEND="!<gnome-base/gvfs-1.6.4-r990
 	dbus? ( gnome-base/dconf )
 	mime? ( x11-misc/shared-mime-info )
@@ -117,15 +111,13 @@ src_prepare() {
 	fi
 
 	# gdbus-codegen is a separate package
-	epatch "${FILESDIR}"/${PN}-2.40.0-external-gdbus-codegen.patch
+	eapply "${FILESDIR}"/${PN}-2.40.0-external-gdbus-codegen.patch
 
 	# Leave python shebang alone - handled by python_replicate_script
 	# We could call python_setup and give configure a valid --with-python
 	# arg, but that would mean a build dep on python when USE=utils.
 	sed -e '/${PYTHON}/d' \
 		-i glib/Makefile.{am,in} || die
-
-	epatch_user
 
 	# Also needed to prevent cross-compile failures, see bug #267603
 	eautoreconf
@@ -168,10 +160,9 @@ multilib_src_configure() {
 		*)        myconf="${myconf} --with-threads=posix" ;;
 	esac
 
-	# FIXME: Always use internal libpcre, bug #254659
-	# (maybe consider going back to system lib)
 	# libelf used only by the gresource bin
 	ECONF_SOURCE="${S}" gnome2_src_configure ${myconf} \
+		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable xattr) \
 		$(use_enable fam) \
 		$(use_enable selinux) \
@@ -181,7 +172,7 @@ multilib_src_configure() {
 		$(multilib_native_use_enable utils libelf) \
 		--disable-compile-warnings \
 		--enable-man \
-		--with-pcre=internal \
+		--with-pcre=system \
 		--with-xml-catalog="${EPREFIX}/etc/xml/catalog"
 
 	if multilib_is_native_abi; then
@@ -210,7 +201,7 @@ multilib_src_test() {
 	fi
 
 	# Need X for dbus-launch session X11 initialization
-	Xemake check
+	virtx emake check
 }
 
 multilib_src_install() {
@@ -219,7 +210,6 @@ multilib_src_install() {
 }
 
 multilib_src_install_all() {
-	DOCS="AUTHORS ChangeLog* NEWS* README"
 	einstalldocs
 
 	if use utils ; then

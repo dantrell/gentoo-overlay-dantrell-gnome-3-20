@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 
-inherit autotools eutils gnome2 multilib python-r1 virtualx
+inherit autotools gnome2 multilib python-r1 virtualx
 
 DESCRIPTION="A GObject plugins library"
 HOMEPAGE="https://developer.gnome.org/libpeas/stable/"
@@ -42,7 +41,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# Gentoo uses unversioned lua - lua.pc instad of lua5.1.pc, /usr/bin/lua instead of /usr/bin/lua5.1
-	epatch "${FILESDIR}"/${PN}-1.14.0-lua.pc.patch
+	eapply "${FILESDIR}"/${PN}-1.14.0-lua.pc.patch
 	eautoreconf
 	gnome2_src_prepare
 }
@@ -85,11 +84,13 @@ src_configure() {
 }
 
 src_test() {
+	# This looks fixed since 1.18.0:
+	#
 	# FIXME: Tests fail because of some bug involving Xvfb and Gtk.IconTheme
 	# DO NOT REPORT UPSTREAM, this is not a libpeas bug.
 	# To reproduce:
 	# >>> from gi.repository import Gtk
 	# >>> Gtk.IconTheme.get_default().has_icon("gtk-about")
 	# This should return True, it returns False for Xvfb
-	Xemake check
+	virtx emake check
 }

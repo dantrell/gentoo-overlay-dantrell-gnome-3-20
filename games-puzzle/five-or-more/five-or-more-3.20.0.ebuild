@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome-games
+inherit gnome2
 
 DESCRIPTION="Five or More Game for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/Five%20or%20more"
@@ -16,7 +15,7 @@ IUSE=""
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.32:2
-	>=gnome-base/librsvg-2.32
+	>=gnome-base/librsvg-2.32:2
 	>=x11-libs/gtk+-3.12:3
 "
 RDEPEND="${COMMON_DEPEND}

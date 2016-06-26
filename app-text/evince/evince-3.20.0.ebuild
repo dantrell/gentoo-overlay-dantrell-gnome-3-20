@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
 inherit gnome2
@@ -16,11 +15,8 @@ KEYWORDS="*"
 
 IUSE="djvu dvi gstreamer gnome gnome-keyring +introspection nautilus nsplugin +postscript t1lib tiff xps"
 
-# Since 2.26.2, can handle poppler without cairo support. Make it optional ?
-# not mature enough
 # atk used in libview
 # gdk-pixbuf used all over the place
-# libX11 used for totem-screensaver
 COMMON_DEPEND="
 	dev-libs/atk
 	>=dev-libs/glib-2.36:2[dbus]
@@ -30,7 +26,7 @@ COMMON_DEPEND="
 	>=x11-libs/gtk+-3.16.0:3[introspection?]
 	gnome-base/gsettings-desktop-schemas
 	>=x11-libs/cairo-1.10:=
-	>=app-text/poppler-0.33[cairo]
+	>=app-text/poppler-0.33:=[cairo]
 	djvu? ( >=app-text/djvu-3.5.22:= )
 	dvi? (
 		virtual/tex-base
@@ -53,7 +49,6 @@ RDEPEND="${COMMON_DEPEND}
 	gnome-base/librsvg
 	|| (
 		>=x11-themes/adwaita-icon-theme-2.17.1
-		( >=x11-themes/gnome-icon-theme-2.17.1 x11-themes/gnome-icon-theme-symbolic )
 		>=x11-themes/hicolor-icon-theme-0.10 )
 "
 DEPEND="${COMMON_DEPEND}

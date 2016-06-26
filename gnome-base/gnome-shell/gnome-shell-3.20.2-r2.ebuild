@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{3_3,3_4,3_5} )
 
-inherit autotools eutils gnome2 multilib pax-utils python-r1 systemd
+inherit autotools gnome2 multilib pax-utils python-r1 systemd
 
 DESCRIPTION="Provides core UI functions for the GNOME 3 desktop"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeShell"
@@ -86,7 +85,7 @@ RDEPEND="${COMMON_DEPEND}
 	>=app-accessibility/caribou-0.4.8
 	media-libs/cogl[introspection]
 	>=sys-apps/accountsservice-0.6.14[introspection]
-	>=sys-power/upower-0.99[introspection]
+	>=sys-power/upower-0.99:=[introspection]
 
 	>=gnome-base/gnome-session-2.91.91
 	>=gnome-base/gnome-settings-daemon-3.8.3
@@ -101,7 +100,7 @@ RDEPEND="${COMMON_DEPEND}
 	x11-misc/xdg-utils
 
 	media-fonts/dejavu
-	x11-themes/gnome-icon-theme-symbolic
+	x11-themes/adwaita-icon-theme
 
 	networkmanager? (
 		net-misc/mobile-broadband-provider-info
@@ -128,37 +127,35 @@ src_prepare() {
 	if use deprecated; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
-		epatch "${FILESDIR}"/${PN}-3.14.1-restore-deprecated-code.patch
-		epatch "${FILESDIR}"/${PN}-3.12.2-expose-hibernate-functionality.patch
+		eapply "${FILESDIR}"/${PN}-3.14.1-restore-deprecated-code.patch
+		eapply "${FILESDIR}"/${PN}-3.12.2-expose-hibernate-functionality.patch
 	fi
 
 	if use deprecated-background; then
-		epatch "${FILESDIR}"/${PN}-3.20.2-restore-deprecated-background-code.patch
+		eapply "${FILESDIR}"/${PN}-3.20.2-restore-deprecated-background-code.patch
 	fi
 
 	if ! use vanilla-motd; then
-		epatch "${FILESDIR}"/${PN}-3.16.4-improve-motd-handling.patch
+		eapply "${FILESDIR}"/${PN}-3.16.4-improve-motd-handling.patch
 	fi
 
 	if ! use vanilla-screen; then
-		epatch "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
+		eapply "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
 	fi
 
 	# From GNOME:
 	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=35cc224240ec4fc8159fc689fe3e093a81f97dc9
-	epatch "${FILESDIR}"/${PN}-3.20.3-st-init-framebuffer-early-to-fix-gnome-shell-crash-on-nvidia-drivers.patch
+	eapply "${FILESDIR}"/${PN}-3.20.3-st-init-framebuffer-early-to-fix-gnome-shell-crash-on-nvidia-drivers.patch
 
 	# Change favorites defaults, bug #479918
-	epatch "${FILESDIR}"/${PN}-3.16.0-defaults.patch
+	eapply "${FILESDIR}"/${PN}-3.16.0-defaults.patch
 
 	# Fix automagic gnome-bluetooth dep, bug #398145
-	epatch "${FILESDIR}"/${PN}-3.12-bluetooth-flag.patch
+	eapply "${FILESDIR}"/${PN}-3.12-bluetooth-flag.patch
 
 	# Fix silent bluetooth linking failure with ld.gold, bug #503952
 	# https://bugzilla.gnome.org/show_bug.cgi?id=726435
-	epatch "${FILESDIR}"/${PN}-3.14.0-bluetooth-gold.patch
-
-	epatch_user
+	eapply "${FILESDIR}"/${PN}-3.14.0-bluetooth-gold.patch
 
 	eautoreconf
 	gnome2_src_prepare
@@ -228,6 +225,12 @@ pkg_postinst() {
 	if has_version "x11-drivers/nvidia-drivers[-kms]"; then
 		ewarn "You will need to enable kms support in x11-drivers/nvidia-drivers,"
 		ewarn "otherwise Gnome will fail to start"
+	fi
+
+	if use systemd && ! systemd_is_booted; then
+		ewarn "${PN} needs Systemd to be *running* for working"
+		ewarn "properly. Please follow this guide to migrate:"
+		ewarn "https://wiki.gentoo.org/wiki/Systemd"
 	fi
 
 	if use deprecated; then

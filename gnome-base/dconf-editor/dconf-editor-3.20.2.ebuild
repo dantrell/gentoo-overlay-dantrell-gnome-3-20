@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2
 
@@ -13,6 +12,7 @@ SLOT="0"
 KEYWORDS="*"
 
 COMMON_DEPEND="
+	dev-libs/appstream-glib
 	>=dev-libs/glib-2.46.0:2
 	>=gnome-base/dconf-0.23.2
 	>=x11-libs/gtk+-3.19.5:3

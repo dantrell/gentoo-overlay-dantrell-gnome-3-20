@@ -1,11 +1,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{3_3,3_4,3_5} )
+VALA_MIN_API_VERSION="0.32" # Needed when gtk+-3.20 is found
 
-inherit gnome2 python-r1 vala
+inherit gnome2 pax-utils python-r1 vala
 
 DESCRIPTION="git repository viewer for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gitg"
@@ -22,7 +22,6 @@ REQUIRED_USE="python? ( ^^ ( $(python_gen_useflags '*') ) )"
 RDEPEND="
 	app-crypt/libsecret
 	dev-libs/libgee:0.8[introspection]
-	>=dev-libs/json-glib-0.16
 	>=app-text/gtkspell-3.0.3:3
 	>=dev-libs/glib-2.38:2[dbus]
 	>=dev-libs/gobject-introspection-0.10.1:=
@@ -32,11 +31,11 @@ RDEPEND="
 	<dev-libs/libgit2-glib-0.25.0
 
 	>=dev-libs/libpeas-1.5.0[gtk]
+	>=dev-libs/libxml2-2.9.0:2
 	>=gnome-base/gsettings-desktop-schemas-0.1.1
-	>=net-libs/webkit-gtk-2.2:4[introspection]
-	>=x11-libs/gtk+-3.12.0:3
+	>=x11-libs/gtk+-3.19.0:3
 	>=x11-libs/gtksourceview-3.10:3.0
-	>=x11-themes/gnome-icon-theme-symbolic-3.10
+	x11-themes/adwaita-icon-theme
 	glade? ( >=dev-util/glade-3.2:3.10 )
 	python? (
 		${PYTHON_DEPS}
@@ -45,12 +44,12 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}
+	$(vala_depend)
 	>=dev-libs/libgit2-glib-0.22.0[vala]
 	gnome-base/gnome-common
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 	>=dev-util/intltool-0.40
-	$(vala_depend)
 "
 
 pkg_setup() {

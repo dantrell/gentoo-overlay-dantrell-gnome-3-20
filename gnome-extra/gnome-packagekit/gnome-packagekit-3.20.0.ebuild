@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome2 virtualx
+inherit autotools gnome2 virtualx
 
 DESCRIPTION="PackageKit client for the GNOME desktop"
 HOMEPAGE="https://www.freedesktop.org/software/PackageKit/"
@@ -68,6 +67,10 @@ src_prepare() {
 	# FIXME: touching configure.ac triggers maintainer-mode
 	sed -e '/CPPFLAGS="$CPPFLAGS -g"/d' -i configure || die
 
+	# Fix compat with current systemd
+	sed -i -e 's/libsystemd-login/libsystemd/' configure.ac || die
+
+	eautoreconf
 	gnome2_src_prepare
 }
 
@@ -82,7 +85,5 @@ src_configure() {
 
 src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
-
-	unset DISPLAY
-	GSETTINGS_SCHEMA_DIR="${S}/data" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/data" virtx emake check
 }

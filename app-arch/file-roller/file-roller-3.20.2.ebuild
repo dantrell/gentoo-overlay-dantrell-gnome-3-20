@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2 readme.gentoo
+inherit gnome2 readme.gentoo-r1
 
 DESCRIPTION="Archive manager for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/FileRoller"
@@ -33,7 +32,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-util/desktop-file-utils
-	>=dev-util/intltool-0.40.0
+	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
@@ -67,7 +66,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog HACKING MAINTAINERS NEWS README* TODO"
 	# --disable-debug because enabling it adds -O0 to CFLAGS
 	gnome2_src_configure \
 		--disable-run-in-place \

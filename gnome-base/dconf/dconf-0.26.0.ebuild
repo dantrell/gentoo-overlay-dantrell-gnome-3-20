@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 bash-completion-r1 virtualx
 
@@ -16,8 +15,7 @@ KEYWORDS="*"
 IUSE="test"
 
 RDEPEND="
-	>=dev-libs/glib-2.39.1:2
-	sys-apps/dbus
+	>=dev-libs/glib-2.44.0:2
 "
 DEPEND="${RDEPEND}
 	app-text/docbook-xml-dtd:4.2
@@ -37,7 +35,7 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }
 
 src_install() {
@@ -49,10 +47,6 @@ src_install() {
 	echo 'CONFIG_PROTECT_MASK="/etc/dconf"' >> 51dconf
 	echo 'GSETTINGS_BACKEND="dconf"' >> 51dconf
 	doenvd 51dconf
-
-	# Install bash-completion file properly to the system
-	rm -rv "${ED}usr/share/bash-completion" || die
-	dobashcomp "${S}/bin/completion/dconf"
 }
 
 pkg_postinst() {

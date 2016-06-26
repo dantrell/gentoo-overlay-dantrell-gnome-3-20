@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 multilib-minimal
 
@@ -22,7 +21,7 @@ DEPEND="${RDEPEND}
 	>=dev-lang/perl-5
 	dev-util/gtk-doc-am
 	>=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]
-	nls? ( sys-devel/gettext )
+	nls? ( >=sys-devel/gettext-0.19.2 )
 "
 
 src_prepare() {

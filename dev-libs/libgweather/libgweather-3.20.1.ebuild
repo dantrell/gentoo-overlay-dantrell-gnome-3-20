@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala
@@ -19,7 +18,7 @@ REQUIRED_USE="vala? ( introspection )"
 COMMON_DEPEND="
 	>=x11-libs/gtk+-3.13.5:3[introspection?]
 	>=dev-libs/glib-2.35.1:2
-	>=net-libs/libsoup-2.34:2.4
+	>=net-libs/libsoup-2.44:2.4
 	>=dev-libs/libxml2-2.6.0
 	sci-geosciences/geocode-glib
 	>=sys-libs/timezone-data-2010k
@@ -44,7 +43,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="AUTHORS MAINTAINERS NEWS README"
 	gnome2_src_configure \
 		--disable-static \
 		$(use_enable glade glade-catalog) \

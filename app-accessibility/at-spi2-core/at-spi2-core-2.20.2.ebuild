@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2 multilib-minimal
+inherit gnome2 multilib-minimal
 
 DESCRIPTION="D-Bus accessibility specifications and registration daemon"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"
@@ -34,12 +33,10 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig[${MULTILIB_USEDEP}]
 "
 
-src_prepare() {
+PATCHES=(
 	# disable teamspaces test since that requires Novell.ICEDesktop.Daemon
-	epatch "${FILESDIR}/${PN}-2.0.2-disable-teamspaces-test.patch"
-
-	gnome2_src_prepare
-}
+	"${FILESDIR}/${PN}-2.0.2-disable-teamspaces-test.patch"
+)
 
 multilib_src_configure() {
 	# xevie is deprecated/broken since xorg-1.6/1.7

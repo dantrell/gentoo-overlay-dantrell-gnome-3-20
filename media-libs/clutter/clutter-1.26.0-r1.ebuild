@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit eutils gnome2 virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="Clutter is a library for creating graphical user interfaces"
 HOMEPAGE="https://wiki.gnome.org/Projects/Clutter"
@@ -21,7 +20,7 @@ REQUIRED_USE="
 
 # NOTE: glx flavour uses libdrm + >=mesa-7.3
 # >=libX11-1.3.1 needed for X Generic Event support
-# do not depend on tslib, it does not build and is disable by default upstream
+# do not depend on tslib, it does not build and is disabled by default upstream
 RDEPEND="
 	>=dev-libs/glib-2.44.0:2
 	>=dev-libs/atk-2.5.3[introspection?]
@@ -35,7 +34,7 @@ RDEPEND="
 
 	egl? (
 		>=dev-libs/libinput-0.19.0
-		media-libs/cogl:1.0=[gles2,kms]
+		media-libs/cogl[gles2,kms]
 		>=virtual/libgudev-136
 		x11-libs/libxkbcommon
 	)
@@ -67,7 +66,7 @@ DEPEND="${RDEPEND}
 src_prepare() {
 	# From GNOME:
 	# 	https://git.gnome.org/browse/clutter/commit/?id=be8602fbb491c30c1e2febb92553375b2f4ce584
-	epatch "${FILESDIR}"/${PN}-1.26.0-reorganize-backends.patch
+	eapply "${FILESDIR}"/${PN}-1.26.0-reorganize-backends.patch
 
 	# We only need conformance tests, the rest are useless for us
 	sed -e 's/^\(SUBDIRS =\).*/\1 accessibility conform/g' \
@@ -105,5 +104,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check -C tests/conform
+	virtx emake check -C tests/conform
 }

@@ -1,11 +1,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 python3_{3,4,5} )
 
-inherit eutils gnome2 python-r1 virtualx
+inherit gnome2 python-r1 virtualx
 
 DESCRIPTION="GLib's GObject library bindings for Python"
 HOMEPAGE="https://wiki.gnome.org/Projects/PyGObject"
@@ -22,7 +21,7 @@ REQUIRED_USE="
 
 COMMON_DEPEND="${PYTHON_DEPS}
 	>=dev-libs/glib-2.38:2
-	>=dev-libs/gobject-introspection-1.46:=
+	>=dev-libs/gobject-introspection-1.46.0:=
 	virtual/libffi:=
 	cairo? (
 		>=dev-python/pycairo-1.10.0[${PYTHON_USEDEP}]
@@ -81,14 +80,13 @@ src_compile() {
 }
 
 src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
 	export GIO_USE_VFS="local" # prevents odd issues with deleting ${T}/.gvfs
 	export GIO_USE_VOLUME_MONITOR="unix" # prevent udisks-related failures in chroots, bug #449484
 	export SKIP_PEP8="yes"
 
 	testing() {
 		export XDG_CACHE_HOME="${T}/${EPYTHON}"
-		run_in_build_dir Xemake check
+		run_in_build_dir virtx emake check
 		unset XDG_CACHE_HOME
 	}
 	python_foreach_impl testing
@@ -96,8 +94,6 @@ src_test() {
 }
 
 src_install() {
-	DOCS="AUTHORS ChangeLog* NEWS README"
-
 	python_foreach_impl run_in_build_dir gnome2_src_install
 
 	if use examples; then

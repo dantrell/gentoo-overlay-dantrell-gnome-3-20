@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala virtualx
@@ -41,5 +40,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }

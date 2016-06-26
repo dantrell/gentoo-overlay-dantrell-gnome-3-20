@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit eutils gnome2 virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="GNOME power management service"
 HOMEPAGE="https://projects.gnome.org/gnome-power-manager/"
@@ -21,7 +20,7 @@ COMMON_DEPEND="
 	>=sys-power/upower-0.99:=
 "
 RDEPEND="${COMMON_DEPEND}
-	x11-themes/gnome-icon-theme-symbolic
+	x11-themes/adwaita-icon-theme
 "
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-sgml-dtd:4.1
@@ -53,6 +52,5 @@ src_configure() {
 }
 
 src_test() {
-	unset DBUS_SESSION_BUS_ADDRESS
-	Xemake check
+	virtx emake check
 }

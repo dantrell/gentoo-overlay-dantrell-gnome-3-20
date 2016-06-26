@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2
 
@@ -20,7 +19,7 @@ RDEPEND="
 	>=dev-libs/libical-1.0.1
 	>=gnome-extra/evolution-data-server-3.17.1:=
 	>=net-libs/gnome-online-accounts-3.2.0:=
-	>=x11-libs/gtk+-3.15.4:3
+	>=x11-libs/gtk+-3.19.1:3
 "
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib

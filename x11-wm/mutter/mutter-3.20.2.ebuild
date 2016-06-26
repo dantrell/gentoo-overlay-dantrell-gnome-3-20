@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
-inherit autotools eutils gnome2
+inherit autotools gnome2
 
 DESCRIPTION="GNOME 3 compositing window manager based on Clutter"
 HOMEPAGE="https://git.gnome.org/browse/mutter/"
@@ -60,6 +59,7 @@ COMMON_DEPEND="
 		x11-libs/libdrm:= )
 	wayland? (
 		>=dev-libs/wayland-1.6.90
+		>=dev-libs/wayland-protocols-1.1
 		>=media-libs/clutter-1.20[wayland]
 		x11-base/xorg-server[wayland] )
 "
@@ -78,10 +78,8 @@ RDEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	if use deprecated-background; then
-		epatch "${FILESDIR}"/${PN}-3.18.4-restore-deprecated-background-code.patch
+		eapply "${FILESDIR}"/${PN}-3.18.4-restore-deprecated-background-code.patch
 	fi
-
-	epatch_user
 
 	eautoreconf
 	gnome2_src_prepare
