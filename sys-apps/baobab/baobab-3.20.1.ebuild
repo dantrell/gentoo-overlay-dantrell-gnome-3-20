@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2
 
@@ -16,10 +15,11 @@ IUSE=""
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.40:2[dbus]
-	>=x11-libs/gtk+-3.13.2:3
+	>=x11-libs/gtk+-3.19.1:3
 "
 RDEPEND="${COMMON_DEPEND}
 	gnome-base/gsettings-desktop-schemas
+	x11-themes/adwaita-icon-theme
 	x11-themes/gnome-icon-theme-extras
 	!<gnome-extra/gnome-utils-3.4
 "

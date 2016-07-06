@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
 inherit gnome2 virtualx
 
@@ -15,7 +14,7 @@ KEYWORDS="*"
 IUSE="packagekit raw"
 
 # Need gtk+-3.3.8 for https://bugzilla.gnome.org/show_bug.cgi?id=673331
-COMMON_DEPEND="
+RDEPEND="
 	>=dev-libs/glib-2.31.10:2
 	>=media-libs/lcms-2.2:2
 	>=media-libs/libcanberra-0.10[gtk3]
@@ -30,10 +29,8 @@ COMMON_DEPEND="
 	packagekit? ( app-admin/packagekit-base )
 	raw? ( media-gfx/exiv2 )
 "
-RDEPEND="${COMMON_DEPEND}"
-
 # docbook-sgml-{utils,dtd:4.1} needed to generate man pages
-DEPEND="${COMMON_DEPEND}
+DEPEND="${RDEPEND}
 	app-text/docbook-sgml-dtd:4.1
 	app-text/docbook-sgml-utils
 	dev-libs/appstream-glib
@@ -55,7 +52,7 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }
 
 pkg_postinst() {

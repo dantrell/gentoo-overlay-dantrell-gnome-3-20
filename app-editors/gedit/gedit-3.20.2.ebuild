@@ -1,13 +1,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes" # plugins are dlopened
 PYTHON_COMPAT=( python3_{3,4,5} )
 VALA_MIN_API_VERSION="0.26"
 VALA_USE_DEPEND="vapigen"
 
-inherit eutils gnome2 multilib python-r1 vala virtualx
+inherit gnome2 multilib python-r1 vala virtualx
 
 DESCRIPTION="A text editor for the GNOME desktop"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gedit"
@@ -45,7 +44,7 @@ COMMON_DEPEND="
 		dev-python/pycairo[${PYTHON_USEDEP}]
 		>=dev-python/pygobject-3:3[cairo,${PYTHON_USEDEP}]
 		dev-libs/libpeas[${PYTHON_USEDEP}] )
-	spell? ( >=app-text/gspell-0.2.5 )
+	spell? ( >=app-text/gspell-0.2.5:0= )
 "
 RDEPEND="${COMMON_DEPEND}
 	x11-themes/adwaita-icon-theme
@@ -73,8 +72,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog MAINTAINERS NEWS README"
-
 	gnome2_src_configure \
 		--disable-deprecations \
 		--enable-updater \
@@ -87,7 +84,7 @@ src_configure() {
 
 src_test() {
 	"${EROOT}${GLIB_COMPILE_SCHEMAS}" --allow-any-name "${S}/data" || die
-	GSETTINGS_SCHEMA_DIR="${S}/data" Xemake check
+	GSETTINGS_SCHEMA_DIR="${S}/data" virtx emake check
 }
 
 src_install() {

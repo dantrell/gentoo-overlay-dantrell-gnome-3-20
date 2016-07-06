@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
 inherit gnome2
 
@@ -12,7 +11,7 @@ LICENSE="LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="libnotify test webkit"
+IUSE="debug libnotify test webkit"
 
 RDEPEND="
 	>=dev-libs/glib-2.8:2
@@ -33,9 +32,8 @@ DEPEND="${RDEPEND}
 #	>=gnome-base/gnome-common-2.12
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog HACKING NEWS README THANKS TODO"
-
 	gnome2_src_configure \
+		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable libnotify) \
 		$(use_enable webkit webkitgtk) \
 		PERL=$(type -P false)

@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no" # --enable-debug does not do anything useful
+EAPI="6"
 
 inherit gnome2
 
@@ -23,9 +22,7 @@ RDEPEND="
 	>=dev-libs/json-glib-0.99.2[introspection?]
 	gnome-base/gvfs[http]
 	>=net-libs/libsoup-2.42:2.4[introspection?]
-	introspection? (
-		>=dev-libs/gobject-introspection-0.6.3:=
-		net-libs/libsoup:2.4[introspection] )
+	introspection? ( >=dev-libs/gobject-introspection-0.6.3:= )
 "
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.13
@@ -36,6 +33,10 @@ DEPEND="${RDEPEND}
 # eautoreconf requires:
 #	dev-libs/gobject-introspection-common
 #	gnome-base/gnome-common
+
+src_configure() {
+	gnome2_src_configure $(use_enable introspection)
+}
 
 src_test() {
 	export GVFS_DISABLE_FUSE=1

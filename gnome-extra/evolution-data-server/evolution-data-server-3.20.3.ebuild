@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 python3_{4,5} pypy )
 VALA_USE_DEPEND="vapigen"
@@ -16,7 +15,7 @@ LICENSE="|| ( LGPL-2 LGPL-3 ) BSD Sleepycat"
 SLOT="0/57" # subslot = libcamel-1.2 soname version
 KEYWORDS="*"
 
-IUSE="api-doc-extras +berkdb +gnome-online-accounts +gtk +google +introspection ipv6 ldap kerberos vala +weather"
+IUSE="api-doc-extras +berkdb +gnome-online-accounts +gtk google +introspection ipv6 ldap kerberos vala +weather"
 REQUIRED_USE="vala? ( introspection )"
 
 # Some tests fail due to missings locales.
@@ -32,14 +31,12 @@ RDEPEND="
 	>=app-crypt/libsecret-0.5[crypt]
 	>=dev-db/sqlite-3.7.17:=
 	>=dev-libs/glib-2.40:2
-	>=dev-libs/json-glib-1.0.4
 	>=dev-libs/libgdata-0.10:=
 	>=dev-libs/libical-0.43:=
 	>=dev-libs/libxml2-2
 	>=dev-libs/nspr-4.4:=
 	>=dev-libs/nss-3.9:=
 	>=net-libs/libsoup-2.42:2.4
-	>=net-libs/webkit-gtk-2.4.9:3
 
 	dev-libs/icu:=
 	sys-libs/zlib:=
@@ -55,7 +52,7 @@ RDEPEND="
 		>=dev-libs/libgdata-0.15.1:=
 		>=net-libs/webkit-gtk-2.4.9:3
 	)
-	gnome-online-accounts? ( >=net-libs/gnome-online-accounts-3.8 )
+	gnome-online-accounts? ( >=net-libs/gnome-online-accounts-3.8:= )
 	introspection? ( >=dev-libs/gobject-introspection-0.9.12:= )
 	kerberos? ( virtual/krb5:= )
 	ldap? ( >=net-nds/openldap-2:= )
@@ -80,10 +77,6 @@ pkg_setup() {
 
 src_prepare() {
 	use vala && vala_src_prepare
-
-	# Fix relink issues in src_install
-	ELTCONF="--reverse-deps"
-
 	gnome2_src_prepare
 }
 
@@ -118,8 +111,7 @@ src_configure() {
 src_test() {
 	unset ORBIT_SOCKETDIR
 	unset SESSION_MANAGER
-	unset DISPLAY
-	Xemake check
+	virtx emake check
 }
 
 src_install() {

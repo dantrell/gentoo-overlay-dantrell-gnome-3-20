@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit gnome2 readme.gentoo
+inherit gnome2 readme.gentoo-r1
 
 DESCRIPTION="JavaScript extensions for GNOME Shell"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeShell/Extensions"
@@ -15,6 +14,7 @@ KEYWORDS="*"
 IUSE="+deprecated-background examples"
 
 PDEPEND="
+	>=dev-libs/glib-2.26:2
 	>=gnome-base/libgtop-2.28.3[introspection]
 	>=app-eselect/eselect-gnome-shell-extensions-20111211
 	>=dev-libs/gjs-1.29
@@ -30,7 +30,6 @@ PDEPEND="
 	x11-themes/adwaita-icon-theme
 "
 DEPEND="
-	>=dev-libs/glib-2.26:2
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig

@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 PYTHON_COMPAT=( python2_7 )
 
 inherit gnome2 python-any-r1 virtualx
@@ -23,10 +22,10 @@ RDEPEND="
 	media-libs/babl
 	>=media-libs/gegl-0.3.5:0.3[jpeg,jpeg2k,png,raw]
 	>=media-libs/grilo-0.3.0:0.3=
-	>=media-plugins/grilo-plugins-0.3.0:0.3[upnp-av,flickr]
 	media-libs/gexiv2
 	media-libs/lcms:2
-	media-libs/libpng:0=
+	>=media-libs/libpng-1.6:0=
+	>=media-plugins/grilo-plugins-0.3.0:0.3[upnp-av,flickr]
 	>=net-libs/gnome-online-accounts-3.8:=
 	>=net-libs/libgfbgraph-0.2.1:0.2
 	>=x11-libs/cairo-1.14
@@ -53,5 +52,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }

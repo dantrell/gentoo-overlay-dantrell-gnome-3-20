@@ -90,7 +90,6 @@ gnome-extra/gnome-todo::gentoo
 gnome-extra/gnome-tweak-tool::gentoo
 gnome-extra/gnome-user-docs::gentoo
 gnome-extra/gnome-weather::gentoo
-gnome-extra/gucharmap::gentoo
 gnome-extra/nautilus-tracker-tags::gentoo
 gnome-extra/sushi::gentoo
 gnome-extra/yelp-xsl::gentoo

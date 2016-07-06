@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2 multilib-minimal
+inherit autotools gnome2 multilib-minimal
 
 DESCRIPTION="Standard Themes for GNOME Applications"
 HOMEPAGE="https://git.gnome.org/browse/gnome-themes-standard/"
@@ -38,7 +37,7 @@ RDEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# https://bugzilla.gnome.org/show_bug.cgi?id=746920
-	epatch "${FILESDIR}/${PN}-3.14.2.3-srcdir.patch"
+	eapply "${FILESDIR}/${PN}-3.14.2.3-srcdir.patch"
 	eautoreconf
 
 	gnome2_src_prepare

@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools eutils gnome2 multilib-minimal virtualx
+inherit gnome2 multilib-minimal virtualx
 
 DESCRIPTION="Network-related giomodules for glib"
 HOMEPAGE="https://git.gnome.org/browse/glib-networking/"
@@ -34,11 +33,6 @@ DEPEND="${RDEPEND}
 "
 # eautoreconf needs >=sys-devel/autoconf-2.65:2.5
 
-src_prepare() {
-	eautoreconf
-	gnome2_src_prepare
-}
-
 multilib_src_configure() {
 	ECONF_SOURCE=${S} \
 	gnome2_src_configure \
@@ -55,7 +49,7 @@ multilib_src_test() {
 	# have no idea what's wrong. would appreciate some help.
 	multilib_is_native_abi || return 0
 
-	Xemake check
+	virtx emake check
 }
 
 multilib_src_install() {

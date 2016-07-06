@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
 inherit gnome2
@@ -13,7 +12,7 @@ LICENSE="GPL-2+"
 SLOT="1"
 KEYWORDS="*"
 
-IUSE="+exif +introspection +jpeg lcms +svg tiff xmp"
+IUSE="debug +exif +introspection +jpeg lcms +svg tiff xmp"
 REQUIRED_USE="exif? ( jpeg )"
 
 RDEPEND="
@@ -43,8 +42,8 @@ DEPEND="${RDEPEND}
 "
 
 src_configure() {
-	DOCS="AUTHORS ChangeLog HACKING MAINTAINERS NEWS README THANKS TODO"
 	gnome2_src_configure \
+		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable introspection) \
 		$(use_with jpeg libjpeg) \
 		$(use_with exif libexif) \

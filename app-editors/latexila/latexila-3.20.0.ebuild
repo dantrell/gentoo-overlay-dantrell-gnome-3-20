@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_MIN_API_VERSION="0.26"
 VALA_USE_DEPEND="vapigen"
 
@@ -18,7 +17,7 @@ IUSE="+introspection +latexmk rubber"
 
 COMMON_DEPEND="$(vala_depend)
 	app-text/enchant
-	=app-text/gspell-1.0*
+	>=app-text/gspell-1.0:0=
 	>=dev-libs/glib-2.40:2[dbus]
 	>=dev-libs/libgee-0.10:0.8=
 	gnome-base/gsettings-desktop-schemas
@@ -43,7 +42,6 @@ DEPEND="${COMMON_DEPEND}
 "
 
 src_prepare() {
-	DOCS="AUTHORS HACKING NEWS README"
 	gnome2_src_prepare
 	vala_src_prepare
 }

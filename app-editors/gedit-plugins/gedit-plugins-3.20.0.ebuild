@@ -1,13 +1,12 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes" # plugins are dlopened
 PYTHON_COMPAT=( python3_{3,4,5} )
 PYTHON_REQ_USE="xml"
 VALA_MIN_API_VERSION="0.28"
 
-inherit eutils gnome2 multilib python-r1 vala
+inherit gnome2 multilib python-r1 vala
 
 DESCRIPTION="Official plugins for gedit"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gedit/ShippedPlugins"

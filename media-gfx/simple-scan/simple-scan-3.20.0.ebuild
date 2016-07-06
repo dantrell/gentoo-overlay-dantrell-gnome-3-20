@@ -1,8 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
-VALA_MIN_API_VERSION="0.22"
+EAPI="6"
 
 inherit gnome2 vala versionator
 
@@ -46,7 +44,6 @@ src_prepare() {
 }
 
 src_configure() {
-	DOCS="NEWS README.md"
 	gnome2_src_configure \
 		$(use_enable colord) \
 		$(use_enable packagekit)

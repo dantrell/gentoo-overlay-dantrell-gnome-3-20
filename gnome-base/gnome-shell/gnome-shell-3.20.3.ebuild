@@ -143,10 +143,6 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-3.16.4-improve-screen-blanking.patch
 	fi
 
-	# From GNOME:
-	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=35cc224240ec4fc8159fc689fe3e093a81f97dc9
-	eapply "${FILESDIR}"/${PN}-3.20.3-st-init-framebuffer-early-to-fix-gnome-shell-crash-on-nvidia-drivers.patch
-
 	# Change favorites defaults, bug #479918
 	eapply "${FILESDIR}"/${PN}-3.16.0-defaults.patch
 

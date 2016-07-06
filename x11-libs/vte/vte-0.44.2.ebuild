@@ -1,10 +1,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 VALA_USE_DEPEND="vapigen"
 
-inherit eutils gnome2 vala
+inherit gnome2 vala
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/action/show/Apps/Terminal/VTE"
@@ -71,7 +70,6 @@ src_configure() {
 }
 
 src_install() {
-	DOCS="AUTHORS ChangeLog HACKING NEWS README"
 	gnome2_src_install
 	mv "${D}"/etc/profile.d/vte{,-${SLOT}}.sh || die
 }

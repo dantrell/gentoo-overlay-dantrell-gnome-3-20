@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 VALA_USE_DEPEND="vapigen"
@@ -15,11 +14,10 @@ LICENSE="LGPL-2+"
 SLOT="2.4"
 KEYWORDS="*"
 
-IUSE="+introspection samba ssl test vala"
+IUSE="debug gssapi +introspection samba ssl test vala"
 REQUIRED_IUSE="vala? ( introspection )"
 
 RDEPEND="
-	!<net-libs/libsoup-gnome-2.54
 	>=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}]
 	>=dev-libs/libxml2-2.9.1-r4:2[${MULTILIB_USEDEP}]
 	>=dev-db/sqlite-3.8.2:3[${MULTILIB_USEDEP}]
@@ -68,8 +66,10 @@ multilib_src_configure() {
 	gnome2_src_configure \
 		--disable-static \
 		--disable-tls-check \
-		--with-gnome \
+		--without-gnome \
 		--without-apache-httpd \
+		$(usex debug --enable-debug=yes ' ') \
+		$(multilib_native_use_with gssapi) \
 		$(multilib_native_use_enable introspection) \
 		$(multilib_native_use_enable vala) \
 		$(use_with samba ntlm-auth '${EPREFIX}'/usr/bin/ntlm_auth)

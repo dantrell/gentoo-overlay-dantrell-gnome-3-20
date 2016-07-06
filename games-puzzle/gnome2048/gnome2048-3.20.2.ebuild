@@ -18,7 +18,7 @@ IUSE=""
 RDEPEND="
 	dev-libs/glib:2[dbus]
 	>=dev-libs/libgee-0.14:0.8
-	>=dev-libs/libgames-support-0.1:1.0
+	>=dev-libs/libgames-support-0.1
 	>=media-libs/clutter-1.12:1.0
 	>=media-libs/clutter-gtk-1.6:1.0
 	>=x11-libs/gtk+-3.12:3

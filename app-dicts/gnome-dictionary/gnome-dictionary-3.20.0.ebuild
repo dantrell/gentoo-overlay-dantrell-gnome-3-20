@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
 inherit gnome2
 
@@ -9,10 +8,10 @@ DESCRIPTION="Dictionary utility for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Apps/Dictionary"
 
 LICENSE="GPL-2+ LGPL-2.1+ FDL-1.1+"
-SLOT="0/9" # subslot = suffix of libgdict-1.0.so
+SLOT="0/10" # subslot = suffix of libgdict-1.0.so
 KEYWORDS="*"
 
-IUSE="+introspection ipv6"
+IUSE="debug +introspection ipv6"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.39:2[dbus]
@@ -36,6 +35,7 @@ DEPEND="${COMMON_DEPEND}
 
 src_configure() {
 	gnome2_src_configure \
+		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable introspection) \
 		$(use_enable ipv6)
 }

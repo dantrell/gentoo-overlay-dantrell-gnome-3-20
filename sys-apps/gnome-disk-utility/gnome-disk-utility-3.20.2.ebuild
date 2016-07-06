@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 GNOME2_LA_PUNT="yes"
 
 inherit gnome2
@@ -28,7 +27,7 @@ RDEPEND="${COMMON_DEPEND}
 	>=media-libs/libdvdread-4.2.0
 	>=media-libs/libcanberra-0.1[gtk3]
 	>=x11-libs/libnotify-0.7:=
-	>=x11-themes/gnome-icon-theme-symbolic-2.91
+	x11-themes/adwaita-icon-theme
 	fat? ( sys-fs/dosfstools )
 	gnome? ( >=gnome-base/gnome-settings-daemon-3.8 )
 "
