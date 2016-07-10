@@ -57,7 +57,7 @@ COMMON_DEPEND="
 		>=x11-libs/pango-1.20
 		x11-drivers/xf86-input-wacom
 		virtual/libgudev:= )
-	networkmanager? ( >=net-misc/networkmanager-1.0 )
+	networkmanager? ( >=net-misc/networkmanager-1.0:= )
 	smartcard? ( >=dev-libs/nss-3.11.2 )
 	udev? ( virtual/libgudev:= )
 	wayland? ( dev-libs/wayland )

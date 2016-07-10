@@ -12,6 +12,9 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="+deprecated-background +introspection kms test wayland"
+REQUIRED_USE="
+	wayland? ( kms )
+"
 
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
