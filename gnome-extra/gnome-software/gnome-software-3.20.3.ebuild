@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 PYTHON_COMPAT=( python2_7 )
 
 inherit gnome2 python-any-r1 virtualx
@@ -59,5 +58,5 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check TESTS_ENVIRONMENT="dbus-run-session"
+	virtx emake check TESTS_ENVIRONMENT="dbus-run-session"
 }

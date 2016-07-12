@@ -1,8 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI="6"
 
-inherit gnome-games
+inherit gnome2
 
 DESCRIPTION="a game where you build full molecules, from simple inorganic to extremely complex organic ones"
 HOMEPAGE="http://ftp.gnome.org/pub/GNOME/sources/atomix/"

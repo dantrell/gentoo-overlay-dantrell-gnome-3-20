@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="no"
+EAPI="6"
 
-inherit eutils gnome2 pax-utils virtualx
+inherit gnome2 pax-utils virtualx
 
 DESCRIPTION="Javascript bindings for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/Gjs"
@@ -33,7 +32,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# Disable broken unittests
-	epatch "${FILESDIR}"/${PN}-1.43.3-disable-unittest-*.patch
+	eapply "${FILESDIR}"/${PN}-1.43.3-disable-unittest-*.patch
 
 	gnome2_src_prepare
 }
@@ -51,7 +50,7 @@ src_configure() {
 }
 
 src_test() {
-	Xemake check
+	virtx emake check
 }
 
 src_install() {

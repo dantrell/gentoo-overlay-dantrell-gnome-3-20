@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
+EAPI="6"
 
 DESCRIPTION="Sub-meta package for the core libraries of GNOME 3"
 HOMEPAGE="https://www.gnome.org/"

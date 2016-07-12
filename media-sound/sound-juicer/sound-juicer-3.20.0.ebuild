@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="5"
-GCONF_DEBUG="yes"
+EAPI="6"
 
 inherit gnome2
 
@@ -12,7 +11,7 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="flac test vorbis"
+IUSE="debug flac test vorbis"
 
 COMMON_DEPEND="
 	app-text/iso-codes
@@ -55,4 +54,9 @@ src_prepare() {
 	# /dev/card*/dri
 	sed -e "s|\(gstinspect=\).*|\1$(type -P true)|" \
 		-i configure || die
+}
+
+src_configure() {
+	gnome2_src_configure \
+		$(usex debug --enable-debug=yes ' ')
 }
