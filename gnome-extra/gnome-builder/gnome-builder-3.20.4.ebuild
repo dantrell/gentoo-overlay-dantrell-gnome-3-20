@@ -12,7 +12,7 @@ HOMEPAGE="https://wiki.gnome.org/Apps/Builder"
 
 LICENSE="GPL-3+ GPL-2+ LGPL-3+ LGPL-2+ MIT CC-BY-SA-3.0 CC0-1.0"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS=""
 
 IUSE="+introspection python vala"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"

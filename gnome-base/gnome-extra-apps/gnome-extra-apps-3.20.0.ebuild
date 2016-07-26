@@ -55,7 +55,7 @@ RDEPEND="
 
 	bijiben? ( >=app-misc/bijiben-${PV} )
 	boxes? ( >=gnome-extra/gnome-boxes-${PV} )
-	builder? ( >=gnome-extra/gnome-builder-${PV} )
+	builder? ( >=gnome-extra/gnome-builder-3.18.0 )
 	california? ( >=gnome-extra/california-0.4.0 )
 	epiphany? ( >=www-client/epiphany-${PV} )
 	evolution? ( >=mail-client/evolution-${PV} )
