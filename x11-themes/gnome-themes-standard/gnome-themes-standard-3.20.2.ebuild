@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit autotools gnome2 multilib-minimal
+inherit autotools eutils gnome2 multilib-minimal
 
 DESCRIPTION="Standard Themes for GNOME Applications"
 HOMEPAGE="https://git.gnome.org/browse/gnome-themes-standard/"

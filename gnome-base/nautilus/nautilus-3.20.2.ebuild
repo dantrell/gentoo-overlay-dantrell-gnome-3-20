@@ -97,10 +97,6 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-3.20.1-support-alternative-search.patch
 	fi
 
-	# From GNOME
-	# 	https://git.gnome.org/browse/nautilus/commit/?id=e96f73cf1589c023ade74e4aeb16a0c422790161
-	eapply "${FILESDIR}"/${PN}-3.20.2-do-not-reset-double-click-status-on-pointer-movement.patch
-
 	# Remove -D*DEPRECATED flags. Don't leave this for eclass! (bug #448822)
 	sed -e 's/DISABLE_DEPRECATED_CFLAGS=.*/DISABLE_DEPRECATED_CFLAGS=/' \
 		-i configure || die "sed failed"
