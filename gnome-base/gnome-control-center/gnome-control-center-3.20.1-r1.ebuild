@@ -12,7 +12,7 @@ LICENSE="GPL-2+"
 SLOT="2"
 KEYWORDS="*"
 
-IUSE="+bluetooth +colord +cups debug +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos networkmanager systemd v4l vanilla-datetime vanilla-hostname wayland"
+IUSE="+bluetooth +colord +cups debug +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos libinput networkmanager systemd v4l vanilla-datetime vanilla-hostname wayland"
 
 # False positives caused by nested configure scripts
 QA_CONFIGURE_OPTIONS=".*"
@@ -77,6 +77,10 @@ COMMON_DEPEND="
 "
 # <gnome-color-manager-3.1.2 has file collisions with g-c-c-3.1.x
 # libgnomekbd needed only for gkbd-keyboard-display tool
+#
+# mouse panel needs a concrete set of X11 drivers at runtime, bug #580474
+# Also we need newer driver versions to allow wacom and libinput drivers to
+# not collide
 RDEPEND="${COMMON_DEPEND}
 	>=sys-apps/accountsservice-0.6.39
 	x11-themes/adwaita-icon-theme
@@ -86,6 +90,10 @@ RDEPEND="${COMMON_DEPEND}
 		net-print/cups-pk-helper )
 	input_devices_wacom? ( gnome-base/gnome-settings-daemon[input_devices_wacom] )
 	i18n? ( >=gnome-base/libgnomekbd-3 )
+	wayland? ( libinput? ( dev-libs/libinput ) )
+	!wayland? (
+		libinput? ( >=x11-drivers/xf86-input-libinput-0.19.0 )
+		input_devices_wacom? ( >=x11-drivers/xf86-input-wacom-0.33.0 ) )
 
 	!<gnome-base/gdm-2.91.94
 	!<gnome-extra/gnome-color-manager-3.1.2

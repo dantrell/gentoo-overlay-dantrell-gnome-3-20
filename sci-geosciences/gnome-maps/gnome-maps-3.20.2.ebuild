@@ -36,7 +36,3 @@ DEPEND="${RDEPEND}
 	>=dev-util/intltool-0.40
 	virtual/pkgconfig
 "
-
-src_configure() {
-	gnome2_src_configure --disable-static
-}
