@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-	>=app-misc/geoclue-0.12.99:2.0
+	>=app-misc/geoclue-1.99.3:2.0
 	>=dev-libs/folks-0.10
 	>=dev-libs/gjs-1.44.0
 	>=dev-libs/gobject-introspection-0.10.1:=
