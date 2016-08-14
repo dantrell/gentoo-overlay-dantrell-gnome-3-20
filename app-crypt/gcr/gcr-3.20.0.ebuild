@@ -17,7 +17,6 @@ IUSE="debug gtk +introspection vala"
 REQUIRED_USE="vala? ( introspection )"
 
 COMMON_DEPEND="
-	>=app-crypt/gnupg-2
 	>=app-crypt/p11-kit-0.19
 	>=dev-libs/glib-2.38:2
 	>=dev-libs/libgcrypt-1.2.2:0=

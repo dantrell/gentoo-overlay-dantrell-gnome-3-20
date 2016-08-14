@@ -123,6 +123,7 @@ sys-apps/gnome-disk-utility::gentoo
 www-client/epiphany::gentoo
 x11-libs/gtk+::gentoo
 x11-libs/gtksourceview::gentoo
+x11-libs/libwnck::gentoo
 x11-libs/vte::gentoo
 x11-misc/notification-daemon::gentoo
 x11-terms/gnome-terminal::gentoo

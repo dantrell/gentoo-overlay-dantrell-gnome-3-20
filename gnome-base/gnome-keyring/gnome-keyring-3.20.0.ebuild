@@ -16,7 +16,7 @@ KEYWORDS="*"
 IUSE="+caps pam selinux +ssh-agent test"
 
 # Replace gkd gpg-agent with pinentry[gnome-keyring] one, bug #547456
-COMMON_DEPEND="
+RDEPEND="
 	>=app-crypt/gcr-3.5.3:=[gtk]
 	>=dev-libs/glib-2.38:2
 	app-misc/ca-certificates
@@ -25,10 +25,7 @@ COMMON_DEPEND="
 	pam? ( virtual/pam )
 	>=app-crypt/gnupg-2.0.28:=
 "
-RDEPEND="${COMMON_DEPEND}
-	app-crypt/pinentry[gnome-keyring]
-"
-DEPEND="${COMMON_DEPEND}
+DEPEND="${RDEPEND}
 	>=app-eselect/eselect-pinentry-0.5
 	app-text/docbook-xml-dtd:4.3
 	dev-libs/libxslt
@@ -37,6 +34,7 @@ DEPEND="${COMMON_DEPEND}
 	virtual/pkgconfig
 	test? ( ${PYTHON_DEPS} )
 "
+PDEPEND="app-crypt/pinentry[gnome-keyring]" #570512
 
 pkg_setup() {
 	use test && python-any-r1_pkg_setup
