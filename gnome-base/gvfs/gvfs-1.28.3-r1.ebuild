@@ -45,7 +45,7 @@ RDEPEND="
 	gtk? ( >=x11-libs/gtk+-3.0:3 )
 	http? ( >=net-libs/libsoup-2.42:2.4 )
 	ios? (
-		>=app-pda/libimobiledevice-1.1.5:=
+		>=app-pda/libimobiledevice-1.2:=
 		>=app-pda/libplist-1:= )
 	mtp? ( >=media-libs/libmtp-1.1.6 )
 	nfs? ( >=net-fs/libnfs-1.9.7 )
