@@ -11,7 +11,7 @@ SLOT="3.0"
 # double check none of the deps are still masked !
 KEYWORDS="*"
 
-IUSE="+bijiben boxes builder california epiphany +evolution +fonts +games geary +share +shotwell +todo +tracker"
+IUSE="+bijiben boxes builder california epiphany +evolution flashback +fonts +games geary +share +shotwell +todo +tracker"
 
 # Note to developers:
 # This is a wrapper for the extra apps integrated with GNOME 3
@@ -23,7 +23,7 @@ IUSE="+bijiben boxes builder california epiphany +evolution +fonts +games geary 
 RDEPEND="
 	>=gnome-base/gnome-core-libs-${PV}
 
-	>=app-admin/gnome-system-log-20160331
+	>=app-admin/gnome-system-log-20160820
 	>=app-arch/file-roller-${PV}
 	>=app-dicts/gnome-dictionary-${PV}
 	>=gnome-base/dconf-editor-${PV}
@@ -59,6 +59,7 @@ RDEPEND="
 	california? ( >=gnome-extra/california-0.4.0 )
 	epiphany? ( >=www-client/epiphany-${PV} )
 	evolution? ( >=mail-client/evolution-${PV} )
+	flashback? ( >=gnome-base/gnome-flashback-${PV} )
 	fonts? (
 		>=media-fonts/noto-2015.04
 		>=media-fonts/symbola-8.00

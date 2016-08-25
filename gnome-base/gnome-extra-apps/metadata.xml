@@ -12,8 +12,9 @@
 	<flag name="california">Install <pkg>gnome-extra/california</pkg> (calendar)</flag>
 	<flag name="epiphany">Install <pkg>www-client/epiphany</pkg> (web browser)</flag>
 	<flag name="evolution">Install <pkg>mail-client/evolution</pkg> (mail client)</flag>
+	<flag name="flashback">Install <pkg>gnome-base/gnome-flashback</pkg> (session and helper application)</flag>
 	<flag name="fonts">Install media-fonts/{noto,symbola,unifont} to complement <pkg>media-fonts/cantarell</pkg></flag>
-	<flag name="games">Install Gnome Games (games in a variety of styles and genres for GNOME)</flag>
+	<flag name="games">Install GNOME Games (a collection of small five-minute games in a variety of styles and genres)</flag>
 	<flag name="geary">Install <pkg>mail-client/geary</pkg> (mail client)</flag>
 	<flag name="share">Install <pkg>gnome-extra/gnome-user-share</pkg> (personal file sharing tool)</flag>
 	<flag name="shotwell">Install <pkg>media-gfx/shotwell</pkg> (photo manager)</flag>

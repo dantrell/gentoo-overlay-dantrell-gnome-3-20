@@ -12,12 +12,10 @@ app-misc/bijiben::gentoo
 app-misc/gnote::gentoo
 app-misc/tracker::gentoo
 app-text/evince::gentoo
-dev-cpp/glibmm::gentoo
 dev-cpp/gtkmm::gentoo
 dev-libs/atk::gentoo
 dev-libs/gdl::gentoo
 dev-libs/gjs::gentoo
-dev-libs/glib::gentoo
 dev-libs/gobject-introspection-common::gentoo
 dev-libs/gobject-introspection::gentoo
 dev-libs/libgweather::gentoo
@@ -26,7 +24,6 @@ dev-python/pyatspi::gentoo
 dev-python/pygobject::gentoo
 dev-util/anjuta::gentoo
 dev-util/devhelp::gentoo
-dev-util/gdbus-codegen::gentoo
 dev-util/glade::gentoo
 dev-util/gnome-devel-docs::gentoo
 dev-util/gtk-update-icon-cache::gentoo
@@ -59,6 +56,7 @@ gnome-base/gnome-core-apps::gentoo
 gnome-base/gnome-core-libs::gentoo
 gnome-base/gnome-desktop::gentoo
 gnome-base/gnome-extra-apps::gentoo
+gnome-base/gnome-flashback::gentoo
 gnome-base/gnome-keyring::gentoo
 gnome-base/gnome-light::gentoo
 gnome-base/gnome-session::gentoo
@@ -116,6 +114,7 @@ net-misc/gnome-online-miners::gentoo
 net-misc/rygel::gentoo
 net-misc/vinagre::gentoo
 net-misc/vino::gentoo
+net-wireless/gnome-bluetooth::gentoo
 sci-geosciences/geocode-glib::gentoo
 sci-geosciences/gnome-maps::gentoo
 sys-apps/baobab::gentoo
@@ -130,4 +129,5 @@ x11-terms/gnome-terminal::gentoo
 x11-themes/adwaita-icon-theme::gentoo
 x11-themes/gnome-backgrounds::gentoo
 x11-themes/gnome-themes-standard::gentoo
+x11-wm/metacity::gentoo
 x11-wm/mutter::gentoo

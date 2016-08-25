@@ -2,14 +2,14 @@
 
 EAPI="6"
 
-inherit gnome2
+inherit autotools gnome2
 
 DESCRIPTION="A simplistic personal task manager"
 HOMEPAGE="https://wiki.gnome.org/Apps/Todo"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~*"
 
 IUSE=""
 
@@ -28,3 +28,12 @@ DEPEND="${RDEPEND}
 	sys-devel/gettext
 	virtual/pkgconfig
 "
+
+src_prepare() {
+	# From Arch Linux:
+	# 	https://git.archlinux.org/svntogit/packages.git/commit/?id=851b201268186ac89b1da6b1355775bee8167144
+	eapply "${FILESDIR}"/${PN}-3.19.91-correct-linking-order.patch
+
+	eautoreconf
+	gnome2_src_prepare
+}

@@ -19,20 +19,20 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 # FIXME: some unittests seem to hang forever
 RDEPEND="
-	>=dev-libs/gjs-1.42
-	>=dev-libs/glib-2.45.8:2[dbus]
+	>=dev-libs/glib-2.47.92:2[dbus]
 	dev-libs/libgit2[ssh,threads]
 	>=dev-libs/libgit2-glib-0.23.4[ssh]
-	>=dev-libs/libpeas-1.14.1
+	>=dev-libs/libpeas-1.18.0
 	>=dev-libs/libxml2-2.9
 	dev-util/uncrustify
 	sys-devel/clang
-	>=x11-libs/gtk+-3.17.8:3[introspection?]
-	>=x11-libs/gtksourceview-3.17.7:3.0[introspection?]
-	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
+	>=x11-libs/gtk+-3.20.0:3[introspection?]
+	>=x11-libs/gtksourceview-3.20.0:3.0[introspection?]
+	>=x11-libs/pango-1.38.0
+	introspection? ( >=dev-libs/gobject-introspection-1.47.92:= )
 	python? (
 		${PYTHON_DEPS}
-		dev-python/pygobject:3 )
+		>=dev-python/pygobject-3.19.3:3 )
 	vala? ( $(vala_depend) )
 "
 DEPEND="${RDEPEND}
