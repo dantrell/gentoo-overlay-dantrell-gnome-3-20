@@ -97,6 +97,7 @@ mail-client/evolution::gentoo
 media-gfx/eog::gentoo
 media-gfx/gnome-font-viewer::gentoo
 media-gfx/gnome-photos::gentoo
+media-gfx/gnome-screenshot::gentoo
 media-gfx/simple-scan::gentoo
 media-libs/clutter-gtk::gentoo
 media-libs/clutter::gentoo

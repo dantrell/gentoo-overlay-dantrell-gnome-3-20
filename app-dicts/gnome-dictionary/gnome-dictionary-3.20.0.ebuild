@@ -16,7 +16,7 @@ IUSE="debug +introspection ipv6"
 COMMON_DEPEND="
 	>=dev-libs/glib-2.39:2[dbus]
 	x11-libs/cairo:=
-	>=x11-libs/gtk+-3.16:3
+	>=x11-libs/gtk+-3.20:3
 	x11-libs/pango
 	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
