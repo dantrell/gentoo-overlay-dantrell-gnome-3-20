@@ -1,6 +1,6 @@
 diff '--exclude=.git' -urN a/data/Makefile.am b/data/Makefile.am
---- a/data/Makefile.am	2016-04-21 08:54:08.000000000 -0400
-+++ b/data/Makefile.am	2016-05-30 23:42:35.401220986 -0400
+--- a/data/Makefile.am	2016-08-19 16:55:21.000000000 -0400
++++ b/data/Makefile.am	2016-09-02 19:14:09.478409275 -0400
 @@ -66,11 +66,45 @@
  		$(SASS) --sourcemap=none -f -q --update $<; \
  	fi
@@ -53,7 +53,7 @@ diff '--exclude=.git' -urN a/data/Makefile.am b/data/Makefile.am
  backgrounddir = $(pkgdatadir)
  background_DATA = perf-background.xml
 diff '--exclude=.git' -urN a/data/gnome-shell-theme.gresource.xml b/data/gnome-shell-theme.gresource.xml
---- a/data/gnome-shell-theme.gresource.xml	2016-04-21 08:54:08.000000000 -0400
+--- a/data/gnome-shell-theme.gresource.xml	2016-07-29 00:43:37.000000000 -0400
 +++ b/data/gnome-shell-theme.gresource.xml	1969-12-31 19:00:00.000000000 -0500
 @@ -1,42 +0,0 @@
 -<?xml version="1.0" encoding="UTF-8"?>
@@ -99,8 +99,8 @@ diff '--exclude=.git' -urN a/data/gnome-shell-theme.gresource.xml b/data/gnome-s
 -  </gresource>
 -</gresources>
 diff '--exclude=.git' -urN a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-high-contrast.css
---- a/data/theme/gnome-shell-high-contrast.css	2016-04-21 08:54:08.000000000 -0400
-+++ b/data/theme/gnome-shell-high-contrast.css	2016-06-04 20:44:36.719288723 -0400
+--- a/data/theme/gnome-shell-high-contrast.css	2016-08-19 17:09:58.000000000 -0400
++++ b/data/theme/gnome-shell-high-contrast.css	2016-09-02 19:14:09.479409268 -0400
 @@ -155,13 +155,13 @@
  .check-box StBin {
    width: 24px;
@@ -253,8 +253,8 @@ diff '--exclude=.git' -urN a/data/theme/gnome-shell-high-contrast.css b/data/the
 -    background-image: url("resource:///org/gnome/shell/theme/toggle-on-hc.svg"); }
 +    background-image: url("toggle-on-hc.svg"); }
 diff '--exclude=.git' -urN a/data/theme/gnome-shell-high-contrast.scss b/data/theme/gnome-shell-high-contrast.scss
---- a/data/theme/gnome-shell-high-contrast.scss	2016-04-21 08:54:08.000000000 -0400
-+++ b/data/theme/gnome-shell-high-contrast.scss	2016-06-04 20:44:37.256279545 -0400
+--- a/data/theme/gnome-shell-high-contrast.scss	2016-07-29 00:43:35.000000000 -0400
++++ b/data/theme/gnome-shell-high-contrast.scss	2016-09-02 19:14:09.479409268 -0400
 @@ -9,6 +9,6 @@
  
  .toggle-switch { width: 48px; }
@@ -265,8 +265,8 @@ diff '--exclude=.git' -urN a/data/theme/gnome-shell-high-contrast.scss b/data/th
 +  &:checked { background-image: url("toggle-on-hc.svg"); }
  }
 diff '--exclude=.git' -urN a/data/theme/gnome-shell-sass/_common.scss b/data/theme/gnome-shell-sass/_common.scss
---- a/data/theme/gnome-shell-sass/_common.scss	2016-04-21 06:55:15.000000000 -0400
-+++ b/data/theme/gnome-shell-sass/_common.scss	2016-06-04 20:45:04.733809910 -0400
+--- a/data/theme/gnome-shell-sass/_common.scss	2016-08-19 16:55:28.000000000 -0400
++++ b/data/theme/gnome-shell-sass/_common.scss	2016-09-02 19:14:09.479409268 -0400
 @@ -144,11 +144,11 @@
    StBin {
      width: 24px;
@@ -408,8 +408,8 @@ diff '--exclude=.git' -urN a/data/theme/gnome-shell-sass/_common.scss b/data/the
  }
  
 diff '--exclude=.git' -urN a/data/theme/gnome-shell.css b/data/theme/gnome-shell.css
---- a/data/theme/gnome-shell.css	2016-04-21 08:54:08.000000000 -0400
-+++ b/data/theme/gnome-shell.css	2016-06-04 20:44:38.839252489 -0400
+--- a/data/theme/gnome-shell.css	2016-08-19 17:09:58.000000000 -0400
++++ b/data/theme/gnome-shell.css	2016-09-02 19:14:09.479409268 -0400
 @@ -155,13 +155,13 @@
  .check-box StBin {
    width: 24px;
@@ -553,8 +553,8 @@ diff '--exclude=.git' -urN a/data/theme/gnome-shell.css b/data/theme/gnome-shell
  
  #screenShieldNotifications StButton#vhandle, #screenShieldNotifications StButton#hhandle {
 diff '--exclude=.git' -urN a/js/gdm/authPrompt.js b/js/gdm/authPrompt.js
---- a/js/gdm/authPrompt.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/gdm/authPrompt.js	2016-05-30 23:42:35.402220969 -0400
+--- a/js/gdm/authPrompt.js	2016-07-29 00:43:43.000000000 -0400
++++ b/js/gdm/authPrompt.js	2016-09-02 19:14:09.479409268 -0400
 @@ -1,7 +1,6 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  
@@ -573,8 +573,8 @@ diff '--exclude=.git' -urN a/js/gdm/authPrompt.js b/js/gdm/authPrompt.js
          this._spinner.actor.opacity = 0;
          this._spinner.actor.show();
 diff '--exclude=.git' -urN a/js/gdm/loginDialog.js b/js/gdm/loginDialog.js
---- a/js/gdm/loginDialog.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/gdm/loginDialog.js	2016-05-30 23:42:35.403220953 -0400
+--- a/js/gdm/loginDialog.js	2016-07-29 00:43:44.000000000 -0400
++++ b/js/gdm/loginDialog.js	2016-09-02 19:14:09.479409268 -0400
 @@ -754,24 +754,24 @@
          this._bannerView.hide();
      },
@@ -609,8 +609,8 @@ diff '--exclude=.git' -urN a/js/gdm/loginDialog.js b/js/gdm/loginDialog.js
  
      _onPrompted: function() {
 diff '--exclude=.git' -urN a/js/ui/animation.js b/js/ui/animation.js
---- a/js/ui/animation.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/animation.js	2016-05-30 23:42:35.403220953 -0400
+--- a/js/ui/animation.js	2016-07-29 00:43:44.000000000 -0400
++++ b/js/ui/animation.js	2016-09-02 19:14:09.480409262 -0400
 @@ -12,7 +12,7 @@
  const Animation = new Lang.Class({
      Name: 'Animation',
@@ -640,8 +640,8 @@ diff '--exclude=.git' -urN a/js/ui/animation.js b/js/ui/animation.js
      }
  });
 diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
---- a/js/ui/background.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/background.js	2016-05-30 23:42:35.405220920 -0400
+--- a/js/ui/background.js	2016-08-17 04:20:05.000000000 -0400
++++ b/js/ui/background.js	2016-09-02 19:14:09.480409262 -0400
 @@ -1,98 +1,5 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  
@@ -1316,14 +1316,14 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
                                     settingsSchema: this._settings.schema_id,
 -                                   onLoaded: Lang.bind(this, function(animation) {
 -                                       this._animation = animation;
--
++                                             onLoaded: Lang.bind(this, function(animation) {
++                                                 this._animation = animation;
+ 
 -                                       if (!this._animation || this._cancellable.is_cancelled()) {
 -                                           this._setLoaded();
 -                                           return;
 -                                       }
-+                                             onLoaded: Lang.bind(this, function(animation) {
-+                                                 this._animation = animation;
- 
+-
 -                                       this._updateAnimation();
 -                                       this._watchFile(file);
 -                                   })
@@ -1576,15 +1576,15 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
  
 -    destroy: function() {
 -        global.screen.disconnect(this._monitorsChangedId);
--
++    _onDestroy: function() {
++        let content = this.actor.content;
+ 
 -        for (let monitorIndex in this._backgrounds) {
 -            let background = this._backgrounds[monitorIndex];
 -            background.disconnect(background._changedId);
 -            background.destroy();
 -        }
-+    _onDestroy: function() {
-+        let content = this.actor.content;
- 
+-
 -        this._backgrounds = null;
 -    }
 +        if (content)
@@ -1638,7 +1638,7 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
      },
  });
  Signals.addSignalMethods(Animation.prototype);
-@@ -651,121 +746,100 @@
+@@ -651,122 +746,100 @@
          params = Params.parse(params, { container: null,
                                          layoutManager: Main.layoutManager,
                                          monitorIndex: null,
@@ -1675,19 +1675,16 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
 -        if (this._newBackgroundActor) {
 -            this._newBackgroundActor.destroy();
 -            this._newBackgroundActor = null;
+-        }
+-
+-        if (this.backgroundActor) {
+-            this.backgroundActor.destroy();
+-            this.backgroundActor = null;
 +        if (this._newBackground) {
 +            this._newBackground.actor.destroy();
 +            this._newBackground = null;
          }
- 
--        if (this.backgroundActor) {
--            this.backgroundActor.destroy();
--            this.backgroundActor = null;
-+        if (this.background) {
-+            this.background.actor.destroy();
-+            this.background = null;
-         }
-     },
+-    },
  
 -    _swapBackgroundActor: function() {
 -        let oldBackgroundActor = this.backgroundActor;
@@ -1700,6 +1697,7 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
 -                           time: FADE_ANIMATION_TIME,
 -                           transition: 'easeOutQuad',
 -                           onComplete: function() {
+-                               oldBackgroundActor.background.run_dispose();
 -                               oldBackgroundActor.destroy();
 -                           }
 -                         });
@@ -1710,20 +1708,24 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
 -            /* Skip displaying existing background queued for load */
 -            this._newBackgroundActor.destroy();
 -            this._newBackgroundActor = null;
--        }
--
++        if (this.background) {
++            this.background.actor.destroy();
++            this.background = null;
+         }
++    },
+ 
 -        let newBackgroundActor = this._createBackgroundActor();
 -        newBackgroundActor.vignette_sharpness = this.backgroundActor.vignette_sharpness;
 -        newBackgroundActor.brightness = this.backgroundActor.brightness;
 -        newBackgroundActor.visible = this.backgroundActor.visible;
+-
+-        this._newBackgroundActor = newBackgroundActor;
 +    _updateBackground: function() {
 +        let newBackground = this._createBackground();
 +        newBackground.vignetteSharpness = this.background.vignetteSharpness;
 +        newBackground.brightness = this.background.brightness;
 +        newBackground.visible = this.background.visible;
  
--        this._newBackgroundActor = newBackgroundActor;
--
 -        let background = newBackgroundActor.background._delegate;
 +        newBackground.loadedSignalId = newBackground.connect('loaded',
 +            Lang.bind(this, function() {
@@ -1822,8 +1824,8 @@ diff '--exclude=.git' -urN a/js/ui/background.js b/js/ui/background.js
  });
  Signals.addSignalMethods(BackgroundManager.prototype);
 diff '--exclude=.git' -urN a/js/ui/calendar.js b/js/ui/calendar.js
---- a/js/ui/calendar.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/calendar.js	2016-06-04 19:17:12.131851157 -0400
+--- a/js/ui/calendar.js	2016-08-19 16:55:21.000000000 -0400
++++ b/js/ui/calendar.js	2016-09-02 19:14:09.480409262 -0400
 @@ -1037,8 +1037,8 @@
  
          this._date = new Date();
@@ -1836,8 +1838,8 @@ diff '--exclude=.git' -urN a/js/ui/calendar.js b/js/ui/calendar.js
          this._otherIcon = new Gio.FileIcon({ file: otherFile });
  
 diff '--exclude=.git' -urN a/js/ui/components/keyring.js b/js/ui/components/keyring.js
---- a/js/ui/components/keyring.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/components/keyring.js	2016-05-30 23:42:35.406220904 -0400
+--- a/js/ui/components/keyring.js	2016-07-29 00:43:45.000000000 -0400
++++ b/js/ui/components/keyring.js	2016-09-02 19:14:09.480409262 -0400
 @@ -127,7 +127,7 @@
              ShellEntry.addContextMenu(this._passwordEntry, { isPassword: true });
              this._passwordEntry.clutter_text.connect('activate', Lang.bind(this, this._onPasswordActivate));
@@ -1848,8 +1850,8 @@ diff '--exclude=.git' -urN a/js/ui/components/keyring.js b/js/ui/components/keyr
              this._workSpinner.actor.opacity = 0;
  
 diff '--exclude=.git' -urN a/js/ui/components/polkitAgent.js b/js/ui/components/polkitAgent.js
---- a/js/ui/components/polkitAgent.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/components/polkitAgent.js	2016-06-04 20:50:07.485636455 -0400
+--- a/js/ui/components/polkitAgent.js	2016-07-29 00:43:45.000000000 -0400
++++ b/js/ui/components/polkitAgent.js	2016-09-02 19:14:09.480409262 -0400
 @@ -143,7 +143,7 @@
          this._passwordBox.add(this._passwordEntry,
                                { expand: true });
@@ -1860,8 +1862,8 @@ diff '--exclude=.git' -urN a/js/ui/components/polkitAgent.js b/js/ui/components/
          this._workSpinner.actor.opacity = 0;
  
 diff '--exclude=.git' -urN a/js/ui/extensionSystem.js b/js/ui/extensionSystem.js
---- a/js/ui/extensionSystem.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/extensionSystem.js	2016-05-30 23:42:35.406220904 -0400
+--- a/js/ui/extensionSystem.js	2016-08-19 16:13:09.000000000 -0400
++++ b/js/ui/extensionSystem.js	2016-09-02 19:14:09.480409262 -0400
 @@ -74,7 +74,7 @@
  
      if (extension.stylesheet) {
@@ -1881,8 +1883,8 @@ diff '--exclude=.git' -urN a/js/ui/extensionSystem.js b/js/ui/extensionSystem.js
              break;
          }
 diff '--exclude=.git' -urN a/js/ui/layout.js b/js/ui/layout.js
---- a/js/ui/layout.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/layout.js	2016-05-30 23:42:35.407220887 -0400
+--- a/js/ui/layout.js	2016-08-19 16:55:21.000000000 -0400
++++ b/js/ui/layout.js	2016-09-02 19:14:09.481409256 -0400
 @@ -11,7 +11,6 @@
  
  const Background = imports.ui.background;
@@ -1989,8 +1991,8 @@ diff '--exclude=.git' -urN a/js/ui/layout.js b/js/ui/layout.js
          this._coverPane = null;
  
 diff '--exclude=.git' -urN a/js/ui/magnifier.js b/js/ui/magnifier.js
---- a/js/ui/magnifier.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/magnifier.js	2016-05-30 23:42:35.408220871 -0400
+--- a/js/ui/magnifier.js	2016-07-29 00:43:44.000000000 -0400
++++ b/js/ui/magnifier.js	2016-09-02 19:14:09.481409256 -0400
 @@ -1227,7 +1227,12 @@
  
          // Add a background for when the magnified uiGroup is scrolled
@@ -2006,8 +2008,8 @@ diff '--exclude=.git' -urN a/js/ui/magnifier.js b/js/ui/magnifier.js
  
          // Clone the group that contains all of UI on the screen.  This is the
 diff '--exclude=.git' -urN a/js/ui/main.js b/js/ui/main.js
---- a/js/ui/main.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/main.js	2016-05-30 23:47:14.351518921 -0400
+--- a/js/ui/main.js	2016-08-19 16:55:21.000000000 -0400
++++ b/js/ui/main.js	2016-09-02 19:14:09.481409256 -0400
 @@ -4,7 +4,6 @@
  const Gdk = imports.gi.Gdk;
  const Gio = imports.gi.Gio;
@@ -2114,8 +2116,8 @@ diff '--exclude=.git' -urN a/js/ui/main.js b/js/ui/main.js
  
  /**
 diff '--exclude=.git' -urN a/js/ui/overview.js b/js/ui/overview.js
---- a/js/ui/overview.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/overview.js	2016-05-30 23:42:35.408220871 -0400
+--- a/js/ui/overview.js	2016-08-19 16:55:21.000000000 -0400
++++ b/js/ui/overview.js	2016-09-02 19:14:09.481409256 -0400
 @@ -183,7 +183,7 @@
          for (let i = 0; i < Main.layoutManager.monitors.length; i++) {
              let bgManager = new Background.BackgroundManager({ container: this._backgroundGroup,
@@ -2154,8 +2156,8 @@ diff '--exclude=.git' -urN a/js/ui/overview.js b/js/ui/overview.js
                                 transition: 'easeOutQuad'
                               });
 diff '--exclude=.git' -urN a/js/ui/panel.js b/js/ui/panel.js
---- a/js/ui/panel.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/panel.js	2016-05-30 23:42:35.409220854 -0400
+--- a/js/ui/panel.js	2016-07-29 00:43:45.000000000 -0400
++++ b/js/ui/panel.js	2016-09-02 19:14:09.481409256 -0400
 @@ -183,7 +183,7 @@
      _onStyleChanged: function(actor) {
          let node = actor.get_theme_node();
@@ -2166,8 +2168,8 @@ diff '--exclude=.git' -urN a/js/ui/panel.js b/js/ui/panel.js
          this._spinnerIcon = icon;
          this._spinner = new Animation.AnimatedIcon(this._spinnerIcon, PANEL_ICON_SIZE);
 diff '--exclude=.git' -urN a/js/ui/runDialog.js b/js/ui/runDialog.js
---- a/js/ui/runDialog.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/runDialog.js	2016-05-30 23:48:26.997261300 -0400
+--- a/js/ui/runDialog.js	2016-07-29 00:43:45.000000000 -0400
++++ b/js/ui/runDialog.js	2016-09-02 19:14:09.481409256 -0400
 @@ -61,7 +61,6 @@
  
                                     // rt is short for "reload theme"
@@ -2177,8 +2179,8 @@ diff '--exclude=.git' -urN a/js/ui/runDialog.js b/js/ui/runDialog.js
                                     })
                                   };
 diff '--exclude=.git' -urN a/js/ui/status/network.js b/js/ui/status/network.js
---- a/js/ui/status/network.js	2016-04-21 08:54:08.000000000 -0400
-+++ b/js/ui/status/network.js	2016-05-30 23:42:35.409220854 -0400
+--- a/js/ui/status/network.js	2016-08-19 16:55:21.000000000 -0400
++++ b/js/ui/status/network.js	2016-09-02 19:14:09.482409249 -0400
 @@ -876,8 +876,7 @@
                                                   x_align: Clutter.ActorAlign.CENTER,
                                                   y_align: Clutter.ActorAlign.CENTER });
@@ -2190,8 +2192,8 @@ diff '--exclude=.git' -urN a/js/ui/status/network.js b/js/ui/status/network.js
          this._noNetworksBox.add_actor(new St.Label({ style_class: 'no-networks-label',
                                                       text: _("No Networks") }));
 diff '--exclude=.git' -urN a/js/ui/workspaceThumbnail.js b/js/ui/workspaceThumbnail.js
---- a/js/ui/workspaceThumbnail.js	2016-04-21 10:04:04.000000000 -0400
-+++ b/js/ui/workspaceThumbnail.js	2016-05-30 23:42:35.409220854 -0400
+--- a/js/ui/workspaceThumbnail.js	2016-08-17 04:20:05.000000000 -0400
++++ b/js/ui/workspaceThumbnail.js	2016-09-02 19:14:09.482409249 -0400
 @@ -317,7 +317,7 @@
      _createBackground: function() {
          this._bgManager = new Background.BackgroundManager({ monitorIndex: Main.layoutManager.primaryIndex,
@@ -2220,8 +2222,8 @@ diff '--exclude=.git' -urN a/js/ui/workspaceThumbnail.js b/js/ui/workspaceThumbn
              clone.setStackAbove(this._windows[this._windows.length - 1].actor);
  
 diff '--exclude=.git' -urN a/src/shell-util.c b/src/shell-util.c
---- a/src/shell-util.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/shell-util.c	2016-05-30 23:42:35.410220838 -0400
+--- a/src/shell-util.c	2016-08-19 16:55:21.000000000 -0400
++++ b/src/shell-util.c	2016-09-02 19:14:09.482409249 -0400
 @@ -5,9 +5,6 @@
  #include <sys/types.h>
  #include <sys/wait.h>
@@ -2270,8 +2272,8 @@ diff '--exclude=.git' -urN a/src/shell-util.c b/src/shell-util.c
  shell_util_text_insert_keyval (ClutterActor *actor,
                                 guint         keyval)
 diff '--exclude=.git' -urN a/src/shell-util.h b/src/shell-util.h
---- a/src/shell-util.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/shell-util.h	2016-05-30 23:42:35.412220805 -0400
+--- a/src/shell-util.h	2016-08-19 16:55:21.000000000 -0400
++++ b/src/shell-util.h	2016-09-02 19:14:09.485409229 -0400
 @@ -46,8 +46,6 @@
  void    shell_util_cursor_tracker_to_clutter (MetaCursorTracker *tracker,
                                                ClutterTexture    *texture);
@@ -2282,8 +2284,8 @@ diff '--exclude=.git' -urN a/src/shell-util.h b/src/shell-util.h
                                      guint         keyval);
  
 diff '--exclude=.git' -urN a/src/st/st-border-image.c b/src/st/st-border-image.c
---- a/src/st/st-border-image.c	2015-11-05 08:55:13.000000000 -0500
-+++ b/src/st/st-border-image.c	2016-05-30 23:42:35.413220788 -0400
+--- a/src/st/st-border-image.c	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-border-image.c	2016-09-02 19:14:09.485409229 -0400
 @@ -27,7 +27,7 @@
  struct _StBorderImage {
    GObject parent;
@@ -2358,8 +2360,8 @@ diff '--exclude=.git' -urN a/src/st/st-border-image.c b/src/st/st-border-image.c
 +          strcmp (image->filename, other->filename) == 0);
  }
 diff '--exclude=.git' -urN a/src/st/st-border-image.h b/src/st/st-border-image.h
---- a/src/st/st-border-image.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-border-image.h	2016-05-30 23:42:35.413220788 -0400
+--- a/src/st/st-border-image.h	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-border-image.h	2016-09-02 19:14:09.485409229 -0400
 @@ -22,7 +22,6 @@
  #define __ST_BORDER_IMAGE_H__
  
@@ -2386,8 +2388,8 @@ diff '--exclude=.git' -urN a/src/st/st-border-image.h b/src/st/st-border-image.h
                                            int           *border_top,
                                            int           *border_right,
 diff '--exclude=.git' -urN a/src/st/st-texture-cache.c b/src/st/st-texture-cache.c
---- a/src/st/st-texture-cache.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-texture-cache.c	2016-05-30 23:42:35.413220788 -0400
+--- a/src/st/st-texture-cache.c	2016-08-17 04:20:05.000000000 -0400
++++ b/src/st/st-texture-cache.c	2016-09-02 19:14:09.486409223 -0400
 @@ -28,8 +28,8 @@
  #include <glib.h>
  
@@ -2826,8 +2828,8 @@ diff '--exclude=.git' -urN a/src/st/st-texture-cache.c b/src/st/st-texture-cache
  }
  
 diff '--exclude=.git' -urN a/src/st/st-texture-cache.h b/src/st/st-texture-cache.h
---- a/src/st/st-texture-cache.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-texture-cache.h	2016-05-30 23:42:35.414220772 -0400
+--- a/src/st/st-texture-cache.h	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-texture-cache.h	2016-09-02 19:14:09.486409223 -0400
 @@ -55,7 +55,7 @@
  
  ClutterActor *
@@ -2864,8 +2866,8 @@ diff '--exclude=.git' -urN a/src/st/st-texture-cache.h b/src/st/st-texture-cache
  
  /**
 diff '--exclude=.git' -urN a/src/st/st-theme-node-drawing.c b/src/st/st-theme-node-drawing.c
---- a/src/st/st-theme-node-drawing.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme-node-drawing.c	2016-05-30 23:42:35.414220772 -0400
+--- a/src/st/st-theme-node-drawing.c	2016-08-17 04:20:05.000000000 -0400
++++ b/src/st/st-theme-node-drawing.c	2016-09-02 19:14:09.486409223 -0400
 @@ -620,7 +620,7 @@
    cairo_pattern_t *pattern;
    cairo_content_t  content;
@@ -2917,8 +2919,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node-drawing.c b/src/st/st-theme-no
        int scale_factor;
  
 diff '--exclude=.git' -urN a/src/st/st-theme-node-private.h b/src/st/st-theme-node-private.h
---- a/src/st/st-theme-node-private.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme-node-private.h	2016-05-30 23:42:35.414220772 -0400
+--- a/src/st/st-theme-node-private.h	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-theme-node-private.h	2016-09-02 19:14:09.486409223 -0400
 @@ -70,7 +70,7 @@
  
    int transition_duration;
@@ -2929,9 +2931,9 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node-private.h b/src/st/st-theme-no
    StShadow *box_shadow;
    StShadow *background_image_shadow;
 diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
---- a/src/st/st-theme-node.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme-node.c	2016-05-30 23:42:35.415220756 -0400
-@@ -157,10 +157,7 @@
+--- a/src/st/st-theme-node.c	2016-08-17 04:20:05.000000000 -0400
++++ b/src/st/st-theme-node.c	2016-09-02 19:14:09.487409217 -0400
+@@ -165,10 +165,7 @@
      }
  
    if (node->background_image)
@@ -2943,7 +2945,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
    if (node->background_texture != COGL_INVALID_HANDLE)
      cogl_handle_unref (node->background_texture);
-@@ -907,7 +904,7 @@
+@@ -915,7 +912,7 @@
   *   parent's parent, and so forth. Note that if the property has a
   *   value of 'inherit' it will be inherited even if %FALSE is passed
   *   in for @inherit; this only affects the default behavior for inheritance.
@@ -2952,7 +2954,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
   *   determined. If the property is not found, the value in this location
   *   will not be changed.
   *
-@@ -922,7 +919,7 @@
+@@ -930,7 +927,7 @@
  st_theme_node_lookup_url (StThemeNode  *node,
                            const char   *property_name,
                            gboolean      inherit,
@@ -2961,7 +2963,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  {
    gboolean result = FALSE;
    int i;
-@@ -937,6 +934,7 @@
+@@ -945,6 +942,7 @@
          {
            CRTerm *term = decl->value;
            CRStyleSheet *base_stylesheet;
@@ -2969,7 +2971,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
            if (term->type != TERM_URI && term->type != TERM_STRING)
              continue;
-@@ -946,21 +944,23 @@
+@@ -954,21 +952,23 @@
            else
              base_stylesheet = NULL;
  
@@ -2998,7 +3000,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
   * st_theme_node_get_url:
   * @node: a #StThemeNode
   * @property_name: The name of the string property
-@@ -971,18 +971,18 @@
+@@ -979,18 +979,18 @@
   * and lets you handle the case where the theme does not specify the
   * indicated value.
   *
@@ -3022,7 +3024,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
    else
      {
        g_warning ("Did not find string property '%s'", property_name);
-@@ -2011,7 +2011,8 @@
+@@ -2019,7 +2019,8 @@
            CRTerm *term;
            /* background: property sets all terms to specified or default values */
            node->background_color = TRANSPARENT_COLOR;
@@ -3032,7 +3034,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
            node->background_position_set = FALSE;
            node->background_size = ST_BACKGROUND_SIZE_AUTO;
  
-@@ -2027,7 +2028,7 @@
+@@ -2035,7 +2036,7 @@
                    if (node->parent_node)
                      {
                        st_theme_node_get_background_color (node->parent_node, &node->background_color);
@@ -3041,7 +3043,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
                      }
                  }
                else if (term_is_none (term))
-@@ -2048,7 +2049,8 @@
+@@ -2056,7 +2057,8 @@
                                                  base_stylesheet,
                                                  term->content.str->stryng->str);
  
@@ -3051,7 +3053,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
                  }
              }
          }
-@@ -2145,25 +2147,30 @@
+@@ -2153,25 +2155,30 @@
            if (decl->value->type == TERM_URI)
              {
                CRStyleSheet *base_stylesheet;
@@ -3089,7 +3091,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
              }
          }
        else if (strcmp (property_name, "-gradient-direction") == 0)
-@@ -2220,13 +2227,7 @@
+@@ -2228,13 +2235,7 @@
    *color = node->background_color;
  }
  
@@ -3104,7 +3106,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  st_theme_node_get_background_image (StThemeNode *node)
  {
    g_return_val_if_fail (ST_IS_THEME_NODE (node), NULL);
-@@ -3032,6 +3033,7 @@
+@@ -3040,6 +3041,7 @@
            int border_left;
  
            GFile *file;
@@ -3112,7 +3114,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
            /* Support border-image: none; to suppress a previously specified border image */
            if (term_is_none (term))
-@@ -3110,15 +3112,17 @@
+@@ -3118,15 +3120,17 @@
              base_stylesheet = NULL;
  
            file = _st_theme_resolve_url (node->theme, base_stylesheet, url);
@@ -3133,7 +3135,7 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
            return node->border_image;
          }
-@@ -4008,9 +4012,7 @@
+@@ -4016,9 +4020,7 @@
        !clutter_color_equal (&node->background_gradient_end, &other->background_gradient_end))
      return FALSE;
  
@@ -3145,8 +3147,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.c b/src/st/st-theme-node.c
  
    _st_theme_node_ensure_geometry (node);
 diff '--exclude=.git' -urN a/src/st/st-theme-node.h b/src/st/st-theme-node.h
---- a/src/st/st-theme-node.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme-node.h	2016-05-30 23:42:35.415220756 -0400
+--- a/src/st/st-theme-node.h	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-theme-node.h	2016-09-02 19:14:09.487409217 -0400
 @@ -159,7 +159,7 @@
  gboolean st_theme_node_lookup_url    (StThemeNode  *node,
                                        const char   *property_name,
@@ -3175,8 +3177,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme-node.h b/src/st/st-theme-node.h
  int    st_theme_node_get_border_width  (StThemeNode  *node,
                                          StSide        side);
 diff '--exclude=.git' -urN a/src/st/st-theme.c b/src/st/st-theme.c
---- a/src/st/st-theme.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme.c	2016-05-30 23:42:35.415220756 -0400
+--- a/src/st/st-theme.c	2016-07-29 00:47:27.000000000 -0400
++++ b/src/st/st-theme.c	2016-09-02 19:14:09.487409217 -0400
 @@ -60,13 +60,13 @@
  {
    GObject parent;
@@ -3598,8 +3600,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme.c b/src/st/st-theme.c
    else
      {
 diff '--exclude=.git' -urN a/src/st/st-theme.h b/src/st/st-theme.h
---- a/src/st/st-theme.h	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-theme.h	2016-05-30 23:42:35.416220739 -0400
+--- a/src/st/st-theme.h	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-theme.h	2016-09-02 19:14:09.487409217 -0400
 @@ -39,12 +39,12 @@
  #define ST_TYPE_THEME              (st_theme_get_type ())
  G_DECLARE_FINAL_TYPE (StTheme, st_theme, ST, THEME, GObject)
@@ -3619,8 +3621,8 @@ diff '--exclude=.git' -urN a/src/st/st-theme.h b/src/st/st-theme.h
  
  G_END_DECLS
 diff '--exclude=.git' -urN a/src/st/st-widget.c b/src/st/st-widget.c
---- a/src/st/st-widget.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/st-widget.c	2016-05-30 23:50:39.592967643 -0400
+--- a/src/st/st-widget.c	2016-07-29 00:47:26.000000000 -0400
++++ b/src/st/st-widget.c	2016-09-02 19:14:09.487409217 -0400
 @@ -284,27 +284,27 @@
  
  static void
@@ -3665,8 +3667,8 @@ diff '--exclude=.git' -urN a/src/st/st-widget.c b/src/st/st-widget.c
  
  static void
 diff '--exclude=.git' -urN a/src/st/test-theme.c b/src/st/test-theme.c
---- a/src/st/test-theme.c	2016-04-21 08:54:08.000000000 -0400
-+++ b/src/st/test-theme.c	2016-05-30 23:42:35.417220723 -0400
+--- a/src/st/test-theme.c	2016-07-29 00:47:27.000000000 -0400
++++ b/src/st/test-theme.c	2016-09-02 19:14:09.487409217 -0400
 @@ -182,21 +182,17 @@
  			 const char  *node_description,
  			 const char  *expected)
@@ -3718,8 +3720,8 @@ diff '--exclude=.git' -urN a/src/st/test-theme.c b/src/st/test-theme.c
    stage = clutter_stage_new ();
    context = st_theme_context_get_for_stage (CLUTTER_STAGE (stage));
 diff '--exclude=.git' -urN a/tests/testcommon/ui.js b/tests/testcommon/ui.js
---- a/tests/testcommon/ui.js	2015-11-05 08:55:13.000000000 -0500
-+++ b/tests/testcommon/ui.js	2016-05-30 23:42:35.417220723 -0400
+--- a/tests/testcommon/ui.js	2016-07-29 00:47:30.000000000 -0400
++++ b/tests/testcommon/ui.js	2016-09-02 19:14:09.488409210 -0400
 @@ -1,7 +1,6 @@
  // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
  

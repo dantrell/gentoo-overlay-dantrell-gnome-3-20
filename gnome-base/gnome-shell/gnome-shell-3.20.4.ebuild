@@ -124,6 +124,10 @@ DEPEND="${COMMON_DEPEND}
 # https://bugs.gentoo.org/show_bug.cgi?id=360413
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=890a1f112b62d95678f765f71013ee4c2c68ab88
+	eapply "${FILESDIR}"/${PN}-3.20.5-calendar-server-add-back-missing-return-value.patch
+
 	if use deprecated; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
@@ -132,7 +136,7 @@ src_prepare() {
 	fi
 
 	if use deprecated-background; then
-		eapply "${FILESDIR}"/${PN}-3.20.2-restore-deprecated-background-code.patch
+		eapply "${FILESDIR}"/${PN}-3.20.4-restore-deprecated-background-code.patch
 	fi
 
 	if ! use vanilla-motd; then
