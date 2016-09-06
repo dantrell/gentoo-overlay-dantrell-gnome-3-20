@@ -20,12 +20,11 @@ RDEPEND="
 	gnome-base/gnome-desktop:3=
 	>=dev-libs/libgdata-0.15.2:0=[gnome-online-accounts]
 	media-libs/babl
-	>=media-libs/gegl-0.3.5:0.3[jpeg2k,raw]
-	>=media-libs/grilo-0.3.0:0.3=
+	>=media-libs/gegl-0.3.5:0.3[cairo,jpeg2k,raw]
 	media-libs/gexiv2
-	media-libs/lcms:2
+	>=media-libs/grilo-0.3.0:0.3=
 	>=media-libs/libpng-1.6:0=
-	>=media-plugins/grilo-plugins-0.3.0:0.3[upnp-av,flickr]
+	>=media-plugins/grilo-plugins-0.3.0:0.3[upnp-av]
 	>=net-libs/gnome-online-accounts-3.8:=
 	>=net-libs/libgfbgraph-0.2.1:0.2
 	>=x11-libs/cairo-1.14
@@ -37,10 +36,16 @@ DEPEND="${RDEPEND}
 	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	virtual/pkgconfig
-	test? ( dev-util/dogtail )
+	test? (
+		${PYTHON_DEPS}
+		$(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
 "
 # eautoreconf
 #	app-text/yelp-tools
+
+python_check_deps() {
+	use test && has_version "dev-util/dogtail[${PYTHON_USEDEP}]"
+}
 
 pkg_setup() {
 	use test && python-any-r1_pkg_setup

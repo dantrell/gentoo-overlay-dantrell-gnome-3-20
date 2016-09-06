@@ -17,7 +17,7 @@ IUSE=""
 RDEPEND="
 	>=dev-libs/glib-2.32:2
 	dev-libs/libgee:0.8=
-	>=dev-libs/libgames-support-1.0
+	>=dev-libs/libgames-support-1
 	>=gnome-base/librsvg-2.32.0:2
 	>=x11-libs/gtk+-3.19.0:3
 "

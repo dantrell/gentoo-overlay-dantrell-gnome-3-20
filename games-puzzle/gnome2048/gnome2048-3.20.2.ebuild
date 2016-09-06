@@ -2,7 +2,6 @@
 
 EAPI="6"
 GNOME_ORG_MODULE="gnome-2048"
-VALA_MIN_API_VERSION="0.24"
 
 inherit gnome2 vala
 

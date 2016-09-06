@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
-VALA_MIN_API_VERSION="0.24"
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 vala virtualx
@@ -17,9 +16,9 @@ IUSE="glade +introspection vala"
 REQUIRED_USE="vala? ( introspection )"
 
 RDEPEND="
-	>=dev-libs/glib-2.47:2
+	>=dev-libs/glib-2.48:2
 	>=dev-libs/libxml2-2.6:2
-	>=x11-libs/gtk+-3.19.6:3[introspection?]
+	>=x11-libs/gtk+-3.20:3[introspection?]
 	glade? ( >=dev-util/glade-3.9:3.10 )
 	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "

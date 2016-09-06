@@ -17,13 +17,13 @@ IUSE="cups python"
 # This is a wrapper for the core libraries used by GNOME 3
 RDEPEND="
 	>=dev-libs/glib-2.48:2
-	>=x11-libs/gdk-pixbuf-2.32:2
-	>=x11-libs/pango-1.38
+	>=x11-libs/gdk-pixbuf-2.34:2
+	>=x11-libs/pango-1.40
 	>=media-libs/clutter-1.26:1.0
 	>=x11-libs/gtk+-${PV}:3[cups?]
 	>=dev-libs/atk-2.20
-	>=x11-libs/libwnck-3.14:3
-	>=gnome-base/librsvg-2.40.11
+	>=x11-libs/libwnck-${PV}:3
+	>=gnome-base/librsvg-2.40.16
 	>=gnome-base/gnome-desktop-${PV}:3
 	>=x11-libs/startup-notification-0.12
 
@@ -32,13 +32,13 @@ RDEPEND="
 
 	|| (
 		>=media-libs/gstreamer-0.10.36:0.10
-		>=media-libs/gstreamer-1.4.5:1.0 )
+		>=media-libs/gstreamer-1.6.1:1.0 )
 	|| (
 		>=media-libs/gst-plugins-base-0.10.36:0.10
-		>=media-libs/gst-plugins-base-1.4.5:1.0 )
+		>=media-libs/gst-plugins-base-1.6.1:1.0 )
 	|| (
 		>=media-libs/gst-plugins-good-0.10.31:0.10
-		>=media-libs/gst-plugins-good-1.4.5:1.0 )
+		>=media-libs/gst-plugins-good-1.6.1:1.0 )
 
 	python? ( >=dev-python/pygobject-${PV}:3 )
 "

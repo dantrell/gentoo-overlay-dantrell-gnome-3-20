@@ -34,7 +34,7 @@ RDEPEND="
 	accessibility? (
 		>=app-accessibility/at-spi2-atk-2.20
 		>=app-accessibility/at-spi2-core-2.20
-		>=app-accessibility/caribou-0.4.19
+		>=app-accessibility/caribou-0.4.21
 		>=app-accessibility/orca-${PV}
 		>=gnome-extra/mousetweaks-3.12.0 )
 	classic? ( >=gnome-extra/gnome-shell-extensions-${PV} )
@@ -43,7 +43,7 @@ RDEPEND="
 
 DEPEND=""
 
-PDEPEND=">=gnome-base/gvfs-1.26[udisks]"
+PDEPEND=">=gnome-base/gvfs-1.28[udisks]"
 
 pkg_postinst() {
 	# Remember people where to find our project information

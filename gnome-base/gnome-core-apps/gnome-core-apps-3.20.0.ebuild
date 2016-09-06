@@ -29,15 +29,15 @@ RDEPEND="
 	>=app-crypt/gcr-${PV}
 	>=gnome-base/nautilus-${PV}
 	>=gnome-base/gnome-keyring-${PV}
-	>=gnome-extra/evolution-data-server-3.20
+	>=gnome-extra/evolution-data-server-${PV}
 
 	>=app-crypt/seahorse-${PV}
 	>=app-editors/gedit-${PV}
 	>=app-text/evince-${PV}
-	>=gnome-extra/gnome-contacts-3.20.0
+	>=gnome-extra/gnome-contacts-${PV}
 	>=media-gfx/eog-${PV}
 	>=media-video/totem-${PV}
-	>=net-im/empathy-3.12.11
+	>=net-im/empathy-3.12.12
 	>=x11-terms/gnome-terminal-${PV}
 
 	>=gnome-extra/gnome-user-docs-${PV}
@@ -46,7 +46,7 @@ RDEPEND="
 	>=x11-themes/adwaita-icon-theme-$(get_version_component_range 1-2)
 	>=x11-themes/gnome-themes-standard-$(get_version_component_range 1-2)
 
-	bluetooth? ( >=net-wireless/gnome-bluetooth-3.18.0 )
+	bluetooth? ( >=net-wireless/gnome-bluetooth-${PV} )
 	cdr? ( >=app-cdr/brasero-3.12.1 )
 
 	!gnome-base/gnome-applets
