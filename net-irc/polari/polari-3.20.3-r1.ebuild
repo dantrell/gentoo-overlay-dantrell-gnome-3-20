@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 COMMON_DEPEND="
-	dev-libs/gjs
+	>=dev-libs/gjs-1.45.3
 	>=dev-libs/glib-2.43.4:2
 	>=dev-libs/gobject-introspection-0.9.6:=
 	net-libs/telepathy-glib[introspection]

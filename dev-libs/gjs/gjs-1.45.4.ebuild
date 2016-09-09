@@ -46,7 +46,9 @@ src_configure() {
 		--disable-dtrace \
 		--disable-coverage \
 		$(use_with cairo cairo) \
-		$(use_with gtk)
+		$(use_with gtk) \
+		$(use_with test dbus-tests) \
+		$(use_with test xvfb-tests)
 }
 
 src_test() {
@@ -54,7 +56,7 @@ src_test() {
 }
 
 src_install() {
-	# installation sometimes fails in parallel
+	# installation sometimes fails in parallel, bug #???
 	gnome2_src_install -j1
 
 	if use examples; then

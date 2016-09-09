@@ -15,29 +15,36 @@ KEYWORDS="*"
 IUSE="test"
 
 RDEPEND="
-	>=app-admin/packagekit-base-1.0.9
+	>=app-admin/packagekit-base-1.1.0
+	app-text/gtkspell:3
 	dev-db/sqlite:3
-	>=dev-libs/appstream-glib-0.5.11:0
-	>=dev-libs/glib-2.45.8:2
+	>=dev-libs/appstream-glib-0.5.12:0
+	>=dev-libs/glib-2.46:2
+	>=dev-libs/json-glib-1.1.1
 	>=gnome-base/gnome-desktop-3.17.92:3=
 	>=gnome-base/gsettings-desktop-schemas-3.11.5
-	net-libs/libsoup:2.4
+	>=net-libs/libsoup-2.51.92:2.4
 	sys-auth/polkit
-	>=x11-libs/gtk+-3.16:3
+	>=x11-libs/gdk-pixbuf-2.31.5
+	>=x11-libs/gtk+-3.18.2:3
 "
 DEPEND="${RDEPEND}
-	${PYTHON_DEPS}
 	app-text/docbook-xml-dtd:4.2
 	dev-libs/libxslt
 	>=dev-util/intltool-0.35
 	virtual/pkgconfig
-	app-text/gtkspell:3
-	test? ( dev-util/dogtail )
+	test? (
+		${PYTHON_DEPS}
+		$(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
 "
 # test? ( dev-util/valgrind )
 
+python_check_deps() {
+	use test && has_version "dev-util/dogtail[${PYTHON_USEDEP}]"
+}
+
 pkg_setup() {
-	python-any-r1_pkg_setup
+	use test && python-any-r1_pkg_setup
 }
 
 src_prepare() {
@@ -52,6 +59,9 @@ src_configure() {
 	# FIXME: investigate limba and firmware update support
 	gnome2_src_configure \
 		--enable-man \
+		--enable-packagekit \
+		--enable-polkit \
+		--disable-xdg-app \
 		--disable-firmware \
 		--disable-limba \
 		$(use_enable test dogtail)

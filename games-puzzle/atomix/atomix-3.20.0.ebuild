@@ -4,7 +4,7 @@ EAPI="6"
 
 inherit gnome2
 
-DESCRIPTION="a game where you build full molecules, from simple inorganic to extremely complex organic ones"
+DESCRIPTION="Build molecules, from simple inorganic to extremely complex organic ones"
 HOMEPAGE="http://ftp.gnome.org/pub/GNOME/sources/atomix/"
 
 LICENSE="GPL-2"
@@ -19,7 +19,7 @@ RDEPEND="
 	>=x11-libs/gtk+-3.10:3"
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib
-	gnome-base/gnome-common
 	>=dev-util/intltool-0.40
+	gnome-base/gnome-common
 	sys-devel/gettext
 	virtual/pkgconfig"
