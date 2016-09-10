@@ -13,7 +13,7 @@ KEYWORDS="*"
 
 IUSE="flickr"
 
-# libgdata[gnome] needed for goa support
+# libgdata[gnome-online-accounts] needed for goa support
 RDEPEND="
 	>=app-misc/tracker-1:0=
 	>=dev-libs/glib-2.35.1:2
