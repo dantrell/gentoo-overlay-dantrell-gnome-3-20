@@ -15,7 +15,7 @@ SLOT="2.4"
 KEYWORDS="*"
 
 IUSE="debug gssapi +introspection samba ssl test vala"
-REQUIRED_IUSE="vala? ( introspection )"
+REQUIRED_USE="vala? ( introspection )"
 
 RDEPEND="
 	>=dev-libs/glib-2.34.3:2[${MULTILIB_USEDEP}]

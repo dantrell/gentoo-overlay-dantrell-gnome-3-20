@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="debug glade +python"
-REQUIRED_USE="python? ( ^^ ( $(python_gen_useflags '*') ) )"
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 # test if unbundling of libgd is possible
 # Currently it seems not to be (unstable API/ABI)
@@ -40,17 +40,16 @@ RDEPEND="
 	glade? ( >=dev-util/glade-3.2:3.10 )
 	python? (
 		${PYTHON_DEPS}
-		dev-libs/libpeas[python,${PYTHON_USEDEP}]
 		dev-python/pygobject:3[${PYTHON_USEDEP}]
 	)
 "
 DEPEND="${RDEPEND}
 	$(vala_depend)
 	>=dev-libs/libgit2-glib-0.22.0[vala]
+	>=dev-util/intltool-0.40
 	gnome-base/gnome-common
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
-	>=dev-util/intltool-0.40
 "
 
 pkg_setup() {
@@ -77,5 +76,14 @@ src_configure() {
 }
 
 src_install() {
+	# -j1: bug #???
 	gnome2_src_install -j1
+
+	if use python ; then
+		install_gi_override() {
+			python_moduleinto "$(python_get_sitedir)/gi/overrides"
+			python_domodule "${S}"/libgitg-ext/GitgExt.py
+		}
+		python_foreach_impl install_gi_override
+	fi
 }
