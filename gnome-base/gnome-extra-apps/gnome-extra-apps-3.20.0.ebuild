@@ -23,7 +23,7 @@ IUSE="+bijiben boxes builder california epiphany +evolution flashback +fonts +ga
 RDEPEND="
 	>=gnome-base/gnome-core-libs-${PV}
 
-	>=app-admin/gnome-system-log-20160820
+	>=app-admin/gnome-system-log-20160922
 	>=app-arch/file-roller-${PV}
 	>=app-dicts/gnome-dictionary-${PV}
 	>=gnome-base/dconf-editor-${PV}
@@ -61,7 +61,7 @@ RDEPEND="
 	evolution? ( >=mail-client/evolution-${PV} )
 	flashback? ( >=gnome-base/gnome-flashback-${PV} )
 	fonts? (
-		>=media-fonts/noto-2015.04
+		>=media-fonts/noto-20160305
 		>=media-fonts/symbola-8.00
 		>=media-fonts/unifont-8.0.01 )
 	games? (
