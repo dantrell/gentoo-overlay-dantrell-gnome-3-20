@@ -114,5 +114,6 @@ x11-terms/gnome-terminal::gentoo
 x11-themes/adwaita-icon-theme::gentoo
 x11-themes/gnome-backgrounds::gentoo
 x11-themes/gnome-themes-standard::gentoo
+x11-themes/gtk-engines-adwaita::gentoo
 x11-wm/metacity::gentoo
 x11-wm/mutter::gentoo

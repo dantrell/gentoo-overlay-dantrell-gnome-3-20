@@ -16,6 +16,7 @@ IUSE="test"
 
 RDEPEND="
 	>=app-admin/packagekit-base-1.1.0
+	app-crypt/libsecret
 	app-text/gtkspell:3
 	dev-db/sqlite:3
 	>=dev-libs/appstream-glib-0.5.12:0

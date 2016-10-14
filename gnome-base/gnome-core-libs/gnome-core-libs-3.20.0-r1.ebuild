@@ -30,15 +30,9 @@ RDEPEND="
 	>=gnome-base/gvfs-1.28
 	>=gnome-base/dconf-0.26
 
-	|| (
-		>=media-libs/gstreamer-0.10.36:0.10
-		>=media-libs/gstreamer-1.6.1:1.0 )
-	|| (
-		>=media-libs/gst-plugins-base-0.10.36:0.10
-		>=media-libs/gst-plugins-base-1.6.1:1.0 )
-	|| (
-		>=media-libs/gst-plugins-good-0.10.31:0.10
-		>=media-libs/gst-plugins-good-1.6.1:1.0 )
+	>=media-libs/gstreamer-1.8:1.0
+	>=media-libs/gst-plugins-base-1.8:1.0
+	>=media-libs/gst-plugins-good-1.8:1.0
 
 	python? ( >=dev-python/pygobject-${PV}:3 )
 "

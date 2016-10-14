@@ -4,7 +4,7 @@ EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
 
-inherit autotools gnome2 python-r1 systemd udev virtualx
+inherit autotools gnome2 python-any-r1 systemd udev virtualx
 
 DESCRIPTION="Gnome Settings Daemon"
 HOMEPAGE="https://git.gnome.org/browse/gnome-settings-daemon"
@@ -24,7 +24,7 @@ COMMON_DEPEND="
 	>=dev-libs/glib-2.37.7:2[dbus]
 	>=x11-libs/gtk+-3.15.3:3
 	>=gnome-base/gnome-desktop-3.11.1:3=
-	>=gnome-base/gsettings-desktop-schemas-3.19.3
+	>=gnome-base/gsettings-desktop-schemas-3.20
 	>=gnome-base/librsvg-2.36.2:2
 	media-fonts/cantarell
 	media-libs/alsa-lib
@@ -79,12 +79,16 @@ RDEPEND="${COMMON_DEPEND}
 	)
 "
 # xproto-7.0.15 needed for power plugin
+# FIXME: tests require dbus-mock
 DEPEND="${COMMON_DEPEND}
 	cups? ( sys-apps/sed )
 	test? (
 		${PYTHON_DEPS}
-		dev-python/pygobject[${PYTHON_USEDEP}] )
+		$(python_gen_any_dep 'dev-python/pygobject:3[${PYTHON_USEDEP}]')
+		gnome-base/gnome-session )
+	app-text/docbook-xsl-stylesheets
 	dev-libs/libxml2:2
+	dev-libs/libxslt
 	sys-devel/gettext
 	>=dev-util/intltool-0.40
 	virtual/pkgconfig
@@ -92,6 +96,14 @@ DEPEND="${COMMON_DEPEND}
 	x11-proto/xf86miscproto
 	>=x11-proto/xproto-7.0.15
 "
+
+python_check_deps() {
+	use test && has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]"
+}
+
+pkg_setup() {
+	use test && python-any-r1_pkg_setup
+}
 
 src_prepare() {
 	if use deprecated; then
@@ -124,7 +136,6 @@ src_configure() {
 }
 
 src_test() {
-	python_export_best
 	virtx emake check
 }
 
