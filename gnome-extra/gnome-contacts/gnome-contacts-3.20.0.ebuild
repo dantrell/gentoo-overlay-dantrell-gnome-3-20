@@ -62,5 +62,7 @@ src_prepare() {
 }
 
 src_configure() {
-	gnome2_src_configure $(use_with v4l cheese)
+	gnome2_src_configure \
+		--enable-man-pages \
+		$(use_with v4l cheese)
 }

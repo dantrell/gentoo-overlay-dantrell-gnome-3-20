@@ -30,12 +30,10 @@ DEPEND="${RDEPEND}
 	test? ( sys-apps/dbus )
 "
 
-src_prepare() {
-	# Disable broken unittests
-	eapply "${FILESDIR}"/${PN}-1.43.3-disable-unittest-*.patch
-
-	gnome2_src_prepare
-}
+PATCHES=(
+	# Disable broken unittests, upstream bug #????
+	"${FILESDIR}"/${PN}-1.43.3-disable-unittest-{1,2}.patch
+)
 
 src_configure() {
 	# FIXME: add systemtap/dtrace support, like in glib:2

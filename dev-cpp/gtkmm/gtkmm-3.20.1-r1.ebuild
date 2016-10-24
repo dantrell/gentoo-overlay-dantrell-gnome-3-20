@@ -25,7 +25,7 @@ RDEPEND="
 	>=dev-libs/libsigc++-2.3.2:2[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
-	virtual/pkgconfig
+	virtual/pkgconfig[${MULTILIB_USEDEP}]
 	examples? ( >=media-libs/libepoxy-1.2[${MULTILIB_USEDEP}] )
 	doc? (
 		media-gfx/graphviz
@@ -52,7 +52,8 @@ src_prepare() {
 }
 
 multilib_src_configure() {
-	ECONF_SOURCE="${S}" gnome2_src_configure \
+	ECONF_SOURCE="${S}" \
+	gnome2_src_configure \
 		--enable-api-atkmm \
 		$(multilib_native_use_enable doc documentation) \
 		$(use_enable aqua quartz-backend) \

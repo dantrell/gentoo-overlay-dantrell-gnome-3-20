@@ -17,6 +17,7 @@ PDEPEND="
 	>=dev-libs/glib-2.26:2
 	>=gnome-base/libgtop-2.28.3[introspection]
 	>=app-eselect/eselect-gnome-shell-extensions-20111211
+
 	>=dev-libs/gjs-1.29
 	dev-libs/gobject-introspection:=
 	dev-libs/atk[introspection]

@@ -65,7 +65,7 @@ src_prepare() {
 
 src_configure() {
 	# TODO: Give users a way to set the G/FB/Windows Live secrets
-	# telepathy optional support is really a badly one, bug #494456
+	# telepathy optional support is really badly done, bug #494456
 	gnome2_src_configure \
 		--disable-static \
 		--enable-backend \

@@ -38,6 +38,7 @@ src_prepare() {
 	# Fix compatibility with Gentoo's sys-apps/man
 	# https://bugzilla.gnome.org/show_bug.cgi?id=648854
 	eapply "${FILESDIR}"/${PN}-3.20.0-man-compatibility.patch
+
 	eautoreconf
 	gnome2_src_prepare
 }

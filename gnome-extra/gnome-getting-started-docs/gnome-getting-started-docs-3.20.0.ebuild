@@ -23,4 +23,3 @@ DEPEND="
 	sys-devel/gettext
 	virtual/pkgconfig
 "
-

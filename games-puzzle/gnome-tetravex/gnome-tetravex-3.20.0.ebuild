@@ -15,7 +15,6 @@ IUSE=""
 
 RDEPEND="
 	>=dev-libs/glib-2.40:2
-	>=gnome-base/librsvg-2.32:2
 	>=x11-libs/gtk+-3.13.4:3
 "
 DEPEND="${RDEPEND}

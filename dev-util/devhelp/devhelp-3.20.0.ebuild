@@ -33,8 +33,10 @@ RDEPEND="${COMMON_DEPEND}
 DEPEND="${COMMON_DEPEND}
 	${PYTHON_DEPS}
 	>=dev-util/intltool-0.40
+	gnome-base/gnome-common
 	virtual/pkgconfig
 "
+
 pkg_setup() {
 	use gedit && python-single-r1_pkg_setup
 }

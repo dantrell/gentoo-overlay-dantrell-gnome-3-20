@@ -14,9 +14,8 @@ KEYWORDS="*"
 
 IUSE="+introspection +latexmk rubber"
 
-# gspell-0.1 is required for this cycle
-# https://git.gnome.org/browse/latexila/commit/?h=gnome-3-18&id=fd6b77796e304cfb9e31844cf24432d3b2cb6043
-COMMON_DEPEND="$(vala_depend)
+COMMON_DEPEND="
+	$(vala_depend)
 	app-text/enchant
 	>=app-text/gspell-1.0:0=
 	>=dev-libs/glib-2.40:2[dbus]

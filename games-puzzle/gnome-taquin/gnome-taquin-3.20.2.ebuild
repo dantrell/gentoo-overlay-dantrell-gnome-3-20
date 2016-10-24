@@ -17,16 +17,16 @@ IUSE=""
 RDEPEND="
 	>=dev-libs/glib-2.40:2
 	>=gnome-base/librsvg-2.32:2
-	>=media-libs/libcanberra-0.26
+	>=media-libs/libcanberra-0.26[gtk3]
 	>=x11-libs/gtk+-3.15:3
 "
 DEPEND="${RDEPEND}
+	$(vala_depend)
 	app-text/yelp-tools
 	dev-libs/appstream-glib
 	>=dev-util/intltool-0.50
 	sys-devel/gettext
 	virtual/pkgconfig
-	$(vala_depend)
 "
 
 src_prepare() {
