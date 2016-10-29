@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit flag-o-matic readme.gentoo-r1 gnome2
+inherit gnome2 flag-o-matic readme.gentoo-r1
 
 DESCRIPTION="Integrated mail, addressbook and calendaring functionality"
 HOMEPAGE="https://wiki.gnome.org/Apps/Evolution"
@@ -13,7 +13,7 @@ LICENSE="|| ( LGPL-2 LGPL-3 ) CC-BY-SA-3.0 FDL-1.3+ OPENLDAP"
 SLOT="2.0"
 KEYWORDS="*"
 
-IUSE="+bogofilter crypt highlight ldap map spamassassin spell ssl +weather"
+IUSE="+bogofilter crypt geolocation highlight ldap spamassassin spell ssl +weather"
 
 # We need a graphical pinentry frontend to be able to ask for the GPG
 # password from inside evolution, bug 160302
@@ -52,14 +52,14 @@ COMMON_DEPEND="
 		>=app-crypt/gnupg-1.4
 		${PINENTRY_DEPEND}
 		x11-libs/libcryptui )
-	map? (
+	geolocation? (
 		>=media-libs/libchamplain-0.12:0.12[gtk]
 		>=media-libs/clutter-1.0.0:1.0
 		>=media-libs/clutter-gtk-0.90:1.0
 		>=sci-geosciences/geocode-glib-3.10.0
 		x11-libs/mx:1.0 )
-	spell? ( app-text/gtkspell:3 )
 	ldap? ( >=net-nds/openldap-2:= )
+	spell? ( app-text/gtkspell:3 )
 	ssl? (
 		>=dev-libs/nspr-4.6.1:=
 		>=dev-libs/nss-3.11:= )
@@ -67,14 +67,13 @@ COMMON_DEPEND="
 "
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xml-dtd:4.1.2
+	app-text/yelp-tools
 	dev-util/gtk-doc-am
 	>=dev-util/intltool-0.40.0
 	dev-util/itstool
+	>=gnome-base/gnome-common-2.12
 	virtual/pkgconfig
 "
-# eautoreconf needs:
-#	app-text/yelp-tools
-#	>=gnome-base/gnome-common-2.12
 RDEPEND="${COMMON_DEPEND}
 	bogofilter? ( mail-filter/bogofilter )
 	highlight? ( app-text/highlight )
@@ -105,7 +104,7 @@ src_configure() {
 		--enable-canberra \
 		$(use_enable crypt libcryptui) \
 		$(use_enable highlight text-highlight) \
-		$(use_enable map contact-maps) \
+		$(use_enable geolocation contact-maps) \
 		$(use_enable spell gtkspell) \
 		$(use_enable ssl nss) \
 		$(use_enable ssl smime) \

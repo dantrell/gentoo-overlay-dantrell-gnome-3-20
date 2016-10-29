@@ -39,7 +39,6 @@ RDEPEND="${COMMON_DEPEND}
 	!www-client/epiphany-extensions
 "
 # paxctl needed for bug #407085
-# eautoreconf requires gnome-common-3.5.5
 DEPEND="${COMMON_DEPEND}
 	app-text/yelp-tools
 	dev-libs/appstream-glib

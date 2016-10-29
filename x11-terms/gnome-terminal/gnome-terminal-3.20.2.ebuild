@@ -14,7 +14,7 @@ KEYWORDS="*"
 
 IUSE="debug +deprecated-transparency +gnome-shell +nautilus vanilla-hotkeys"
 
-# FIXME: automagic dependency on gtk+[X]
+# FIXME: automagic dependency on gtk+[X], just transitive but needs proper control
 RDEPEND="
 	>=dev-libs/glib-2.42:2[dbus]
 	>=x11-libs/gtk+-3.12:3[X]
