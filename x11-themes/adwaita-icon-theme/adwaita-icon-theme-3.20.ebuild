@@ -2,7 +2,7 @@
 
 EAPI="6"
 
-inherit gnome2 versionator
+inherit gnome2
 
 DESCRIPTION="GNOME default icon theme"
 HOMEPAGE="https://git.gnome.org/browse/adwaita-icon-theme/"

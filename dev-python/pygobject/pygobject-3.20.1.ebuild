@@ -2,7 +2,7 @@
 
 EAPI="6"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python2_7 python3_{3,4,5} )
+PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
 inherit gnome2 python-r1 virtualx
 
@@ -13,7 +13,7 @@ LICENSE="LGPL-2.1+"
 SLOT="3"
 KEYWORDS="*"
 
-IUSE="+cairo examples test +threads"
+IUSE="+cairo test +threads"
 REQUIRED_USE="
 	${PYTHON_REQUIRED_USE}
 	test? ( cairo )
@@ -96,8 +96,5 @@ src_test() {
 src_install() {
 	python_foreach_impl run_in_build_dir gnome2_src_install
 
-	if use examples; then
-		insinto /usr/share/doc/${PF}
-		doins -r examples
-	fi
+	dodoc -r examples
 }

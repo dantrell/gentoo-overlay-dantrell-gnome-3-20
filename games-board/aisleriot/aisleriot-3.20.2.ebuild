@@ -11,7 +11,7 @@ LICENSE="GPL-3 LGPL-3 FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="extra gnome +sound"
+IUSE="debug extra gnome +sound"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.32:2
@@ -74,9 +74,9 @@ src_configure() {
 	gnome2_src_configure \
 		--with-gtk=3.0 \
 		--with-guile=2.0 \
-		GUILE=$(type -P guile-2.0) \
-		${myconf[@]} \
-		$(use_enable sound)
+		$(usex debug --enable-debug=yes --enable-debug=minimum) \
+		$(use_enable sound) \
+		${myconf[@]}
 }
 
 pkg_postinst() {

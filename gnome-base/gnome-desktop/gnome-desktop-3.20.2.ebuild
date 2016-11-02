@@ -47,9 +47,6 @@ DEPEND="${COMMON_DEPEND}
 # eventually libXrandr shouldn't RDEPEND on randrproto)
 
 src_configure() {
-	# Note: do *not* use "--with-pnp-ids-path" argument. Otherwise, the pnp.ids
-	# file (needed by other packages such as >=gnome-settings-daemon-3.1.2)
-	# will not get installed in ${pnpdatadir} (/usr/share/libgnome-desktop-3.0).
 	gnome2_src_configure \
 		--disable-static \
 		--with-gnome-distributor=Gentoo \

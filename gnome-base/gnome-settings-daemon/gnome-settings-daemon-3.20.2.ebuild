@@ -2,7 +2,7 @@
 
 EAPI="6"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python{2_7,3_3,3_4,3_5} )
+PYTHON_COMPAT=( python{2_7,3_4,3_5} )
 
 inherit autotools gnome2 python-any-r1 systemd udev virtualx
 
@@ -17,7 +17,6 @@ IUSE="+colord +cups debug +deprecated input_devices_wacom networkmanager policyk
 REQUIRED_USE="
 	input_devices_wacom? ( udev )
 	smartcard? ( udev )
-	test? ( ${PYTHON_REQUIRED_USE} )
 "
 
 COMMON_DEPEND="

@@ -11,7 +11,7 @@ LICENSE="LGPL-2.1+"
 SLOT="3.0"
 KEYWORDS="*"
 
-IUSE="aqua doc examples test wayland X"
+IUSE="aqua doc test wayland X"
 REQUIRED_USE="|| ( aqua wayland X )"
 
 RDEPEND="
@@ -26,13 +26,11 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	virtual/pkgconfig[${MULTILIB_USEDEP}]
-	examples? ( >=media-libs/libepoxy-1.2[${MULTILIB_USEDEP}] )
 	doc? (
 		media-gfx/graphviz
 		dev-libs/libxslt
 		app-doc/doxygen )
 "
-#	dev-cpp/mm-common"
 # eautoreconf needs mm-common
 
 src_prepare() {
@@ -42,11 +40,9 @@ src_prepare() {
 			|| die "sed 1 failed"
 	fi
 
-	if ! use examples; then
-		# don't waste time building tests
-		sed 's/^\(SUBDIRS =.*\)demos\(.*\)$/\1\2/' -i Makefile.am Makefile.in \
-			|| die "sed 2 failed"
-	fi
+	# don't waste time building examples
+	sed 's/^\(SUBDIRS =.*\)demos\(.*\)$/\1\2/' -i Makefile.am Makefile.in \
+		|| die "sed 2 failed"
 
 	gnome2_src_prepare
 }
@@ -67,4 +63,12 @@ multilib_src_test() {
 
 multilib_src_install() {
 	gnome2_src_install
+}
+
+multilib_src_install_all() {
+	einstalldocs
+
+	find demos -type d -name '.deps' -exec rm -rf {} \; 2>/dev/null
+	find demos -type f -name 'Makefile*' -exec rm -f {} \; 2>/dev/null
+	dodoc -r demos
 }

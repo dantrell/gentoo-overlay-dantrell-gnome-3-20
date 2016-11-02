@@ -45,7 +45,7 @@ multilib_src_configure() {
 }
 
 multilib_src_test() {
-	# non-native tests fail if glib-networking is already installed.
+	# XXX: non-native tests fail if glib-networking is already installed.
 	# have no idea what's wrong. would appreciate some help.
 	multilib_is_native_abi || return 0
 
