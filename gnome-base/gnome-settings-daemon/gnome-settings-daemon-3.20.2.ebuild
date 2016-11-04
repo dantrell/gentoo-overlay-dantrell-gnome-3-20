@@ -28,7 +28,6 @@ COMMON_DEPEND="
 	media-fonts/cantarell
 	media-libs/alsa-lib
 	media-libs/fontconfig
-	>=media-libs/lcms-2.2:2
 	media-libs/libcanberra[gtk3]
 	>=media-sound/pulseaudio-2
 	>=sys-power/upower-0.99:=
@@ -49,7 +48,9 @@ COMMON_DEPEND="
 	>=sci-geosciences/geocode-glib-3.10
 	>=sys-auth/polkit-0.103
 
-	colord? ( >=x11-misc/colord-1.0.2:= )
+	colord? (
+		>=media-libs/lcms-2.2:2
+		>=x11-misc/colord-1.0.2:= )
 	cups? ( >=net-print/cups-1.4[dbus] )
 	input_devices_wacom? (
 		>=dev-libs/libwacom-0.7
