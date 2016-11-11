@@ -76,6 +76,7 @@ gnome-extra/gnome-shell-extensions::gentoo
 gnome-extra/gnome-shell-frippery::gentoo
 gnome-extra/gnome-software::gentoo
 gnome-extra/gnome-system-monitor::gentoo
+gnome-extra/gnome-todo::gentoo
 gnome-extra/gnome-tweak-tool::gentoo
 gnome-extra/gnome-user-docs::gentoo
 gnome-extra/nautilus-tracker-tags::gentoo

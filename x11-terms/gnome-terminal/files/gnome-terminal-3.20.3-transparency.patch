@@ -1,6 +1,6 @@
 diff '--exclude=.git' -urN a/po/am.po b/po/am.po
---- a/po/am.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/am.po	2016-05-15 19:14:53.576169349 -0400
+--- a/po/am.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/am.po	2016-11-10 23:59:28.787688183 -0500
 @@ -613,8 +613,8 @@
  msgstr "የ_ጽሑፍ ቀለም፦"
  
@@ -13,8 +13,8 @@ diff '--exclude=.git' -urN a/po/am.po b/po/am.po
  #: ../src/gnome-terminal.glade2.h:103
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/ar.po b/po/ar.po
---- a/po/ar.po	2016-05-08 03:04:35.000000000 -0400
-+++ b/po/ar.po	2016-05-15 19:14:53.577169331 -0400
+--- a/po/ar.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/ar.po	2016-11-10 23:59:28.787688183 -0500
 @@ -3105,8 +3105,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "صورة الخلفية ت_لتف"
@@ -27,8 +27,8 @@ diff '--exclude=.git' -urN a/po/ar.po b/po/ar.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "_ظلل شفافية أو صورة الخلفية:"
 diff '--exclude=.git' -urN a/po/as.po b/po/as.po
---- a/po/as.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/as.po	2016-05-15 19:14:53.577169331 -0400
+--- a/po/as.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/as.po	2016-11-10 23:59:28.787688183 -0500
 @@ -2979,8 +2979,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "পটভূমিৰ ছবি স্ক্ৰল কৰক (_s)"
@@ -41,8 +41,8 @@ diff '--exclude=.git' -urN a/po/as.po b/po/as.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "স্বচ্ছ বা ছবিৰ সৈতে পটভূমি ছায়া আচ্ছন্ন কৰক (_h):"
 diff '--exclude=.git' -urN a/po/ast.po b/po/ast.po
---- a/po/ast.po	2013-03-20 06:09:31.000000000 -0400
-+++ b/po/ast.po	2016-05-15 19:14:53.577169331 -0400
+--- a/po/ast.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/ast.po	2016-11-10 23:59:28.788688165 -0500
 @@ -1598,8 +1598,8 @@
  msgstr "Color del _testu:"
  
@@ -55,8 +55,8 @@ diff '--exclude=.git' -urN a/po/ast.po b/po/ast.po
  #: ../src/profile-preferences.glade.h:78
  msgid "_Underline color:"
 diff '--exclude=.git' -urN a/po/az.po b/po/az.po
---- a/po/az.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/az.po	2016-05-15 19:14:53.578169312 -0400
+--- a/po/az.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/az.po	2016-11-10 23:59:28.788688165 -0500
 @@ -619,8 +619,8 @@
  msgstr "_Mətn rəngi:"
  
@@ -69,8 +69,8 @@ diff '--exclude=.git' -urN a/po/az.po b/po/az.po
  #: ../src/gnome-terminal.glade2.h:103
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/be.po b/po/be.po
---- a/po/be.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/be.po	2016-05-15 19:14:53.578169312 -0400
+--- a/po/be.po	2016-09-18 11:10:02.000000000 -0400
++++ b/po/be.po	2016-11-10 23:59:28.788688165 -0500
 @@ -2015,3 +2015,6 @@
  msgid "C_lose Window"
  msgstr "_Закрыць акно"
@@ -79,8 +79,8 @@ diff '--exclude=.git' -urN a/po/be.po b/po/be.po
 +msgstr "Празрысты фон"
 +
 diff '--exclude=.git' -urN a/po/be@latin.po b/po/be@latin.po
---- a/po/be@latin.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/be@latin.po	2016-05-15 19:14:53.578169312 -0400
+--- a/po/be@latin.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/be@latin.po	2016-11-10 23:59:28.788688165 -0500
 @@ -1425,8 +1425,8 @@
  msgstr "Koler _tekstu:"
  
@@ -93,8 +93,8 @@ diff '--exclude=.git' -urN a/po/be@latin.po b/po/be@latin.po
  #: ../src/profile-preferences.glade.h:74
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/bg.po b/po/bg.po
---- a/po/bg.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/bg.po	2016-05-15 19:14:53.579169294 -0400
+--- a/po/bg.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/bg.po	2016-11-10 23:59:28.789688147 -0500
 @@ -2281,3 +2281,6 @@
  #: ../src/terminal-window.c:3727
  msgid "C_lose Window"
@@ -103,8 +103,8 @@ diff '--exclude=.git' -urN a/po/bg.po b/po/bg.po
 +msgid "Transparent background"
 +msgstr "Прозрачен фон"
 diff '--exclude=.git' -urN a/po/bn_IN.po b/po/bn_IN.po
---- a/po/bn_IN.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/bn_IN.po	2016-05-15 19:14:53.579169294 -0400
+--- a/po/bn_IN.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/bn_IN.po	2016-11-10 23:59:28.789688147 -0500
 @@ -2358,3 +2358,6 @@
  
  #~ msgid "_Title:"
@@ -113,8 +113,8 @@ diff '--exclude=.git' -urN a/po/bn_IN.po b/po/bn_IN.po
 +msgid "Transparent background"
 +msgstr "স্বচ্চ পটভূমি "
 diff '--exclude=.git' -urN a/po/bs.po b/po/bs.po
---- a/po/bs.po	2015-03-25 06:18:15.000000000 -0400
-+++ b/po/bs.po	2016-05-15 19:14:53.579169294 -0400
+--- a/po/bs.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/bs.po	2016-11-10 23:59:28.789688147 -0500
 @@ -680,6 +680,10 @@
  msgid "Keyboard shortcut to make font smaller"
  msgstr "Kratica tastature za smanjivanje fonta"
@@ -127,8 +127,8 @@ diff '--exclude=.git' -urN a/po/bs.po b/po/bs.po
  msgid "Keyboard shortcut to make font normal-size"
  msgstr "Kratica tastature za postavljanje fonta na normalnu veličinu"
 diff '--exclude=.git' -urN a/po/ca.po b/po/ca.po
---- a/po/ca.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/ca.po	2016-05-15 19:14:53.579169294 -0400
+--- a/po/ca.po	2016-09-18 11:10:02.000000000 -0400
++++ b/po/ca.po	2016-11-10 23:59:28.789688147 -0500
 @@ -2304,3 +2304,6 @@
  
  #~ msgid "Whether to use a dark theme variant"
@@ -137,8 +137,8 @@ diff '--exclude=.git' -urN a/po/ca.po b/po/ca.po
 +msgid "Transparent background"
 +msgstr "Fons transparent"
 diff '--exclude=.git' -urN a/po/ca@valencia.po b/po/ca@valencia.po
---- a/po/ca@valencia.po	2015-03-25 06:18:15.000000000 -0400
-+++ b/po/ca@valencia.po	2016-05-15 19:14:53.580169275 -0400
+--- a/po/ca@valencia.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/ca@valencia.po	2016-11-10 23:59:28.789688147 -0500
 @@ -2092,3 +2092,6 @@
  #: ../src/terminal-window.c:3645
  msgid "C_lose Window"
@@ -147,8 +147,8 @@ diff '--exclude=.git' -urN a/po/ca@valencia.po b/po/ca@valencia.po
 +msgid "Transparent background"
 +msgstr "Fons transparent"
 diff '--exclude=.git' -urN a/po/cs.po b/po/cs.po
---- a/po/cs.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/cs.po	2016-05-15 19:14:53.580169275 -0400
+--- a/po/cs.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/cs.po	2016-11-10 23:59:28.790688129 -0500
 @@ -2249,3 +2249,6 @@
  #: ../src/terminal-window.c:3727
  msgid "C_lose Window"
@@ -157,8 +157,8 @@ diff '--exclude=.git' -urN a/po/cs.po b/po/cs.po
 +msgid "Transparent background"
 +msgstr "Průsvitné pozadí"
 diff '--exclude=.git' -urN a/po/cy.po b/po/cy.po
---- a/po/cy.po	2015-06-24 04:41:31.000000000 -0400
-+++ b/po/cy.po	2016-05-15 19:14:53.580169275 -0400
+--- a/po/cy.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/cy.po	2016-11-10 23:59:28.790688129 -0500
 @@ -1447,8 +1447,8 @@
  msgstr "Lliw'r _testun:"
  
@@ -171,8 +171,8 @@ diff '--exclude=.git' -urN a/po/cy.po b/po/cy.po
  #: ../src/profile-preferences.glade.h:74
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/da.po b/po/da.po
---- a/po/da.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/da.po	2016-05-15 19:14:53.581169257 -0400
+--- a/po/da.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/da.po	2016-11-10 23:59:28.790688129 -0500
 @@ -3178,8 +3178,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "_Ensfarvet"
@@ -185,8 +185,8 @@ diff '--exclude=.git' -urN a/po/da.po b/po/da.po
  #~ msgid ""
  #~ "You already have a profile called “%s”. Do you want to create another "
 diff '--exclude=.git' -urN a/po/de.po b/po/de.po
---- a/po/de.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/de.po	2016-05-15 19:14:53.581169257 -0400
+--- a/po/de.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/de.po	2016-11-10 23:59:28.790688129 -0500
 @@ -3259,8 +3259,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "Hintergrundbild _folgt Bildlauf"
@@ -199,8 +199,8 @@ diff '--exclude=.git' -urN a/po/de.po b/po/de.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "Transparenz und Bildhintergründe _abdunkeln:"
 diff '--exclude=.git' -urN a/po/dz.po b/po/dz.po
---- a/po/dz.po	2013-03-20 06:09:31.000000000 -0400
-+++ b/po/dz.po	2016-05-15 19:14:53.581169257 -0400
+--- a/po/dz.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/dz.po	2016-11-10 23:59:28.791688111 -0500
 @@ -1551,8 +1551,8 @@
  msgstr "ཚིག་ཡིག་ཚོས་གཞི་:(_T)"
  
@@ -213,8 +213,8 @@ diff '--exclude=.git' -urN a/po/dz.po b/po/dz.po
  #: ../src/profile-preferences.glade.h:78
  #, fuzzy
 diff '--exclude=.git' -urN a/po/el.po b/po/el.po
---- a/po/el.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/el.po	2016-05-15 19:14:53.582169238 -0400
+--- a/po/el.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/el.po	2016-11-10 23:59:28.791688111 -0500
 @@ -2510,3 +2510,6 @@
  
  #~ msgid "_Input Methods"
@@ -223,8 +223,8 @@ diff '--exclude=.git' -urN a/po/el.po b/po/el.po
 +msgid "Transparent background"
 +msgstr "Διάφανο παρασκήνιο"
 diff '--exclude=.git' -urN a/po/en@shaw.po b/po/en@shaw.po
---- a/po/en@shaw.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/en@shaw.po	2016-05-15 19:14:53.582169238 -0400
+--- a/po/en@shaw.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/en@shaw.po	2016-11-10 23:59:28.791688111 -0500
 @@ -1467,8 +1467,8 @@
  msgstr "_𐑑𐑧𐑒𐑕𐑑 𐑒𐑳𐑤𐑼:"
  
@@ -237,8 +237,8 @@ diff '--exclude=.git' -urN a/po/en@shaw.po b/po/en@shaw.po
  #: ../src/profile-preferences.glade.h:79
  msgid "_Underline color:"
 diff '--exclude=.git' -urN a/po/en_CA.po b/po/en_CA.po
---- a/po/en_CA.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/en_CA.po	2016-05-15 19:14:53.582169238 -0400
+--- a/po/en_CA.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/en_CA.po	2016-11-10 23:59:28.791688111 -0500
 @@ -556,8 +556,8 @@
  msgstr "_Text colour:"
  
@@ -251,8 +251,8 @@ diff '--exclude=.git' -urN a/po/en_CA.po b/po/en_CA.po
  #: ../src/gnome-terminal.glade2.h:87
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/en_GB.po b/po/en_GB.po
---- a/po/en_GB.po	2013-09-14 06:01:56.000000000 -0400
-+++ b/po/en_GB.po	2016-05-15 19:14:53.583169220 -0400
+--- a/po/en_GB.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/en_GB.po	2016-11-10 23:59:28.792688093 -0500
 @@ -2732,8 +2732,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "Background image _scrolls"
@@ -265,8 +265,8 @@ diff '--exclude=.git' -urN a/po/en_GB.po b/po/en_GB.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "S_hade transparent or image background:"
 diff '--exclude=.git' -urN a/po/es.po b/po/es.po
---- a/po/es.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/es.po	2016-05-15 19:14:53.583169220 -0400
+--- a/po/es.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/es.po	2016-11-10 23:59:28.792688093 -0500
 @@ -3303,8 +3303,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "Color _sólido"
@@ -279,8 +279,8 @@ diff '--exclude=.git' -urN a/po/es.po b/po/es.po
  #~ msgid "No such profile \"%s\", using default profile\n"
  #~ msgstr "No existe el perfil «%s», usando el perfil predeterminado\n"
 diff '--exclude=.git' -urN a/po/et.po b/po/et.po
---- a/po/et.po	2014-03-03 15:48:48.000000000 -0500
-+++ b/po/et.po	2016-05-15 19:14:53.583169220 -0400
+--- a/po/et.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/et.po	2016-11-10 23:59:28.792688093 -0500
 @@ -1747,3 +1747,6 @@
  
  #~ msgid "Choose base profile"
@@ -289,8 +289,8 @@ diff '--exclude=.git' -urN a/po/et.po b/po/et.po
 +msgid "Transparent background"
 +msgstr "Läbipaistev taust"
 diff '--exclude=.git' -urN a/po/eu.po b/po/eu.po
---- a/po/eu.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/eu.po	2016-05-15 19:14:53.584169201 -0400
+--- a/po/eu.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/eu.po	2016-11-10 23:59:28.792688093 -0500
 @@ -3168,8 +3168,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "_Kolore solidoa"
@@ -303,8 +303,8 @@ diff '--exclude=.git' -urN a/po/eu.po b/po/eu.po
  #~ msgid ""
  #~ "You already have a profile called “%s”. Do you want to create another "
 diff '--exclude=.git' -urN a/po/fa.po b/po/fa.po
---- a/po/fa.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/fa.po	2016-05-15 19:14:53.584169201 -0400
+--- a/po/fa.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/fa.po	2016-11-10 23:59:28.793688075 -0500
 @@ -2240,3 +2240,6 @@
  
  #~ msgid "_Title:"
@@ -313,8 +313,8 @@ diff '--exclude=.git' -urN a/po/fa.po b/po/fa.po
 +msgid "Transparent background"
 +msgstr "پس‌زمینه‌ی شفاف"
 diff '--exclude=.git' -urN a/po/fi.po b/po/fi.po
---- a/po/fi.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/fi.po	2016-05-15 19:14:53.584169201 -0400
+--- a/po/fi.po	2016-09-18 11:10:02.000000000 -0400
++++ b/po/fi.po	2016-11-10 23:59:28.793688075 -0500
 @@ -2294,6 +2294,9 @@
  #~ msgid "_Update login records when command is launched"
  #~ msgstr "_Päivitä kirjautumistallenne kun komento käynnistetään"
@@ -326,8 +326,8 @@ diff '--exclude=.git' -urN a/po/fi.po b/po/fi.po
  #~ msgid "Missing command"
  #~ msgstr "Puuttuva komento"
 diff '--exclude=.git' -urN a/po/fr.po b/po/fr.po
---- a/po/fr.po	2016-03-19 08:03:58.000000000 -0400
-+++ b/po/fr.po	2016-05-15 19:14:53.584169201 -0400
+--- a/po/fr.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/fr.po	2016-11-10 23:59:28.793688075 -0500
 @@ -2303,3 +2303,6 @@
  
  #~ msgid "_Same as text color"
@@ -336,8 +336,8 @@ diff '--exclude=.git' -urN a/po/fr.po b/po/fr.po
 +msgid "Transparent background"
 +msgstr "Arrière-plan transparent"
 diff '--exclude=.git' -urN a/po/fur.po b/po/fur.po
---- a/po/fur.po	2016-05-08 03:04:35.000000000 -0400
-+++ b/po/fur.po	2016-05-15 19:14:53.585169183 -0400
+--- a/po/fur.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/fur.po	2016-11-10 23:59:28.793688075 -0500
 @@ -652,6 +652,10 @@
  msgid "Which encoding to use"
  msgstr "Codifiche di doprâ"
@@ -350,8 +350,8 @@ diff '--exclude=.git' -urN a/po/fur.po b/po/fur.po
  msgid ""
  "Whether ambiguous-width characters are narrow or wide when using UTF-8 "
 diff '--exclude=.git' -urN a/po/ga.po b/po/ga.po
---- a/po/ga.po	2014-03-03 15:48:48.000000000 -0500
-+++ b/po/ga.po	2016-05-15 19:14:53.585169183 -0400
+--- a/po/ga.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/ga.po	2016-11-10 23:59:28.793688075 -0500
 @@ -1925,3 +1925,6 @@
  #: ../src/terminal-window.c:3582
  msgid "C_lose Terminal"
@@ -360,8 +360,8 @@ diff '--exclude=.git' -urN a/po/ga.po b/po/ga.po
 +msgid "Transparent background"
 +msgstr "Cúlra trédhearcach"
 diff '--exclude=.git' -urN a/po/gl.po b/po/gl.po
---- a/po/gl.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/gl.po	2016-05-15 19:14:53.585169183 -0400
+--- a/po/gl.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/gl.po	2016-11-10 23:59:28.794688057 -0500
 @@ -3241,8 +3241,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "A imaxe de fondo _desprázase"
@@ -374,8 +374,8 @@ diff '--exclude=.git' -urN a/po/gl.po b/po/gl.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "_Sombra transparente ou imaxe de fondo:"
 diff '--exclude=.git' -urN a/po/gu.po b/po/gu.po
---- a/po/gu.po	2015-03-23 15:01:12.000000000 -0400
-+++ b/po/gu.po	2016-05-15 19:14:53.586169165 -0400
+--- a/po/gu.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/gu.po	2016-11-10 23:59:28.794688057 -0500
 @@ -2944,8 +2944,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "ઘટ્ટ રંગ (_S)"
@@ -388,8 +388,8 @@ diff '--exclude=.git' -urN a/po/gu.po b/po/gu.po
  #~ msgid "No such profile \"%s\", using default profile\n"
  #~ msgstr "\"%s\" જેવી કોઈ રૂપરેખા નથી, મૂળભૂત રૂપરેખા વાપરી રહ્યા છે\n"
 diff '--exclude=.git' -urN a/po/he.po b/po/he.po
---- a/po/he.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/he.po	2016-05-15 19:14:53.586169165 -0400
+--- a/po/he.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/he.po	2016-11-10 23:59:28.794688057 -0500
 @@ -3189,8 +3189,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "צבע _אחיד"
@@ -402,8 +402,8 @@ diff '--exclude=.git' -urN a/po/he.po b/po/he.po
  #~ msgid "No such profile \"%s\", using default profile\n"
  #~ msgstr "No such profile \"%s\", using default profile\n"
 diff '--exclude=.git' -urN a/po/hi.po b/po/hi.po
---- a/po/hi.po	2015-03-23 15:01:12.000000000 -0400
-+++ b/po/hi.po	2016-05-15 19:14:53.586169165 -0400
+--- a/po/hi.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/hi.po	2016-11-10 23:59:28.794688057 -0500
 @@ -2979,8 +2979,8 @@
  #~ msgid "_Background image"
  #~ msgstr "पृष्ठभूमि छवि (_B)"
@@ -416,22 +416,19 @@ diff '--exclude=.git' -urN a/po/hi.po b/po/hi.po
  #~ msgid "S/Key Challenge Response"
  #~ msgstr "एस/कुंजी चैलेंज प्रतिक्रिया"
 diff '--exclude=.git' -urN a/po/hr.po b/po/hr.po
---- a/po/hr.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/hr.po	2016-05-15 19:14:53.587169146 -0400
-@@ -1362,8 +1362,8 @@
- msgstr "_Boja teksta:"
- 
- #: ../src/profile-preferences.glade.h:69
--msgid "_Transparent background"
--msgstr "_Prozirna pozadina"
+--- a/po/hr.po	2016-10-17 13:24:05.000000000 -0400
++++ b/po/hr.po	2016-11-10 23:59:28.795688039 -0500
+@@ -2287,3 +2287,7 @@
+ #: ../src/terminal-window.c:3864
+ msgid "C_lose Window"
+ msgstr "_Zatvori prozor"
++
++#: ../src/profile-preferences.glade.h:69
 +msgid "Transparent background"
 +msgstr "Prozirna pozadina"
- 
- #: ../src/profile-preferences.glade.h:70
- msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/hu.po b/po/hu.po
---- a/po/hu.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/hu.po	2016-05-15 19:14:53.587169146 -0400
+--- a/po/hu.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/hu.po	2016-11-10 23:59:28.795688039 -0500
 @@ -2713,3 +2713,6 @@
  
  #~ msgid "Background image"
@@ -440,8 +437,8 @@ diff '--exclude=.git' -urN a/po/hu.po b/po/hu.po
 +msgid "Transparent background"
 +msgstr "Áttetsző háttér"
 diff '--exclude=.git' -urN a/po/hy.po b/po/hy.po
---- a/po/hy.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/hy.po	2016-05-15 19:14:53.587169146 -0400
+--- a/po/hy.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/hy.po	2016-11-10 23:59:28.795688039 -0500
 @@ -1011,8 +1011,8 @@
  msgstr "_Տեքստի գույնը՝"
  
@@ -454,8 +451,8 @@ diff '--exclude=.git' -urN a/po/hy.po b/po/hy.po
  #: ../src/profile-preferences.glade.h:74
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/id.po b/po/id.po
---- a/po/id.po	2016-05-08 03:04:35.000000000 -0400
-+++ b/po/id.po	2016-05-15 19:14:53.588169128 -0400
+--- a/po/id.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/id.po	2016-11-10 23:59:28.795688039 -0500
 @@ -2248,3 +2248,6 @@
  #: ../src/terminal-window.c:3727
  msgid "C_lose Window"
@@ -464,8 +461,8 @@ diff '--exclude=.git' -urN a/po/id.po b/po/id.po
 +msgid "Transparent background"
 +msgstr "Latar belakang transparan"
 diff '--exclude=.git' -urN a/po/it.po b/po/it.po
---- a/po/it.po	2016-05-08 03:04:35.000000000 -0400
-+++ b/po/it.po	2016-05-15 19:14:53.588169128 -0400
+--- a/po/it.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/it.po	2016-11-10 23:59:28.795688039 -0500
 @@ -2284,3 +2284,6 @@
  #: ../src/terminal-window.c:3727
  msgid "C_lose Window"
@@ -474,8 +471,8 @@ diff '--exclude=.git' -urN a/po/it.po b/po/it.po
 +msgid "Transparent background"
 +msgstr "Sfondo trasparente"
 diff '--exclude=.git' -urN a/po/ja.po b/po/ja.po
---- a/po/ja.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/ja.po	2016-05-15 19:14:53.588169128 -0400
+--- a/po/ja.po	2016-05-23 04:28:00.000000000 -0400
++++ b/po/ja.po	2016-11-10 23:59:28.796688021 -0500
 @@ -1907,3 +1907,6 @@
  
  #~ msgid "_Update login records when command is launched"
@@ -484,8 +481,8 @@ diff '--exclude=.git' -urN a/po/ja.po b/po/ja.po
 +msgid "Transparent background"
 +msgstr "透過な画像にする"
 diff '--exclude=.git' -urN a/po/ka.po b/po/ka.po
---- a/po/ka.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/ka.po	2016-05-15 19:14:53.588169128 -0400
+--- a/po/ka.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/ka.po	2016-11-10 23:59:28.796688021 -0500
 @@ -568,7 +568,7 @@
  
  #: ../src/gnome-terminal.glade2.h:86
@@ -496,8 +493,8 @@ diff '--exclude=.git' -urN a/po/ka.po b/po/ka.po
  
  #: ../src/gnome-terminal.glade2.h:87
 diff '--exclude=.git' -urN a/po/kk.po b/po/kk.po
---- a/po/kk.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/kk.po	2016-05-15 19:14:53.589169109 -0400
+--- a/po/kk.po	2016-11-07 12:30:53.000000000 -0500
++++ b/po/kk.po	2016-11-10 23:59:28.796688021 -0500
 @@ -2208,3 +2208,6 @@
  
  #~ msgid "Be quiet"
@@ -506,8 +503,8 @@ diff '--exclude=.git' -urN a/po/kk.po b/po/kk.po
 +msgid "Transparent background"
 +msgstr "Мөлдір фон"
 diff '--exclude=.git' -urN a/po/kn.po b/po/kn.po
---- a/po/kn.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/kn.po	2016-05-15 19:14:53.589169109 -0400
+--- a/po/kn.po	2016-05-23 04:17:50.000000000 -0400
++++ b/po/kn.po	2016-11-10 23:59:28.796688021 -0500
 @@ -2344,3 +2344,6 @@
  
  #~ msgid "_Title:"
@@ -516,8 +513,8 @@ diff '--exclude=.git' -urN a/po/kn.po b/po/kn.po
 +msgid "Transparent background"
 +msgstr "ಪಾರದರ್ಶಕ ಹಿನ್ನಲೆ"
 diff '--exclude=.git' -urN a/po/ko.po b/po/ko.po
---- a/po/ko.po	2016-03-19 08:03:58.000000000 -0400
-+++ b/po/ko.po	2016-05-15 19:14:53.589169109 -0400
+--- a/po/ko.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ko.po	2016-11-10 23:59:28.796688021 -0500
 @@ -2304,3 +2304,6 @@
  
  #~ msgid "Whether to use a dark theme variant"
@@ -526,8 +523,8 @@ diff '--exclude=.git' -urN a/po/ko.po b/po/ko.po
 +msgid "Transparent background"
 +msgstr "투명한 배경"
 diff '--exclude=.git' -urN a/po/ku.po b/po/ku.po
---- a/po/ku.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/ku.po	2016-05-15 19:14:53.590169091 -0400
+--- a/po/ku.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ku.po	2016-11-10 23:59:28.797688003 -0500
 @@ -557,8 +557,8 @@
  msgstr "Rengê _nivîsê:"
  
@@ -540,8 +537,8 @@ diff '--exclude=.git' -urN a/po/ku.po b/po/ku.po
  #: ../src/gnome-terminal.glade2.h:87
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/lt.po b/po/lt.po
---- a/po/lt.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/lt.po	2016-05-15 19:14:53.590169091 -0400
+--- a/po/lt.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/lt.po	2016-11-10 23:59:28.797688003 -0500
 @@ -2310,3 +2310,6 @@
  
  #~ msgid "Whether to use a dark theme variant"
@@ -550,8 +547,8 @@ diff '--exclude=.git' -urN a/po/lt.po b/po/lt.po
 +msgid "Transparent background"
 +msgstr "Permatomas fonas"
 diff '--exclude=.git' -urN a/po/lv.po b/po/lv.po
---- a/po/lv.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/lv.po	2016-05-15 19:14:53.590169091 -0400
+--- a/po/lv.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/lv.po	2016-11-10 23:59:28.797688003 -0500
 @@ -2231,3 +2231,5 @@
  msgid "C_lose Window"
  msgstr "Aizvērt _logu"
@@ -559,8 +556,8 @@ diff '--exclude=.git' -urN a/po/lv.po b/po/lv.po
 +msgid "Transparent background"
 +msgstr "Caurspīdīgs fons"
 diff '--exclude=.git' -urN a/po/mai.po b/po/mai.po
---- a/po/mai.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/mai.po	2016-05-15 19:14:53.590169091 -0400
+--- a/po/mai.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/mai.po	2016-11-10 23:59:28.797688003 -0500
 @@ -1290,8 +1290,8 @@
  msgstr "पाठ रँग (_T):"
  
@@ -573,8 +570,8 @@ diff '--exclude=.git' -urN a/po/mai.po b/po/mai.po
  #: ../src/profile-preferences.glade.h:70
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/mg.po b/po/mg.po
---- a/po/mg.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/mg.po	2016-05-15 19:14:53.591169072 -0400
+--- a/po/mg.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/mg.po	2016-11-10 23:59:28.797688003 -0500
 @@ -566,8 +566,8 @@
  msgstr "Lokon'ny _soratra:"
  
@@ -587,8 +584,8 @@ diff '--exclude=.git' -urN a/po/mg.po b/po/mg.po
  #: ../src/gnome-terminal.glade2.h:87
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/mk.po b/po/mk.po
---- a/po/mk.po	2013-03-20 06:09:31.000000000 -0400
-+++ b/po/mk.po	2016-05-15 19:14:53.591169072 -0400
+--- a/po/mk.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/mk.po	2016-11-10 23:59:28.798687985 -0500
 @@ -1166,8 +1166,8 @@
  msgstr "_Боја на текстот:"
  
@@ -601,8 +598,8 @@ diff '--exclude=.git' -urN a/po/mk.po b/po/mk.po
  #: ../src/profile-preferences.glade.h:78
  #| msgid "_Text color:"
 diff '--exclude=.git' -urN a/po/ml.po b/po/ml.po
---- a/po/ml.po	2014-03-03 15:48:48.000000000 -0500
-+++ b/po/ml.po	2016-05-15 19:14:53.591169072 -0400
+--- a/po/ml.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/ml.po	2016-11-10 23:59:28.798687985 -0500
 @@ -2751,8 +2751,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "_സോളിഡ് നിറം"
@@ -615,8 +612,8 @@ diff '--exclude=.git' -urN a/po/ml.po b/po/ml.po
  #~ msgid "S/Key Challenge Response"
  #~ msgstr "S/Key ചാലഞ്ച് മറുപടി"
 diff '--exclude=.git' -urN a/po/mn.po b/po/mn.po
---- a/po/mn.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/mn.po	2016-05-15 19:14:53.592169054 -0400
+--- a/po/mn.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/mn.po	2016-11-10 23:59:28.798687985 -0500
 @@ -617,8 +617,8 @@
  msgstr "_Текстийн өнгө:"
  
@@ -629,8 +626,8 @@ diff '--exclude=.git' -urN a/po/mn.po b/po/mn.po
  #: ../src/gnome-terminal.glade2.h:103
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/mr.po b/po/mr.po
---- a/po/mr.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/mr.po	2016-05-15 19:14:53.592169054 -0400
+--- a/po/mr.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/mr.po	2016-11-10 23:59:28.799687967 -0500
 @@ -3015,8 +3015,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "गडद रंग (_S)"
@@ -643,8 +640,8 @@ diff '--exclude=.git' -urN a/po/mr.po b/po/mr.po
  #~ msgid "Disabled"
  #~ msgstr "अकार्यान्वीतित"
 diff '--exclude=.git' -urN a/po/ms.po b/po/ms.po
---- a/po/ms.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/ms.po	2016-05-15 19:14:53.592169054 -0400
+--- a/po/ms.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ms.po	2016-11-10 23:59:28.799687967 -0500
 @@ -630,8 +630,8 @@
  msgstr "Warna _Teks:"
  
@@ -657,18 +654,18 @@ diff '--exclude=.git' -urN a/po/ms.po b/po/ms.po
  #: ../src/gnome-terminal.glade2.h:103
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/nb.po b/po/nb.po
---- a/po/nb.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/nb.po	2016-05-15 19:14:53.593169035 -0400
-@@ -2101,3 +2101,6 @@
- #: ../src/terminal-window.c:3726
+--- a/po/nb.po	2016-09-18 11:10:02.000000000 -0400
++++ b/po/nb.po	2016-11-10 23:59:28.799687967 -0500
+@@ -2238,3 +2238,6 @@
+ #: ../src/terminal-window.c:3736
  msgid "C_lose Window"
  msgstr "_Lukk vindu"
 +
 +msgid "Transparent background"
 +msgstr "Gjennomsiktig bakgrunn"
 diff '--exclude=.git' -urN a/po/nds.po b/po/nds.po
---- a/po/nds.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/nds.po	2016-05-15 19:14:53.593169035 -0400
+--- a/po/nds.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/nds.po	2016-11-10 23:59:28.799687967 -0500
 @@ -995,8 +995,8 @@
  msgstr "_Textklöör:"
  
@@ -681,8 +678,8 @@ diff '--exclude=.git' -urN a/po/nds.po b/po/nds.po
  #: ../src/profile-preferences.glade.h:74
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/ne.po b/po/ne.po
---- a/po/ne.po	2015-03-25 06:18:15.000000000 -0400
-+++ b/po/ne.po	2016-05-15 19:14:53.593169035 -0400
+--- a/po/ne.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/ne.po	2016-11-10 23:59:28.799687967 -0500
 @@ -2398,8 +2398,8 @@
  #~ msgid "_None (use solid color)"
  #~ msgstr "कुनै पनि होइन (एउटै रङ प्रयोग गर्नुहोस्)"
@@ -695,8 +692,8 @@ diff '--exclude=.git' -urN a/po/ne.po b/po/ne.po
  #~ msgid "_Use the system fixed width font"
  #~ msgstr "प्रणाली निश्चित गरिएको फन्ट चौडाइ प्रयोग गर्नुहोस्"
 diff '--exclude=.git' -urN a/po/nl.po b/po/nl.po
---- a/po/nl.po	2015-03-25 06:18:15.000000000 -0400
-+++ b/po/nl.po	2016-05-15 19:14:53.594169017 -0400
+--- a/po/nl.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/nl.po	2016-11-10 23:59:28.800687949 -0500
 @@ -2352,3 +2352,6 @@
  
  #~ msgid "Switch to Tab 12"
@@ -705,8 +702,8 @@ diff '--exclude=.git' -urN a/po/nl.po b/po/nl.po
 +msgid "Transparent background"
 +msgstr "Transparante achtergrond"
 diff '--exclude=.git' -urN a/po/nn.po b/po/nn.po
---- a/po/nn.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/nn.po	2016-05-15 19:14:53.594169017 -0400
+--- a/po/nn.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/nn.po	2016-11-10 23:59:28.800687949 -0500
 @@ -1428,8 +1428,8 @@
  msgstr "_Tekstfarge:"
  
@@ -719,8 +716,8 @@ diff '--exclude=.git' -urN a/po/nn.po b/po/nn.po
  #: ../src/profile-preferences.glade.h:74
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/oc.po b/po/oc.po
---- a/po/oc.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/oc.po	2016-05-15 19:14:53.594169017 -0400
+--- a/po/oc.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/oc.po	2016-11-10 23:59:28.800687949 -0500
 @@ -3419,8 +3419,8 @@
  #~ msgid "Run;"
  #~ msgstr "Executar;Consòla;Shell;"
@@ -733,8 +730,8 @@ diff '--exclude=.git' -urN a/po/oc.po b/po/oc.po
  #~ msgid ""
  #~ "A subset of possible encodings are presented in the Encoding submenu. "
 diff '--exclude=.git' -urN a/po/or.po b/po/or.po
---- a/po/or.po	2013-09-14 06:01:57.000000000 -0400
-+++ b/po/or.po	2016-05-15 19:14:53.595168999 -0400
+--- a/po/or.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/or.po	2016-11-10 23:59:28.800687949 -0500
 @@ -2705,8 +2705,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "ପୃଷ୍ଠଭୂମି ଚିତ୍ର ସ୍କ୍ରୋଲଗୁଡିକ (_s)"
@@ -747,8 +744,8 @@ diff '--exclude=.git' -urN a/po/or.po b/po/or.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "ଛାୟା ସ୍ବଚ୍ଛ କିମ୍ବା ଚିତ୍ର ପୃଷ୍ଠଭୂମି (_h):"
 diff '--exclude=.git' -urN a/po/pa.po b/po/pa.po
---- a/po/pa.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/pa.po	2016-05-15 19:14:53.595168999 -0400
+--- a/po/pa.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/pa.po	2016-11-10 23:59:28.801687931 -0500
 @@ -3008,8 +3008,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "ਇੱਕ ਰੰਗ ਵਰਤੋਂ(_S)"
@@ -761,8 +758,8 @@ diff '--exclude=.git' -urN a/po/pa.po b/po/pa.po
  #~ msgid "S/Key Challenge Response"
  #~ msgstr "S/ਸਵਿੱਚ ਚੈਲੰਜ਼ ਜਵਾਬ"
 diff '--exclude=.git' -urN a/po/ps.po b/po/ps.po
---- a/po/ps.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/ps.po	2016-05-15 19:14:53.595168999 -0400
+--- a/po/ps.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ps.po	2016-11-10 23:59:28.801687931 -0500
 @@ -1052,8 +1052,8 @@
  msgstr ":د ليکنې رنګ_"
  
@@ -775,8 +772,8 @@ diff '--exclude=.git' -urN a/po/ps.po b/po/ps.po
  #: ../src/profile-preferences.glade.h:70
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/pt.po b/po/pt.po
---- a/po/pt.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/pt.po	2016-05-15 19:14:53.596168980 -0400
+--- a/po/pt.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/pt.po	2016-11-10 23:59:28.801687931 -0500
 @@ -3193,8 +3193,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "Imagem de fundo _rola"
@@ -789,8 +786,8 @@ diff '--exclude=.git' -urN a/po/pt.po b/po/pt.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "Transparente som_breado ou imagem de fundo:"
 diff '--exclude=.git' -urN a/po/pt_BR.po b/po/pt_BR.po
---- a/po/pt_BR.po	2016-05-08 04:36:49.000000000 -0400
-+++ b/po/pt_BR.po	2016-05-15 19:14:53.596168980 -0400
+--- a/po/pt_BR.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/pt_BR.po	2016-11-10 23:59:28.801687931 -0500
 @@ -3056,3 +3056,6 @@
  #~ "terminal poderão usar. Essa é a paleta, na forma de uma lista de nomes de "
  #~ "cores separada por dois pontos. Os nomes de cores devem estar no formato "
@@ -799,8 +796,8 @@ diff '--exclude=.git' -urN a/po/pt_BR.po b/po/pt_BR.po
 +msgid "Transparent background"
 +msgstr "Fundo transparente"
 diff '--exclude=.git' -urN a/po/ro.po b/po/ro.po
---- a/po/ro.po	2011-04-07 16:21:59.000000000 -0400
-+++ b/po/ro.po	2016-05-15 19:14:53.596168980 -0400
+--- a/po/ro.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/ro.po	2016-11-10 23:59:28.802687912 -0500
 @@ -1576,8 +1576,8 @@
  msgstr "Culoare _text:"
  
@@ -813,8 +810,8 @@ diff '--exclude=.git' -urN a/po/ro.po b/po/ro.po
  #: ../src/profile-preferences.glade.h:78
  msgid "_Underline color:"
 diff '--exclude=.git' -urN a/po/ru.po b/po/ru.po
---- a/po/ru.po	2016-03-19 08:03:58.000000000 -0400
-+++ b/po/ru.po	2016-05-15 19:14:53.597168962 -0400
+--- a/po/ru.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ru.po	2016-11-10 23:59:28.802687912 -0500
 @@ -2318,3 +2318,6 @@
  
  #~ msgid "_Same as text color"
@@ -823,8 +820,8 @@ diff '--exclude=.git' -urN a/po/ru.po b/po/ru.po
 +msgid "Transparent background"
 +msgstr "Прозрачный фон"
 diff '--exclude=.git' -urN a/po/rw.po b/po/rw.po
---- a/po/rw.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/rw.po	2016-05-15 19:14:53.597168962 -0400
+--- a/po/rw.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/rw.po	2016-11-10 23:59:28.802687912 -0500
 @@ -748,7 +748,7 @@
  
  #: ../src/gnome-terminal.glade2.h:102
@@ -835,8 +832,8 @@ diff '--exclude=.git' -urN a/po/rw.po b/po/rw.po
  
  #: ../src/gnome-terminal.glade2.h:103
 diff '--exclude=.git' -urN a/po/si.po b/po/si.po
---- a/po/si.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/si.po	2016-05-15 19:14:53.597168962 -0400
+--- a/po/si.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/si.po	2016-11-10 23:59:28.802687912 -0500
 @@ -537,8 +537,8 @@
  msgstr "පෙළ වර්‍ණ: (_T)"
  
@@ -849,8 +846,8 @@ diff '--exclude=.git' -urN a/po/si.po b/po/si.po
  #: ../src/gnome-terminal.glade2.h:87
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/sk.po b/po/sk.po
---- a/po/sk.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/sk.po	2016-05-15 19:14:53.597168962 -0400
+--- a/po/sk.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sk.po	2016-11-10 23:59:28.803687894 -0500
 @@ -2585,3 +2585,6 @@
  #~ "\n"
  #~ "Viac informácii o jednotlivých príkazoch získate pomocou „%s PRÍKAZ --"
@@ -859,9 +856,9 @@ diff '--exclude=.git' -urN a/po/sk.po b/po/sk.po
 +msgid "Transparent background"
 +msgstr "Priehľadné pozadie"
 diff '--exclude=.git' -urN a/po/sl.po b/po/sl.po
---- a/po/sl.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/sl.po	2016-05-15 19:14:53.598168943 -0400
-@@ -2322,3 +2322,6 @@
+--- a/po/sl.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sl.po	2016-11-10 23:59:28.803687894 -0500
+@@ -2525,3 +2525,6 @@
  
  #~ msgid "_Profile Preferences…"
  #~ msgstr "Možnosti _profila ..."
@@ -869,8 +866,8 @@ diff '--exclude=.git' -urN a/po/sl.po b/po/sl.po
 +msgid "Transparent background"
 +msgstr "Prosojno ozadje"
 diff '--exclude=.git' -urN a/po/sq.po b/po/sq.po
---- a/po/sq.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/sq.po	2016-05-15 19:14:53.598168943 -0400
+--- a/po/sq.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sq.po	2016-11-10 23:59:28.803687894 -0500
 @@ -567,8 +567,8 @@
  
  # (pofilter) simplecaps: checks the capitalisation of two strings isn't wildly different
@@ -883,8 +880,8 @@ diff '--exclude=.git' -urN a/po/sq.po b/po/sq.po
  #: ../src/gnome-terminal.glade2.h:86
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/sr.po b/po/sr.po
---- a/po/sr.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/sr.po	2016-05-15 19:14:53.598168943 -0400
+--- a/po/sr.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sr.po	2016-11-10 23:59:28.803687894 -0500
 @@ -2424,3 +2424,6 @@
  
  #~ msgid "Close Window"
@@ -893,8 +890,8 @@ diff '--exclude=.git' -urN a/po/sr.po b/po/sr.po
 +msgid "Transparent background"
 +msgstr "Провидна позадина"
 diff '--exclude=.git' -urN a/po/sr@latin.po b/po/sr@latin.po
---- a/po/sr@latin.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/sr@latin.po	2016-05-15 19:14:53.599168925 -0400
+--- a/po/sr@latin.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sr@latin.po	2016-11-10 23:59:28.803687894 -0500
 @@ -2424,3 +2424,6 @@
  
  #~ msgid "Close Window"
@@ -903,8 +900,8 @@ diff '--exclude=.git' -urN a/po/sr@latin.po b/po/sr@latin.po
 +msgid "Transparent background"
 +msgstr "Providna pozadina"
 diff '--exclude=.git' -urN a/po/sv.po b/po/sv.po
---- a/po/sv.po	2016-03-19 08:03:58.000000000 -0400
-+++ b/po/sv.po	2016-05-15 19:14:53.599168925 -0400
+--- a/po/sv.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/sv.po	2016-11-10 23:59:28.804687876 -0500
 @@ -2281,5 +2281,8 @@
  #~ msgid "Unknown completion request for \"%s\""
  #~ msgstr "Okänd kompletteringsbegäran för \"%s\""
@@ -915,8 +912,8 @@ diff '--exclude=.git' -urN a/po/sv.po b/po/sv.po
  #~ msgid "Missing command"
  #~ msgstr "Kommando saknas"
 diff '--exclude=.git' -urN a/po/ta.po b/po/ta.po
---- a/po/ta.po	2014-10-19 03:20:45.000000000 -0400
-+++ b/po/ta.po	2016-05-15 19:14:53.599168925 -0400
+--- a/po/ta.po	2016-05-23 04:17:51.000000000 -0400
++++ b/po/ta.po	2016-11-10 23:59:28.804687876 -0500
 @@ -3028,8 +3028,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "(_S) ஒரே வண்ணம்"
@@ -929,8 +926,8 @@ diff '--exclude=.git' -urN a/po/ta.po b/po/ta.po
  #~ msgid "No such profile \"%s\", using default profile\n"
  #~ msgstr "\"%s\" என்ற வரியுரு கிடையாது, முன்னிருப்பு வரியுரு பயன்படுத்தப்படும்\n"
 diff '--exclude=.git' -urN a/po/te.po b/po/te.po
---- a/po/te.po	2015-03-23 15:01:12.000000000 -0400
-+++ b/po/te.po	2016-05-15 19:14:53.600168906 -0400
+--- a/po/te.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/te.po	2016-11-10 23:59:28.804687876 -0500
 @@ -2898,8 +2898,8 @@
  #~ msgid "Background image _scrolls"
  #~ msgstr "నేపథ్యచిత్రము స్క్రాల్స్ (_s)"
@@ -943,8 +940,8 @@ diff '--exclude=.git' -urN a/po/te.po b/po/te.po
  #~ msgid "S_hade transparent or image background:"
  #~ msgstr "పారదర్శకంగా మారు లేదా చిత్రము బ్యాక్‌గ్రౌండ్ కు మారు(_h):"
 diff '--exclude=.git' -urN a/po/th.po b/po/th.po
---- a/po/th.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/th.po	2016-05-15 19:14:53.600168906 -0400
+--- a/po/th.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/th.po	2016-11-10 23:59:28.804687876 -0500
 @@ -2676,8 +2676,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "สี_ทึบ"
@@ -957,18 +954,18 @@ diff '--exclude=.git' -urN a/po/th.po b/po/th.po
  #~ msgid ""
  #~ "You already have a profile called “%s”. Do you want to create another "
 diff '--exclude=.git' -urN a/po/tr.po b/po/tr.po
---- a/po/tr.po	2016-03-13 06:05:26.000000000 -0400
-+++ b/po/tr.po	2016-05-15 19:14:53.600168906 -0400
-@@ -1963,3 +1963,6 @@
- #: ../src/terminal-window.c:3694
- msgid "C_lose Window"
- msgstr "_Pencereyi Kapat"
+--- a/po/tr.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/tr.po	2016-11-10 23:59:28.805687858 -0500
+@@ -2307,3 +2307,6 @@
+ 
+ #~ msgid "_Same as text color"
+ #~ msgstr "_Metin rengiyle aynı"
 +
 +msgid "Transparent background"
 +msgstr "Şeffaf arkaplan"
 diff '--exclude=.git' -urN a/po/ug.po b/po/ug.po
---- a/po/ug.po	2014-03-03 15:48:49.000000000 -0500
-+++ b/po/ug.po	2016-05-15 19:14:53.601168888 -0400
+--- a/po/ug.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/ug.po	2016-11-10 23:59:28.805687858 -0500
 @@ -2616,8 +2616,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "ساپ رەڭ(_S)"
@@ -981,8 +978,8 @@ diff '--exclude=.git' -urN a/po/ug.po b/po/ug.po
  #~ msgid ""
  #~ "You already have a profile called “%s”. Do you want to create another "
 diff '--exclude=.git' -urN a/po/uk.po b/po/uk.po
---- a/po/uk.po	2016-03-13 06:05:27.000000000 -0400
-+++ b/po/uk.po	2016-05-15 19:14:53.601168888 -0400
+--- a/po/uk.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/uk.po	2016-11-10 23:59:28.805687858 -0500
 @@ -3126,8 +3126,8 @@
  #~ msgid "_Solid color"
  #~ msgstr "_Суцільний колір"
@@ -995,8 +992,8 @@ diff '--exclude=.git' -urN a/po/uk.po b/po/uk.po
  #~ msgid "Switch to Tab 2"
  #~ msgstr "До вкладки 2"
 diff '--exclude=.git' -urN a/po/vi.po b/po/vi.po
---- a/po/vi.po	2016-05-09 15:56:26.000000000 -0400
-+++ b/po/vi.po	2016-05-15 19:14:53.601168888 -0400
+--- a/po/vi.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/vi.po	2016-11-10 23:59:28.805687858 -0500
 @@ -2863,3 +2863,6 @@
  #~ "Phím tắt để đặt lại thiết bị cuối. Dùng dạng chuỗi có cùng một khuôn dạng "
  #~ "với tập tin tài nguyên GTK+. Nếu bạn đặt tùy chọn là chuỗi “disabled” (bị "
@@ -1005,8 +1002,8 @@ diff '--exclude=.git' -urN a/po/vi.po b/po/vi.po
 +msgid "Transparent background"
 +msgstr "Nền trong suốt"
 diff '--exclude=.git' -urN a/po/wa.po b/po/wa.po
---- a/po/wa.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/wa.po	2016-05-15 19:14:53.602168869 -0400
+--- a/po/wa.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/wa.po	2016-11-10 23:59:28.806687840 -0500
 @@ -563,8 +563,8 @@
  msgstr "Coleur pol _tecse:"
  
@@ -1019,8 +1016,8 @@ diff '--exclude=.git' -urN a/po/wa.po b/po/wa.po
  #: ../src/gnome-terminal.glade2.h:87
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/xh.po b/po/xh.po
---- a/po/xh.po	2010-08-26 15:55:09.000000000 -0400
-+++ b/po/xh.po	2016-05-15 19:14:53.602168869 -0400
+--- a/po/xh.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/xh.po	2016-11-10 23:59:28.806687840 -0500
 @@ -620,8 +620,8 @@
  msgstr "_Umbala wombhalo:"
  
@@ -1033,9 +1030,9 @@ diff '--exclude=.git' -urN a/po/xh.po b/po/xh.po
  #: ../src/gnome-terminal.glade2.h:103
  msgid "_Update login records when command is launched"
 diff '--exclude=.git' -urN a/po/zh_CN.po b/po/zh_CN.po
---- a/po/zh_CN.po	2016-03-13 06:05:27.000000000 -0400
-+++ b/po/zh_CN.po	2016-05-15 19:14:53.602168869 -0400
-@@ -2357,3 +2357,6 @@
+--- a/po/zh_CN.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/zh_CN.po	2016-11-10 23:59:28.806687840 -0500
+@@ -2470,3 +2470,6 @@
  
  #~ msgid "_Find..."
  #~ msgstr "查找(_F)..."
@@ -1043,8 +1040,8 @@ diff '--exclude=.git' -urN a/po/zh_CN.po b/po/zh_CN.po
 +msgid "Transparent background"
 +msgstr "透明背景"
 diff '--exclude=.git' -urN a/po/zh_HK.po b/po/zh_HK.po
---- a/po/zh_HK.po	2015-03-25 06:18:15.000000000 -0400
-+++ b/po/zh_HK.po	2016-05-15 19:14:53.602168869 -0400
+--- a/po/zh_HK.po	2016-11-07 12:30:54.000000000 -0500
++++ b/po/zh_HK.po	2016-11-10 23:59:28.806687840 -0500
 @@ -2376,3 +2376,6 @@
  
  #~ msgid "Show session management options"
@@ -1053,8 +1050,8 @@ diff '--exclude=.git' -urN a/po/zh_HK.po b/po/zh_HK.po
 +msgid "Transparent background"
 +msgstr "透明背景"
 diff '--exclude=.git' -urN a/po/zh_TW.po b/po/zh_TW.po
---- a/po/zh_TW.po	2016-03-13 06:05:27.000000000 -0400
-+++ b/po/zh_TW.po	2016-05-15 19:14:53.603168851 -0400
+--- a/po/zh_TW.po	2016-09-18 11:10:03.000000000 -0400
++++ b/po/zh_TW.po	2016-11-10 23:59:28.806687840 -0500
 @@ -2558,3 +2558,6 @@
  
  #~ msgid "Show session management options"
@@ -1063,8 +1060,8 @@ diff '--exclude=.git' -urN a/po/zh_TW.po b/po/zh_TW.po
 +msgid "Transparent background"
 +msgstr "透明背景"
 diff '--exclude=.git' -urN a/src/org.gnome.Terminal.gschema.xml b/src/org.gnome.Terminal.gschema.xml
---- a/src/org.gnome.Terminal.gschema.xml	2016-03-13 06:05:27.000000000 -0400
-+++ b/src/org.gnome.Terminal.gschema.xml	2016-05-15 19:14:53.572169423 -0400
+--- a/src/org.gnome.Terminal.gschema.xml	2016-09-18 11:10:03.000000000 -0400
++++ b/src/org.gnome.Terminal.gschema.xml	2016-11-10 23:59:28.784688237 -0500
 @@ -370,6 +370,16 @@
        <default>'narrow'</default>
        <summary>Whether ambiguous-width characters are narrow or wide when using UTF-8 encoding</summary>
@@ -1083,9 +1080,9 @@ diff '--exclude=.git' -urN a/src/org.gnome.Terminal.gschema.xml b/src/org.gnome.
  
    <!-- Keybinding settings -->
 diff '--exclude=.git' -urN a/src/profile-editor.c b/src/profile-editor.c
---- a/src/profile-editor.c	2016-03-13 06:05:27.000000000 -0400
-+++ b/src/profile-editor.c	2016-05-15 19:14:53.573169404 -0400
-@@ -1218,7 +1218,18 @@
+--- a/src/profile-editor.c	2016-11-07 12:30:54.000000000 -0500
++++ b/src/profile-editor.c	2016-11-10 23:59:28.785688219 -0500
+@@ -1213,7 +1213,18 @@
                     "active-id",
                     G_SETTINGS_BIND_GET | G_SETTINGS_BIND_SET);
  
@@ -1105,8 +1102,8 @@ diff '--exclude=.git' -urN a/src/profile-editor.c b/src/profile-editor.c
  
    terminal_util_dialog_focus_widget (editor, widget_name);
 diff '--exclude=.git' -urN a/src/profile-preferences.ui b/src/profile-preferences.ui
---- a/src/profile-preferences.ui	2016-03-13 06:05:27.000000000 -0400
-+++ b/src/profile-preferences.ui	2016-05-15 19:14:53.574169386 -0400
+--- a/src/profile-preferences.ui	2016-11-07 12:30:54.000000000 -0500
++++ b/src/profile-preferences.ui	2016-11-10 23:59:28.785688219 -0500
 @@ -23,6 +23,11 @@
      <property name="step_increment">1</property>
      <property name="page_increment">100</property>
@@ -1214,8 +1211,8 @@ diff '--exclude=.git' -urN a/src/profile-preferences.ui b/src/profile-preference
                          </child>
                        </object>
 diff '--exclude=.git' -urN a/src/terminal-schemas.h b/src/terminal-schemas.h
---- a/src/terminal-schemas.h	2016-03-13 06:05:27.000000000 -0400
-+++ b/src/terminal-schemas.h	2016-05-15 19:14:53.574169386 -0400
+--- a/src/terminal-schemas.h	2016-09-18 11:10:03.000000000 -0400
++++ b/src/terminal-schemas.h	2016-11-10 23:59:28.785688219 -0500
 @@ -69,6 +69,9 @@
  #define TERMINAL_PROFILE_VISIBLE_NAME_KEY               "visible-name"
  #define TERMINAL_PROFILE_WORD_CHAR_EXCEPTIONS_KEY       "word-char-exceptions"
@@ -1227,8 +1224,8 @@ diff '--exclude=.git' -urN a/src/terminal-schemas.h b/src/terminal-schemas.h
  #define TERMINAL_SETTING_DEFAULT_SHOW_MENUBAR_KEY       "default-show-menubar"
  #define TERMINAL_SETTING_ENABLE_MENU_BAR_ACCEL_KEY      "menu-accelerator-enabled"
 diff '--exclude=.git' -urN a/src/terminal-screen.c b/src/terminal-screen.c
---- a/src/terminal-screen.c	2016-05-09 15:56:26.000000000 -0400
-+++ b/src/terminal-screen.c	2016-05-15 19:14:53.576169349 -0400
+--- a/src/terminal-screen.c	2016-11-07 12:32:56.000000000 -0500
++++ b/src/terminal-screen.c	2016-11-10 23:59:28.786688201 -0500
 @@ -140,6 +140,8 @@
  static gboolean terminal_screen_popup_menu (GtkWidget *widget);
  static gboolean terminal_screen_button_press (GtkWidget *widget,
@@ -1327,7 +1324,7 @@ diff '--exclude=.git' -urN a/src/terminal-screen.c b/src/terminal-screen.c
  }
  
  static void
-@@ -1575,6 +1622,13 @@
+@@ -1577,6 +1624,13 @@
    terminal_screen_popup_info_unref (info);
  }
  
@@ -1342,9 +1339,9 @@ diff '--exclude=.git' -urN a/src/terminal-screen.c b/src/terminal-screen.c
  terminal_screen_button_press (GtkWidget      *widget,
                                GdkEventButton *event)
 diff '--exclude=.git' -urN a/src/terminal-window.c b/src/terminal-window.c
---- a/src/terminal-window.c	2016-05-08 04:48:01.000000000 -0400
-+++ b/src/terminal-window.c	2016-05-15 19:14:53.576169349 -0400
-@@ -2290,6 +2290,32 @@
+--- a/src/terminal-window.c	2016-11-07 12:30:54.000000000 -0500
++++ b/src/terminal-window.c	2016-11-10 23:59:28.787688183 -0500
+@@ -2317,6 +2317,32 @@
  }
  
  static gboolean
@@ -1377,7 +1374,7 @@ diff '--exclude=.git' -urN a/src/terminal-window.c b/src/terminal-window.c
  terminal_window_state_event (GtkWidget            *widget,
                               GdkEventWindowState  *event)
  {
-@@ -2618,6 +2644,8 @@
+@@ -2645,6 +2671,8 @@
    TerminalWindowPrivate *priv;
    TerminalApp *app;
    TerminalSettingsList *profiles_list;
@@ -1386,7 +1383,7 @@ diff '--exclude=.git' -urN a/src/terminal-window.c b/src/terminal-window.c
    GtkActionGroup *action_group;
    GtkAction *action;
    GtkUIManager *manager;
-@@ -2632,6 +2660,11 @@
+@@ -2658,6 +2686,11 @@
  
    gtk_widget_init_template (GTK_WIDGET (window));
  
@@ -1398,7 +1395,7 @@ diff '--exclude=.git' -urN a/src/terminal-window.c b/src/terminal-window.c
    uuid_generate (u);
    uuid_unparse (u, uuidstr);
    priv->uuid = g_strdup (uuidstr);
-@@ -2811,6 +2844,7 @@
+@@ -2843,6 +2876,7 @@
  
    widget_class->show = terminal_window_show;
    widget_class->realize = terminal_window_realize;
