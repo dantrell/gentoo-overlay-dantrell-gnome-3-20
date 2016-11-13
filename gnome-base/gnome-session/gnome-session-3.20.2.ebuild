@@ -11,7 +11,7 @@ LICENSE="GPL-2 LGPL-2 FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+deprecated doc elibc_FreeBSD gconf ipv6 systemd"
+IUSE="+deprecated doc elibc_FreeBSD gconf ipv6 systemd wayland"
 
 # x11-misc/xdg-user-dirs{,-gtk} are needed to create the various XDG_*_DIRs, and
 # create .config/user-dirs.dirs which is read by glib to get G_USER_DIRECTORY_*
@@ -24,8 +24,9 @@ COMMON_DEPEND="
 	>=dev-libs/json-glib-0.10
 	>=gnome-base/gnome-desktop-3.18:3=
 	elibc_FreeBSD? ( dev-libs/libexecinfo )
+	wayland? ( media-libs/mesa[egl,gles2] )
+	!wayland? ( media-libs/mesa[gles2] )
 
-	virtual/opengl
 	x11-libs/libSM
 	x11-libs/libICE
 	x11-libs/libXau
@@ -61,9 +62,9 @@ RDEPEND="${COMMON_DEPEND}
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-lang/perl-5
-	>=sys-devel/gettext-0.10.40
 	dev-libs/libxslt
 	>=dev-util/intltool-0.40.6
+	>=sys-devel/gettext-0.10.40
 	virtual/pkgconfig
 	!<gnome-base/gdm-2.20.4
 	doc? (
@@ -85,8 +86,10 @@ src_prepare() {
 }
 
 src_configure() {
-	# 1. xsltproc is always checked due to man configure
+	# 1. Support deprecated upower functionality
+	# 2. xsltproc is always checked due to man configure
 	#    switch, even if USE=-doc
+	# 3. Enable old gconf support
 	gnome2_src_configure \
 		--enable-session-selector \
 		$(use_enable deprecated) \

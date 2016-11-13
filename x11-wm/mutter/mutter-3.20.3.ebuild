@@ -11,10 +11,7 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+deprecated-background +introspection kms test wayland"
-REQUIRED_USE="
-	wayland? ( kms )
-"
+IUSE="debug +deprecated-background +introspection test wayland"
 
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
@@ -52,19 +49,18 @@ COMMON_DEPEND="
 	gnome-extra/zenity
 
 	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
-	kms? (
-		dev-libs/libinput
-		>=media-libs/clutter-1.20[egl]
-		media-libs/cogl:1.0=[kms]
-		>=media-libs/mesa-10.3[gbm]
-		sys-apps/systemd
-		virtual/libgudev
-		x11-libs/libdrm:= )
 	wayland? (
+		dev-libs/libinput
 		>=dev-libs/wayland-1.6.90
 		>=dev-libs/wayland-protocols-1.1
-		>=media-libs/clutter-1.20[wayland]
-		x11-base/xorg-server[wayland] )
+		>=media-libs/clutter-1.20[egl,wayland]
+		>=media-libs/mesa-10.3[egl,gbm,wayland]
+		media-libs/cogl:1.0=[kms]
+		sys-apps/systemd
+		virtual/libgudev:=
+		x11-base/xorg-server[wayland]
+		x11-libs/libdrm:=
+	)
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-util/intltool-0.41
@@ -89,13 +85,16 @@ src_prepare() {
 }
 
 src_configure() {
+	# native backend without wayland is useless
 	gnome2_src_configure \
 		--disable-static \
+		--enable-compile-warnings=minimum \
 		--enable-sm \
 		--enable-startup-notification \
 		--enable-verbose-mode \
 		--with-libcanberra \
+		$(usex debug --enable-debug=yes "") \
 		$(use_enable introspection) \
-		$(use_enable kms native-backend) \
-		$(use_enable wayland)
+		$(use_enable wayland) \
+		$(use_enable wayland native-backend)
 }
