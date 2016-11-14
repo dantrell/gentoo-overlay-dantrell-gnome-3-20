@@ -18,7 +18,7 @@ IUSE="debug +deprecated-transparency +gnome-shell +nautilus vanilla-hotkeys"
 RDEPEND="
 	>=dev-libs/glib-2.42:2[dbus]
 	>=x11-libs/gtk+-3.12:3[X]
-	>=x11-libs/vte-0.44.2:2.91
+	>=x11-libs/vte-0.44.3:2.91
 	>=gnome-base/dconf-0.14
 	>=gnome-base/gsettings-desktop-schemas-0.1.0
 	sys-apps/util-linux
