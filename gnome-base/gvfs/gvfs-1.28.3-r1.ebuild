@@ -49,7 +49,7 @@ RDEPEND="
 		>=app-pda/libplist-1:= )
 	mtp? ( >=media-libs/libmtp-1.1.6 )
 	nfs? ( >=net-fs/libnfs-1.9.7 )
-	samba? ( || ( >=net-fs/samba-3.4.6[smbclient] >=net-fs/samba-4[client] ) )
+	samba? ( >=net-fs/samba-4[client] )
 	systemd? ( sys-apps/systemd:0= )
 	udev? (
 		cdda? ( dev-libs/libcdio-paranoia )

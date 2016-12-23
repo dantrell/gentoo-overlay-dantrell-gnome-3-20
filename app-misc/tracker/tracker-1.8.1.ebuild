@@ -4,7 +4,7 @@ EAPI="6"
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
-inherit autotools bash-completion-r1 gnome2 linux-info multilib python-any-r1 vala versionator virtualx
+inherit autotools bash-completion-r1 gnome2 linux-info python-any-r1 vala versionator virtualx
 
 DESCRIPTION="A tagging metadata database, search tool and indexer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Tracker"
@@ -37,8 +37,9 @@ RDEPEND="
 		media-gfx/graphicsmagick[imagemagick,png,jpeg?] )
 	>=media-libs/libpng-1.2:0=
 	>=media-libs/libmediaart-1.9:2.0
-	>=x11-libs/pango-1:=
 	sys-apps/util-linux
+	>=sys-libs/libseccomp-2.0
+	>=x11-libs/pango-1:=
 
 	cue? ( media-libs/libcue )
 	elibc_glibc? ( >=sys-libs/glibc-2.12 )

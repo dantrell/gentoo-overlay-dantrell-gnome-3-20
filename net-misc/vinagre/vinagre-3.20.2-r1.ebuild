@@ -2,7 +2,7 @@
 
 EAPI="6"
 
-inherit gnome2 linux-info vala
+inherit autotools gnome2 linux-info vala
 
 DESCRIPTION="VNC client for the GNOME desktop"
 HOMEPAGE="https://wiki.gnome.org/Apps/Vinagre"
@@ -25,7 +25,7 @@ RDEPEND="
 	x11-libs/gdk-pixbuf:2
 	x11-themes/hicolor-icon-theme
 
-	rdp? ( <net-misc/freerdp-2 )
+	rdp? ( >=net-misc/freerdp-1.1:= )
 	ssh? ( >=x11-libs/vte-0.20:2.91 )
 	spice? (
 		app-emulation/spice-protocol
@@ -36,14 +36,18 @@ RDEPEND="
 	zeroconf? ( >=net-dns/avahi-0.6.26[dbus,gtk3] )
 "
 DEPEND="${RDEPEND}
+	$(vala_depend)
+	app-text/yelp-tools
 	>=dev-lang/perl-5
 	dev-libs/appstream-glib
 	>=dev-util/intltool-0.50
 	dev-util/itstool
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
-	$(vala_depend)
+
+	gnome-base/gnome-common
 "
+# gnome-base/gnome-common needed for eautoreconf
 
 pkg_pretend() {
 	# Needed for VNC ssh tunnel, bug #518574
@@ -52,7 +56,10 @@ pkg_pretend() {
 }
 
 src_prepare() {
+	# https://bugzilla.gnome.org/show_bug.cgi?id=765444
+	eapply "${FILESDIR}"/${PN}-3.20.2-freerdp2.patch
 	vala_src_prepare
+	eautoreconf
 	gnome2_src_prepare
 }
 
