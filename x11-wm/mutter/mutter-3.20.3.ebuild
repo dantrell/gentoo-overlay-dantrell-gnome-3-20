@@ -16,7 +16,7 @@ IUSE="debug +deprecated-background +introspection test wayland"
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
 COMMON_DEPEND="
-	>=x11-libs/pango-1.2[X,introspection?]
+	>=x11-libs/pango-1.2[introspection?]
 	>=x11-libs/cairo-1.10[X]
 	>=x11-libs/gtk+-3.19.8:3[X,introspection?]
 	>=dev-libs/glib-2.36.0:2[dbus]
