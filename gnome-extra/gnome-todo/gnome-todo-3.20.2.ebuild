@@ -4,14 +4,14 @@ EAPI="6"
 
 inherit autotools gnome2
 
-DESCRIPTION="Personnal task manager"
+DESCRIPTION="Personal task manager"
 HOMEPAGE="https://wiki.gnome.org/Apps/Todo"
 
 LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE=""
+IUSE="+introspection"
 
 RDEPEND="
 	>=dev-libs/glib-2.43.4:2
@@ -21,7 +21,7 @@ RDEPEND="
 	>=net-libs/gnome-online-accounts-3.2:=
 	>=x11-libs/gtk+-3.19.5:3
 
-	>=dev-libs/gobject-introspection-1.42:=
+	introspection? ( >=dev-libs/gobject-introspection-1.42:= )
 "
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib
@@ -41,5 +41,6 @@ src_prepare() {
 
 src_configure() {
 	gnome2_src_configure \
+		$(use_enable introspection) \
 		--enable-eds-plugin
 }
