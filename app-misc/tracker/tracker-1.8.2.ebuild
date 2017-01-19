@@ -1,6 +1,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
+GNOME2_EAUTORECONF="yes" # See bug #367975
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
@@ -53,12 +54,12 @@ RDEPEND="
 		>=www-client/firefox-bin-4.0 ) )
 	flac? ( >=media-libs/flac-1.2.1 )
 	gif? ( media-libs/giflib:= )
-	gsf? ( >=gnome-extra/libgsf-1.14.24 )
+	gsf? ( >=gnome-extra/libgsf-1.14.24:0= )
 	gstreamer? (
 		media-libs/gstreamer:1.0
 		media-libs/gst-plugins-base:1.0 )
 	gtk? (
-		>=dev-libs/libgee-0.3:0.8
+		>=dev-libs/libgee-0.3:0.8=
 		>=x11-libs/gtk+-3:3 )
 	iptc? ( media-libs/libiptcdata )
 	iso? ( >=sys-libs/libosinfo-0.2.9:= )
@@ -80,7 +81,7 @@ RDEPEND="
 	upnp-av? ( >=media-libs/gupnp-dlna-0.9.4:2.0 )
 	vorbis? ( >=media-libs/libvorbis-0.22 )
 	xml? ( >=dev-libs/libxml2-2.6 )
-	xmp? ( >=media-libs/exempi-2.1 )
+	xmp? ( >=media-libs/exempi-2.1:2 )
 	xps? ( app-text/libgxps )
 	!gstreamer? ( !ffmpeg? ( || ( media-video/totem media-video/mplayer ) ) )
 "
@@ -126,13 +127,12 @@ src_prepare() {
 	create_version_script "www-client/firefox" "Mozilla Firefox" firefox-version.sh
 	create_version_script "mail-client/thunderbird" "Mozilla Thunderbird" thunderbird-version.sh
 
-	# Looks like sorting got fixed but not test reference files
+	# Looks like sorting got fixed but not test reference files, bug #????
 	sort "${S}"/tests/libtracker-data/functions/functions-tracker-1.out \
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-1.out || die
 	sort "${S}"/tests/libtracker-data/functions/functions-tracker-2.out \
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-2.out || die
 
-	eautoreconf # See bug #367975
 	gnome2_src_prepare
 	vala_src_prepare
 }

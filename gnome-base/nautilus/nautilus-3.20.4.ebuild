@@ -39,7 +39,7 @@ COMMON_DEPEND="
 	introspection? ( >=dev-libs/gobject-introspection-0.6.4:= )
 	selinux? ( >=sys-libs/libselinux-2 )
 	tracker? ( >=app-misc/tracker-0.16:= )
-	xmp? ( >=media-libs/exempi-2.1.0 )
+	xmp? ( >=media-libs/exempi-2.1.0:2 )
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-lang/perl-5
