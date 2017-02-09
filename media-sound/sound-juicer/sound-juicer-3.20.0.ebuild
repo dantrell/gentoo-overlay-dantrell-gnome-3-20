@@ -23,7 +23,7 @@ COMMON_DEPEND="
 	gnome-base/gsettings-desktop-schemas
 
 	>=media-libs/libdiscid-0.4.0
-	>=media-libs/musicbrainz-5.0.1:5
+	>=media-libs/musicbrainz-5.0.1:5=
 
 	media-libs/gstreamer:1.0
 	media-libs/gst-plugins-base:1.0[vorbis?]
