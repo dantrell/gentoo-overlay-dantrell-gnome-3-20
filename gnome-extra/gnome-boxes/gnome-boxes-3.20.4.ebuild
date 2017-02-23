@@ -25,6 +25,7 @@ IUSE="" #bindist
 #        directly with USE=spice
 RDEPEND="
 	>=app-arch/libarchive-3:=
+	app-crypt/libsecret
 	>=dev-libs/glib-2.38:2
 	>=dev-libs/gobject-introspection-0.9.6:=
 	>=dev-libs/libxml2-2.7.8:2

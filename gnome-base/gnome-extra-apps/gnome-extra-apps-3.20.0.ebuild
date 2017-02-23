@@ -23,7 +23,7 @@ IUSE="+bijiben boxes builder california epiphany +evolution flashback +fonts +ga
 RDEPEND="
 	>=gnome-base/gnome-core-libs-${PV}
 
-	>=app-admin/gnome-system-log-20161012
+	>=app-admin/gnome-system-log-20170113
 	>=app-arch/file-roller-${PV}
 	>=app-dicts/gnome-dictionary-${PV}
 	>=gnome-base/dconf-editor-${PV}
@@ -85,7 +85,7 @@ RDEPEND="
 		>=games-puzzle/lightsoff-${PV}
 		>=games-puzzle/quadrapassel-${PV}
 		>=games-puzzle/swell-foop-${PV} )
-	geary? ( >=mail-client/geary-0.11.2 )
+	geary? ( >=mail-client/geary-0.11.3 )
 	share? ( >=gnome-extra/gnome-user-share-3.18.1 )
 	shotwell? ( >=media-gfx/shotwell-0.24 )
 	todo? ( >=gnome-extra/gnome-todo-${PV} )
