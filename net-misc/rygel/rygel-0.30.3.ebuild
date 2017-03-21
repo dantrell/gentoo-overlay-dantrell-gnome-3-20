@@ -73,11 +73,15 @@ src_configure() {
 
 pkg_postinst() {
 	gnome2_pkg_postinst
-	if ! version_is_at_least 0.32.0 ${REPLACING_VERSIONS}; then
-		elog "This version stops forcing the automatical starting of"
-		elog "rygel as upstream pretends. This way, it will honor the"
-		elog "user settings at Sharing section in gnome-control-center."
-		elog "If you desire to keep getting rygel autostarting always"
-		elog "you will need to configure your desktop to do it."
-	fi
+	local v
+	for v in ${REPLACING_VERSIONS}; do
+		if ! version_is_at_least 0.32.0 ${v}; then
+			elog "This version stops forcing the automatical starting of"
+			elog "rygel as upstream pretends. This way, it will honor the"
+			elog "user settings at Sharing section in gnome-control-center."
+			elog "If you desire to keep getting rygel autostarting always"
+			elog "you will need to configure your desktop to do it."
+			break
+		fi
+	done
 }

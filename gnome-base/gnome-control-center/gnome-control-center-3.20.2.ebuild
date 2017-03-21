@@ -12,7 +12,7 @@ LICENSE="GPL-2+"
 SLOT="2"
 KEYWORDS="*"
 
-IUSE="+bluetooth +colord +cups debug +deprecated +gnome-online-accounts +i18n input_devices_wacom kerberos libinput networkmanager systemd v4l vanilla-datetime vanilla-hostname wayland"
+IUSE="+bluetooth +colord +cups debug +deprecated +gnome-online-accounts +ibus input_devices_wacom kerberos libinput networkmanager systemd v4l vanilla-datetime vanilla-hostname wayland"
 
 # False positives caused by nested configure scripts
 QA_CONFIGURE_OPTIONS=".*"
@@ -62,7 +62,7 @@ COMMON_DEPEND="
 	gnome-online-accounts? (
 		>=media-libs/grilo-0.3.0:0.3=
 		>=net-libs/gnome-online-accounts-3.15.1:= )
-	i18n? ( >=app-i18n/ibus-1.5.2 )
+	ibus? ( >=app-i18n/ibus-1.5.2 )
 	kerberos? ( app-crypt/mit-krb5 )
 	networkmanager? (
 		>=gnome-extra/nm-applet-0.9.7.995
@@ -90,7 +90,7 @@ RDEPEND="${COMMON_DEPEND}
 		app-admin/system-config-printer
 		net-print/cups-pk-helper )
 	input_devices_wacom? ( gnome-base/gnome-settings-daemon[input_devices_wacom] )
-	i18n? ( >=gnome-base/libgnomekbd-3 )
+	ibus? ( >=gnome-base/libgnomekbd-3 )
 	wayland? ( libinput? ( dev-libs/libinput ) )
 	!wayland? (
 		libinput? ( >=x11-drivers/xf86-input-libinput-0.19.0 )
@@ -176,7 +176,7 @@ src_configure() {
 		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable deprecated) \
 		$(use_enable gnome-online-accounts goa) \
-		$(use_enable i18n ibus) \
+		$(use_enable ibus) \
 		$(use_enable kerberos) \
 		$(use_enable networkmanager) \
 		$(use_with v4l cheese) \
