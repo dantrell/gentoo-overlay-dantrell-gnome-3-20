@@ -1,7 +1,6 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
-GNOME2_EAUTORECONF="yes" # See bug #367975
 GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python2_7 )
 
@@ -27,6 +26,7 @@ REQUIRED_USE="
 # According to NEWS, introspection is non-optional
 # glibc-2.12 needed for SCHED_IDLE (see bug #385003)
 # sqlite-3.9.0 for FTS5 support
+# seccomp is automagic, though we want to use it whenever possible (linux)
 RDEPEND="
 	>=app-i18n/enca-1.9
 	>=dev-db/sqlite-3.9.0:=
@@ -131,6 +131,7 @@ src_prepare() {
 	sort "${S}"/tests/libtracker-data/functions/functions-tracker-2.out \
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-2.out || die
 
+	eautoreconf # See bug #367975
 	gnome2_src_prepare
 	vala_src_prepare
 }

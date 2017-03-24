@@ -25,7 +25,6 @@ IUSE="" #bindist
 #        directly with USE=spice
 RDEPEND="
 	>=app-arch/libarchive-3:=
-	app-crypt/libsecret
 	>=dev-libs/glib-2.38:2
 	>=dev-libs/gobject-introspection-0.9.6:=
 	>=dev-libs/libxml2-2.7.8:2
@@ -35,6 +34,7 @@ RDEPEND="
 	>=app-emulation/libvirt-glib-0.2.3
 	>=x11-libs/gtk+-3.19.4:3
 	>=net-libs/gtk-vnc-0.4.4[gtk3]
+	app-crypt/libsecret
 	app-emulation/spice[smartcard]
 	>=net-misc/spice-gtk-0.27[gtk3,smartcard,usbredir]
 	virtual/libusb:1
@@ -44,8 +44,6 @@ RDEPEND="
 	>=sys-apps/util-linux-2.20
 	>=net-libs/libsoup-2.38:2.4
 
-	sys-fs/fuse
-	sys-fs/fuseiso
 	sys-fs/mtools
 	virtual/libgudev:=
 "

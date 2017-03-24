@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME_ORG_MODULE="gnome-themes-standard"
 
-inherit gnome.org multilib-minimal
+inherit gnome.org ltprune multilib-minimal
 
 DESCRIPTION="Adwaita GTK+2 theme engine"
 HOMEPAGE="https://git.gnome.org/browse/gnome-themes-standard/"

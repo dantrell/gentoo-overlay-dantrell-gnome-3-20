@@ -12,9 +12,9 @@ LICENSE="GPL-2+ LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="test"
+IUSE="flickr test upnp-av"
 
-RDEPEND="
+COMMON_DEPEND="
 	>=app-misc/tracker-1:=[miner-fs]
 	>=dev-libs/glib-2.39.3:2
 	gnome-base/gnome-desktop:3=
@@ -24,24 +24,28 @@ RDEPEND="
 	media-libs/gexiv2
 	>=media-libs/grilo-0.3.0:0.3=
 	>=media-libs/libpng-1.6:0=
-	media-plugins/grilo-plugins:0.3[upnp-av]
 	>=net-libs/gnome-online-accounts-3.8:=
 	>=net-libs/libgfbgraph-0.2.1:0.2
 	>=x11-libs/cairo-1.14
 	x11-libs/gdk-pixbuf:2
 	>=x11-libs/gtk+-3.19.1:3
 "
-DEPEND="${RDEPEND}
+# gnome-online-miners is also used for google, facebook, DLNA - not only flickr
+# but out of all the grilo-plugins, only upnp-av and flicr get used, which have USE flags here,
+# so don't pull it always, but only if either USE flag is enabled
+RDEPEND="${COMMON_DEPEND}
+	net-misc/gnome-online-miners[flickr?]
+	upnp-av? ( media-plugins/grilo-plugins:0.3[upnp-av] )
+	flickr? ( media-plugins/grilo-plugins:0.3[flickr] )
+"
+DEPEND="${COMMON_DEPEND}
+	app-text/yelp-tools
 	dev-util/desktop-file-utils
 	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	virtual/pkgconfig
-	test? (
-		${PYTHON_DEPS}
-		$(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
+	test? ( $(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
 "
-# eautoreconf
-#	app-text/yelp-tools
 
 python_check_deps() {
 	use test && has_version "dev-util/dogtail[${PYTHON_USEDEP}]"

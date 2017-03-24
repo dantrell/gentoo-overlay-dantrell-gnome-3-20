@@ -22,7 +22,7 @@ COMMON_DEPEND="
 	>=dev-libs/glib-2.28:2
 	>=dev-libs/gobject-introspection-1.35.9:=
 	>=media-libs/grilo-0.3.0:0.3[introspection]
-	media-libs/libmediaart:2.0
+	media-libs/libmediaart:2.0[introspection]
 	>=x11-libs/gtk+-3.19.3:3[introspection]
 "
 # xdg-user-dirs-update needs to be there to create needed dirs
@@ -32,6 +32,7 @@ RDEPEND="${COMMON_DEPEND}
 		app-misc/tracker[gstreamer]
 		app-misc/tracker[ffmpeg]
 	)
+	x11-libs/libnotify[introspection]
 	dev-python/dbus-python[${PYTHON_USEDEP}]
 	dev-python/requests[${PYTHON_USEDEP}]
 	media-libs/gstreamer:1.0[introspection]
@@ -48,4 +49,14 @@ DEPEND="${COMMON_DEPEND}
 
 pkg_setup() {
 	python_setup
+}
+
+src_prepare() {
+	sed -e '/sys.path.insert/d' -i ${S}/gnome-music.in || die "python fixup sed failed"
+	gnome2_src_prepare
+}
+
+src_install() {
+	gnome2_src_install
+	python_fix_shebang ${D}usr/bin/gnome-music
 }
