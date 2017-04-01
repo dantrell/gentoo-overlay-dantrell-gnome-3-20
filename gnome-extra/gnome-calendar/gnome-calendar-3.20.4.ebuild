@@ -16,10 +16,10 @@ IUSE=""
 # >=libical-1.0.1 for https://bugzilla.gnome.org/show_bug.cgi?id=751244
 RDEPEND="
 	>=dev-libs/glib-2.43.4:2
-	>=dev-libs/libical-1.0.1
-	>=gnome-extra/evolution-data-server-3.17.1:=
-	>=net-libs/gnome-online-accounts-3.2.0:=
 	>=x11-libs/gtk+-3.19.1:3
+	>=gnome-extra/evolution-data-server-3.17.1:=
+	>=dev-libs/libical-1.0.1
+	>=net-libs/gnome-online-accounts-3.2.0:=
 "
 DEPEND="${RDEPEND}
 	dev-libs/appstream-glib

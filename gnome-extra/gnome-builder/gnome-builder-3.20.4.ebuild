@@ -15,7 +15,7 @@ HOMEPAGE="https://wiki.gnome.org/Apps/Builder"
 # FIXME: Review licenses at some point
 LICENSE="GPL-3+ GPL-2+ LGPL-3+ LGPL-2+ MIT CC-BY-SA-3.0 CC0-1.0"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 IUSE="clang +git vala webkit"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
