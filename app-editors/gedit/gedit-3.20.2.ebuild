@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python{3_4,3_5,3_6} )
 VALA_MIN_API_VERSION="0.26"
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 multilib python-r1 vala virtualx
+inherit gnome2 multilib python-single-r1 vala virtualx
 
 DESCRIPTION="A text editor for the GNOME desktop"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gedit"
@@ -16,12 +16,7 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE="+introspection +python spell vala"
-# python-single-r1 would request disabling PYTHON_TARGETS on libpeas
-# we need to fix that
-REQUIRED_USE="
-	python? ( introspection )
-	python? ( ^^ ( $(python_gen_useflags '*') ) )
-"
+REQUIRED_USE="python? ( introspection ${PYTHON_REQUIRED_USE} )"
 
 # X libs are not needed for OSX (aqua)
 COMMON_DEPEND="
@@ -43,7 +38,7 @@ COMMON_DEPEND="
 		${PYTHON_DEPS}
 		dev-python/pycairo[${PYTHON_USEDEP}]
 		>=dev-python/pygobject-3:3[cairo,${PYTHON_USEDEP}]
-		dev-libs/libpeas[${PYTHON_USEDEP}] )
+		dev-libs/libpeas[python,${PYTHON_USEDEP}] )
 	spell? ( >=app-text/gspell-0.2.5:0= )
 "
 RDEPEND="${COMMON_DEPEND}
@@ -63,7 +58,7 @@ DEPEND="${COMMON_DEPEND}
 # yelp-tools, gnome-common needed to eautoreconf
 
 pkg_setup() {
-	use python && [[ ${MERGE_TYPE} != binary ]] && python_setup
+	use python && [[ ${MERGE_TYPE} != binary ]] && python-single-r1_pkg_setup
 }
 
 src_prepare() {

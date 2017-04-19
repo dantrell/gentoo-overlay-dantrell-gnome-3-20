@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python{3_4,3_5,3_6} )
 PYTHON_REQ_USE="xml"
 VALA_MIN_API_VERSION="0.28"
 
-inherit gnome2 multilib python-r1 vala
+inherit gnome2 multilib python-single-r1 vala
 
 DESCRIPTION="Official plugins for gedit"
 HOMEPAGE="https://wiki.gnome.org/Apps/Gedit/ShippedPlugins"
@@ -21,21 +21,21 @@ IUSE="+python ${IUSE_plugins}"
 REQUIRED_USE="
 	charmap? ( python )
 	git? ( python )
-	python? ( ^^ ( $(python_gen_useflags '*') ) )
+	python? ( ${PYTHON_REQUIRED_USE} )
 	terminal? ( python )
 	zeitgeist? ( python )
 "
 
 RDEPEND="
-	>=app-editors/gedit-3.16[python?]
+	>=app-editors/gedit-3.16
 	>=dev-libs/glib-2.32:2
-	>=dev-libs/libpeas-1.7.0[gtk,python?]
+	>=dev-libs/libpeas-1.7.0[gtk]
 	>=x11-libs/gtk+-3.9:3
 	>=x11-libs/gtksourceview-3.17.3:3.0
 	python? (
 		${PYTHON_DEPS}
-		>=app-editors/gedit-3.16[introspection,${PYTHON_USEDEP}]
-		dev-libs/libpeas[${PYTHON_USEDEP}]
+		>=app-editors/gedit-3.16[introspection,python,${PYTHON_USEDEP}]
+		dev-libs/libpeas[python,${PYTHON_USEDEP}]
 		>=dev-python/dbus-python-0.82[${PYTHON_USEDEP}]
 		dev-python/pycairo[${PYTHON_USEDEP}]
 		dev-python/pygobject:3[cairo,${PYTHON_USEDEP}]
@@ -58,7 +58,7 @@ DEPEND="${RDEPEND}
 "
 
 pkg_setup() {
-	use python && [[ ${MERGE_TYPE} != binary ]] && python_setup
+	use python && [[ ${MERGE_TYPE} != binary ]] && python-single-r1_pkg_setup
 }
 
 src_prepare() {

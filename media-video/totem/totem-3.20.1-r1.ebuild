@@ -2,7 +2,7 @@
 
 EAPI="6"
 GNOME2_LA_PUNT="yes" # plugins are dlopened
-PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} )
+PYTHON_COMPAT=( python{3_4,3_5,3_6} )
 PYTHON_REQ_USE="threads"
 
 inherit autotools gnome2 python-single-r1
@@ -23,7 +23,7 @@ REQUIRED_USE="
 
 # FIXME:
 # Runtime dependency on gnome-session-2.91
-RDEPEND="
+COMMON_DEPEND="
 	>=dev-libs/glib-2.35:2[dbus]
 	>=dev-libs/libpeas-1.1[gtk]
 	>=dev-libs/libxml2-2.6:2
@@ -36,32 +36,35 @@ RDEPEND="
 	>=x11-libs/gtk+-3.19.4:3[introspection?]
 
 	>=media-libs/grilo-0.3.0:0.3[playlist]
-	media-plugins/grilo-plugins:0.3
 	>=media-libs/gstreamer-1.6.0:1.0
 	>=media-libs/gst-plugins-base-1.6.0:1.0[X,introspection?,pango]
 	media-libs/gst-plugins-good:1.0
-	media-plugins/gst-plugins-meta:1.0
-	media-plugins/gst-plugins-taglib:1.0
 
 	x11-libs/libX11
 
 	gnome-base/gnome-desktop:3=
 	gnome-base/gsettings-desktop-schemas
-	x11-themes/adwaita-icon-theme
 
 	introspection? ( >=dev-libs/gobject-introspection-0.6.7:= )
 	lirc? ( app-misc/lirc )
 	nautilus? ( >=gnome-base/nautilus-2.91.3 )
 	python? (
 		${PYTHON_DEPS}
-		>=dev-libs/libpeas-1.1.0[${PYTHON_USEDEP}]
-		>=dev-python/pygobject-2.90.3:3[${PYTHON_USEDEP}]
+		>=dev-python/pygobject-2.90.3:3[${PYTHON_USEDEP}] )
+	zeitgeist? ( >=gnome-extra/zeitgeist-0.9.12 )
+"
+RDEPEND="${COMMON_DEPEND}
+	media-plugins/grilo-plugins:0.3
+	media-plugins/gst-plugins-meta:1.0
+	media-plugins/gst-plugins-taglib:1.0
+	x11-themes/adwaita-icon-theme
+	python? (
+		>=dev-libs/libpeas-1.1.0[python,${PYTHON_USEDEP}]
 		dev-python/pyxdg[${PYTHON_USEDEP}]
 		dev-python/dbus-python[${PYTHON_USEDEP}]
 		>=x11-libs/gtk+-3.5.2:3[introspection] )
-	zeitgeist? ( >=gnome-extra/zeitgeist-0.9.12 )
 "
-DEPEND="${RDEPEND}
+DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xml-dtd:4.5
 	app-text/yelp-tools
 	dev-libs/appstream-glib
