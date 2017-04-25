@@ -12,7 +12,7 @@ SRC_URI="${SRC_URI}
 
 LICENSE="
 	|| ( LGPL-3 CC-BY-SA-3.0 )
-	branding? ( CC-Sampling-Plus-1.0 )
+	branding? ( CC-BY-SA-4.0 )
 "
 SLOT="0"
 KEYWORDS="*"
