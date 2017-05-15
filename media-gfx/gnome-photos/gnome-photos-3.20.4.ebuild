@@ -31,7 +31,7 @@ COMMON_DEPEND="
 	>=x11-libs/gtk+-3.19.1:3
 "
 # gnome-online-miners is also used for google, facebook, DLNA - not only flickr
-# but out of all the grilo-plugins, only upnp-av and flicr get used, which have USE flags here,
+# but out of all the grilo-plugins, only upnp-av and flickr get used, which have USE flags here,
 # so don't pull it always, but only if either USE flag is enabled
 RDEPEND="${COMMON_DEPEND}
 	net-misc/gnome-online-miners[flickr?]
