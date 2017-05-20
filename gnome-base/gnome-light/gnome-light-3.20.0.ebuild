@@ -46,7 +46,7 @@ S="${WORKDIR}"
 pkg_pretend() {
 	if ! use gnome-shell; then
 		# Users probably want to use e16, sawfish, etc
-		ewarn "You're installing neither GNOME Shell"
+		ewarn "You're not installing GNOME Shell"
 		ewarn "You will have to install and manage a window manager by yourself"
 	fi
 }

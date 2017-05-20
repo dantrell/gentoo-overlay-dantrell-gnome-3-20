@@ -18,7 +18,6 @@ IUSE="accessibility +bluetooth +classic +cdr cups +extras"
 S=${WORKDIR}
 
 # TODO: check accessibility completeness
-# GDM-3.0 integrates very nicely with GNOME Shell
 RDEPEND="
 	>=gnome-base/gnome-core-libs-${PV}[cups?]
 	>=gnome-base/gnome-core-apps-${PV}[cups?,bluetooth?,cdr?]
@@ -34,7 +33,7 @@ RDEPEND="
 	accessibility? (
 		>=app-accessibility/at-spi2-atk-2.20
 		>=app-accessibility/at-spi2-core-2.20
-		>=app-accessibility/caribou-0.4.21
+		>=app-accessibility/caribou-0.4.8
 		>=app-accessibility/orca-${PV}
 		>=gnome-extra/mousetweaks-3.12.0 )
 	classic? ( >=gnome-extra/gnome-shell-extensions-${PV} )
