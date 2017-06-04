@@ -116,6 +116,7 @@ DEPEND="${COMMON_DEPEND}
 	>=dev-util/gtk-doc-am-1.17
 	>=dev-util/intltool-0.40
 	gnome-base/gnome-common
+	sys-devel/autoconf-archive
 	virtual/pkgconfig
 	!!=dev-lang/spidermonkey-1.8.2*
 "

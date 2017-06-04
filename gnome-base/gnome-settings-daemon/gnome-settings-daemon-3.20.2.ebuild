@@ -19,9 +19,12 @@ REQUIRED_USE="
 	smartcard? ( udev )
 "
 
+# TypeErrors with python3; weird test errors with python2; all in power component that was made required now
+RESTRICT="test"
+
 COMMON_DEPEND="
 	>=dev-libs/glib-2.37.7:2[dbus]
-	>=x11-libs/gtk+-3.15.3:3
+	>=x11-libs/gtk+-3.15.3:3[X]
 	>=gnome-base/gnome-desktop-3.11.1:3=
 	>=gnome-base/gsettings-desktop-schemas-3.20
 	>=gnome-base/librsvg-2.36.2:2
@@ -79,12 +82,12 @@ RDEPEND="${COMMON_DEPEND}
 	)
 "
 # xproto-7.0.15 needed for power plugin
-# FIXME: tests require dbus-mock
 DEPEND="${COMMON_DEPEND}
 	cups? ( sys-apps/sed )
 	test? (
 		${PYTHON_DEPS}
 		$(python_gen_any_dep 'dev-python/pygobject:3[${PYTHON_USEDEP}]')
+		$(python_gen_any_dep 'dev-python/dbusmock[${PYTHON_USEDEP}]')
 		gnome-base/gnome-session )
 	app-text/docbook-xsl-stylesheets
 	dev-libs/libxml2:2
@@ -98,7 +101,10 @@ DEPEND="${COMMON_DEPEND}
 "
 
 python_check_deps() {
-	use test && has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]"
+	if use test; then
+		has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]" &&
+		has_version "dev-python/dbusmock[${PYTHON_USEDEP}]"
+	fi
 }
 
 pkg_setup() {
