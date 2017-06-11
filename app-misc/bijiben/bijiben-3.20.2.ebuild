@@ -14,14 +14,14 @@ KEYWORDS="*"
 IUSE="zeitgeist"
 
 RDEPEND="
-	>=app-misc/tracker-1:=
 	>=dev-libs/glib-2.28:2
-	dev-libs/libxml2
-	>=gnome-extra/evolution-data-server-3.13.90:=
-	net-libs/gnome-online-accounts:=
-	net-libs/webkit-gtk:3
-	sys-apps/util-linux
 	>=x11-libs/gtk+-3.11.4:3
+	>=gnome-extra/evolution-data-server-3.13.90:=
+	net-libs/webkit-gtk:3
+	net-libs/gnome-online-accounts:=
+	dev-libs/libxml2
+	>=app-misc/tracker-1:=
+	sys-apps/util-linux
 	zeitgeist? ( gnome-extra/zeitgeist )
 "
 DEPEND="${RDEPEND}
