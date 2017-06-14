@@ -31,7 +31,8 @@ RDEPEND="!gnome-base/gnome
 
 	gnome-shell? (
 		>=x11-wm/mutter-${PV}
-		>=gnome-base/gnome-shell-${PV} )
+		>=gnome-base/gnome-shell-${PV}
+		gnome-base/gnome-shell-common )
 
 	>=x11-themes/adwaita-icon-theme-$(get_version_component_range 1-2)
 	>=x11-themes/gnome-themes-standard-$(get_version_component_range 1-2)
