@@ -18,6 +18,7 @@ RDEPEND="
 	dev-db/sqlite:3=
 	>=dev-libs/glib-2.40:2
 	dev-libs/libical:0=
+	>=dev-libs/libmspack-0.4
 	>=dev-libs/libxml2-2
 	>=gnome-extra/evolution-data-server-${PV}:0=
 	>=mail-client/evolution-${PV}:2.0
@@ -32,8 +33,6 @@ DEPEND="${RDEPEND}
 "
 
 src_configure() {
-	# We don't have libmspack, needing internal lzx
 	gnome2_src_configure \
-		--with-internal-lzx \
 		$(use_enable test tests)
 }
