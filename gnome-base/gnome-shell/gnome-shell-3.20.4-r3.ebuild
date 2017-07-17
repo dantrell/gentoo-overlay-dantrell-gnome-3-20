@@ -202,12 +202,6 @@ pkg_postinst() {
 		ewarn "apps.gnome-shell.recorder/pipeline to what you want to use."
 	fi
 
-	if has_version "<x11-drivers/ati-drivers-12"; then
-		ewarn "GNOME Shell has been reported to show graphical corruption under"
-		ewarn "x11-drivers/ati-drivers-11.*; you may want to switch to open-source"
-		ewarn "drivers."
-	fi
-
 	if ! has_version "media-libs/mesa[llvm]"; then
 		elog "llvmpipe is used as fallback when no 3D acceleration"
 		elog "is available. You will need to enable llvm USE for"
