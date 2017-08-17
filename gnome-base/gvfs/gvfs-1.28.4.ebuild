@@ -76,6 +76,10 @@ DEPEND="${RDEPEND}
 # test dependencies needed per https://bugzilla.gnome.org/700162
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/gvfs/commit/?id=3424bef7ef71dc3a8c2c71310671cd6d39e7b3e7
+	eapply "${FILESDIR}"/${PN}-1.31.4-metadata-include-headers-for-device-number-functionality.patch
+
 	if ! use udev; then
 		sed -e 's/gvfsd-burn/ /' \
 			-e 's/burn.mount.in/ /' \
