@@ -6,7 +6,7 @@ GNOME2_LA_PUNT="yes"
 inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal
 
 DESCRIPTION="Gimp ToolKit +"
-HOMEPAGE="http://www.gtk.org/"
+HOMEPAGE="https://www.gtk.org/"
 
 LICENSE="LGPL-2+"
 SLOT="3/20" # From WebKit: http://trac.webkit.org/changeset/195811
