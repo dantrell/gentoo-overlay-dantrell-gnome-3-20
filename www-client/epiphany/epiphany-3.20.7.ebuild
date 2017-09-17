@@ -20,7 +20,7 @@ COMMON_DEPEND="
 	>=net-libs/webkit-gtk-2.13.2:4=
 	x11-libs/libwnck:3
 	x11-libs/libX11
-	>=app-crypt/gcr-3.5.5:=
+	>=app-crypt/gcr-3.5.5:=[gtk]
 	>=gnome-base/gnome-desktop-2.91.2:3=
 	>=x11-libs/libnotify-0.5.1:=
 	>=app-crypt/libsecret-0.14
