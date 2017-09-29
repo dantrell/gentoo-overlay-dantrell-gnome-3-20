@@ -42,6 +42,12 @@ DEPEND="${RDEPEND}
 #		net-misc/curl
 #		net-libs/glib-networking[ssl])"
 
+PATCHES=(
+	# From GNOME:
+	# 	https://git.gnome.org/browse/libsoup/commit/?id=03c91c76daf70ee227f38304c5e45a155f45073d
+	"${FILESDIR}"/${PN}-2.59.90.1-libsoup-fix-chunked-decoding-buffer-overrun-cve-2017-2885.patch
+)
+
 src_prepare() {
 	if ! use test; then
 		# don't waste time building tests (bug #226271)
