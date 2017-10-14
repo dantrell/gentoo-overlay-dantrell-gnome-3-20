@@ -15,7 +15,7 @@ IUSE="office"
 
 # Optional app-office/unoconv support (OOo to pdf)
 # freetype needed for font loader
-# libX11 needed for sushi_create_foreign_window()
+# gtk+[X] optionally needed for sushi_create_foreign_window(); when wayland is more widespread, might want to not force it
 COMMON_DEPEND="
 	>=x11-libs/gdk-pixbuf-2.23[introspection]
 	>=dev-libs/gjs-1.40
@@ -23,7 +23,7 @@ COMMON_DEPEND="
 	>=dev-libs/gobject-introspection-0.9.6:=
 	>=media-libs/clutter-1.11.4:1.0[introspection]
 	>=media-libs/clutter-gtk-1.0.1:1.0[introspection]
-	>=x11-libs/gtk+-3.13.2:3[introspection]
+	>=x11-libs/gtk+-3.13.2:3[X,introspection]
 
 	>=app-text/evince-3.0[introspection]
 	media-libs/freetype:2
@@ -34,7 +34,6 @@ COMMON_DEPEND="
 	media-libs/musicbrainz:5=
 	net-libs/webkit-gtk:4[introspection]
 	x11-libs/gtksourceview:3.0[introspection]
-	x11-libs/libX11
 
 	office? ( app-office/unoconv )
 "

@@ -37,7 +37,7 @@ RDEPEND="
 	>=gnome-extra/gnome-contacts-${PV}
 	>=media-gfx/eog-${PV}
 	>=media-video/totem-${PV}
-	>=net-im/empathy-3.12.12
+	>=net-im/empathy-3.12.13
 	>=x11-terms/gnome-terminal-${PV}
 
 	>=gnome-extra/gnome-user-docs-${PV}
@@ -47,7 +47,7 @@ RDEPEND="
 	>=x11-themes/gnome-themes-standard-$(get_version_component_range 1-2)
 
 	bluetooth? ( >=net-wireless/gnome-bluetooth-${PV} )
-	cdr? ( >=app-cdr/brasero-3.12.1 )
+	cdr? ( >=app-cdr/brasero-3.12.2 )
 
 	!gnome-base/gnome-applets
 "

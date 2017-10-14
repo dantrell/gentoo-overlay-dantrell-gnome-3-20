@@ -14,7 +14,8 @@ KEYWORDS="*"
 
 IUSE="debug"
 
-# Automagic glib-2.32 dep
+# Automagic:
+# glib-2.32 dep
 COMMON_DEPEND="
 	>=app-crypt/libsecret-0.8
 	>=app-text/gtkspell-3.0:3
