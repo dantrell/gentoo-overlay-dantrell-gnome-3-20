@@ -1,0 +1,34 @@
+From 8d07e3f02a63fbc1bc3a381b088ec2913f21c118 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 15 Aug 2016 14:31:52 +0200
+Subject: Rename webkitgtk_minimum_version to webkit2gtk_minimum_version
+
+---
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 6e0df32..f6f8ac3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -58,7 +58,7 @@ m4_define([goa_minimum_version], [3.8])
+ m4_define([gweather_minimum_version], [3.10])
+ m4_define([libaccounts_glib_minimum_version], [1.4])
+ m4_define([libsignon_glib_minimum_version], [1.8])
+-m4_define([webkitgtk_minimum_version], [2.11.91])
++m4_define([webkit2gtk_minimum_version], [2.11.91])
+ m4_define([json_glib_minimum_version], [1.0.4])
+ 
+ AC_SUBST([BASE_VERSION],[base_version])
+@@ -490,7 +490,7 @@ AC_MSG_CHECKING([if Google authentication support is enabled])
+ AC_MSG_RESULT([$enable_google_auth])
+ if test "x$enable_google_auth" = "xyes"; then
+ 	PKG_CHECK_MODULES(
+-		[GOOGLE_AUTH], [webkit2gtk-4.0 >= webkitgtk_minimum_version
++		[GOOGLE_AUTH], [webkit2gtk-4.0 >= webkit2gtk_minimum_version
+ 				json-glib-1.0 >= json_glib_minimum_version],,
+ 		[AC_MSG_ERROR([
+ 
+-- 
+cgit v0.12
+

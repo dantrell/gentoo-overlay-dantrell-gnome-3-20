@@ -1,0 +1,52 @@
+From 23a9d21a1a9be95b2bbf6626d80ede3b4a989fda Mon Sep 17 00:00:00 2001
+From: Georges Basile Stavracas Neto <georges.stavracas@gmail.com>
+Date: Mon, 5 Jun 2017 09:20:37 -0300
+Subject: editor-toolbar: Remove accelerators
+
+When GtkBuilder is creating the composite template
+instance, it parses the accelerators and attempts to
+find the parent toplevel widget to map the accelerators.
+
+The problem with this is that the toolbar widget is not
+added to any toplevel on creation time, and the accel
+fails to be attached to the non-existant toplevel. This
+throws a few warnings that can be avoided, since the
+accels are also set programmatically.
+
+Fix these warnings by removing the GtkBuilder accel
+definitions from editor-toolbar.ui.
+---
+ src/resources/editor-toolbar.ui | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/resources/editor-toolbar.ui b/src/resources/editor-toolbar.ui
+index aabfb65..694b98a 100644
+--- a/src/resources/editor-toolbar.ui
++++ b/src/resources/editor-toolbar.ui
+@@ -105,7 +105,6 @@
+                 <property name="image">format-text-bold</property>
+                 <property name="use_underline">True</property>
+                 <signal name="clicked" handler="on_bold_clicked" object="BjbEditorToolbar" swapped="no" />
+-                <accelerator key="b" modifiers="GDK_CONTROL_MASK" signal="clicked"/>
+               </object>
+               <packing>
+                 <property name="expand">True</property>
+@@ -122,7 +121,6 @@
+                 <property name="image">format-text-italic</property>
+                 <property name="use_underline">True</property>
+                 <signal name="clicked" handler="on_italic_clicked" object="BjbEditorToolbar" swapped="no" />
+-                <accelerator key="i" modifiers="GDK_CONTROL_MASK" signal="clicked"/>
+               </object>
+               <packing>
+                 <property name="expand">True</property>
+@@ -139,7 +137,6 @@
+                 <property name="image">format-text-strikethrough</property>
+                 <property name="use_underline">True</property>
+                 <signal name="clicked" handler="on_strike_clicked" object="BjbEditorToolbar" swapped="no" />
+-                <accelerator key="s" modifiers="GDK_CONTROL_MASK" signal="clicked"/>
+               </object>
+               <packing>
+                 <property name="expand">True</property>
+-- 
+cgit v0.12
+

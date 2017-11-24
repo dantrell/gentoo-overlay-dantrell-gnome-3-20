@@ -1,0 +1,540 @@
+From 389bb2e29786739b4a9d0199896f070e4ce85cdb Mon Sep 17 00:00:00 2001
+From: Philip Withnall <philip.withnall@collabora.co.uk>
+Date: Wed, 19 Apr 2017 15:49:28 +0800
+Subject: Fix some memory leaks
+
+There are still some remaining, but for a first pass of very basic
+startup and editing functionality, this has eliminated several memory
+leaks.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=762648
+---
+ src/bjb-controller.c                           |  3 +++
+ src/bjb-note-view.c                            |  1 +
+ src/bjb-settings.c                             | 35 +++++++++++++++-----------
+ src/libbiji/biji-manager.c                     | 21 ++++++++++------
+ src/libbiji/biji-tracker.c                     | 14 +++++++----
+ src/libbiji/biji-zeitgeist.c                   | 26 +++++++++++--------
+ src/libbiji/provider/biji-memo-provider.c      | 19 ++++++++++----
+ src/libbiji/provider/biji-own-cloud-provider.c | 16 +++++++++---
+ 8 files changed, 89 insertions(+), 46 deletions(-)
+
+diff --git a/src/bjb-controller.c b/src/bjb-controller.c
+index c6022fb..f23e718 100644
+--- a/src/bjb-controller.c
++++ b/src/bjb-controller.c
+@@ -567,6 +567,9 @@ bjb_controller_apply_needle (BjbController *self)
+     else
+       update_controller_callback (result, self);
+ 
++    result = g_list_first (result);  /* update_controller_callback() sorts it */
++    g_list_free (result);
++
+     return;
+   }
+ 
+diff --git a/src/bjb-note-view.c b/src/bjb-note-view.c
+index 985ed0d..22bec85 100644
+--- a/src/bjb-note-view.c
++++ b/src/bjb-note-view.c
+@@ -81,6 +81,7 @@ bjb_note_view_finalize(GObject *object)
+   bjb_note_view_disconnect (self);
+ 
+   g_clear_object (&priv->view);
++  g_clear_object (&priv->edit_bar);
+ 
+   G_OBJECT_CLASS (bjb_note_view_parent_class)->finalize (object);
+ }
+diff --git a/src/bjb-settings.c b/src/bjb-settings.c
+index 38df3a9..5d7c5b7 100644
+--- a/src/bjb-settings.c
++++ b/src/bjb-settings.c
+@@ -1,16 +1,16 @@
+ /* bjb-settings.c
+  * Copyright (C) Pierre-Yves LUYTEN 2011 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+ 
+@@ -59,8 +59,8 @@ G_DEFINE_TYPE (BjbSettings, bjb_settings, G_TYPE_SETTINGS);
+ 
+ static void
+ bjb_settings_init (BjbSettings *object)
+-{    
+-  object->priv = 
++{
++  object->priv =
+   G_TYPE_INSTANCE_GET_PRIVATE(object,BJB_TYPE_SETTINGS,BjbSettingsPrivate);
+ }
+ 
+@@ -72,6 +72,10 @@ bjb_settings_finalize (GObject *object)
+   self = BJB_SETTINGS (object);
+   g_object_unref (self->priv->system);
+ 
++  g_free (self->priv->font);
++  g_free (self->priv->color);
++  g_free (self->priv->primary);
++
+   G_OBJECT_CLASS (bjb_settings_parent_class)->finalize (object);
+ }
+ 
+@@ -100,7 +104,7 @@ bjb_settings_get_property (GObject    *object,
+     case PROP_PRIMARY:
+       g_value_set_string (value, settings->priv->primary);
+       break;
+-                                
++
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -118,21 +122,24 @@ bjb_settings_set_property (GObject      *object,
+   switch (prop_id)
+   {
+     case PROP_USE_SYSTEM_FONT:
+-      settings->priv->use_system_font = g_value_get_boolean (value) ; 
++      settings->priv->use_system_font = g_value_get_boolean (value) ;
+       break;
+ 
+     case PROP_FONT:
+-      settings->priv->font = g_value_dup_string(value) ; 
++      g_free (settings->priv->font);
++      settings->priv->font = g_value_dup_string(value);
+       break;
+ 
+     case PROP_COLOR:
++      g_free (settings->priv->color);
+       settings->priv->color = g_value_dup_string(value);
+       break;
+ 
+     case PROP_PRIMARY:
++      g_free (settings->priv->primary);
+       settings->priv->primary = g_value_dup_string (value);
+       break;
+-            
++
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -188,7 +195,7 @@ bjb_settings_class_init (BjbSettingsClass *klass)
+                                    "Use system font",
+                                    "Default System Font for Notes",
+                                    TRUE,
+-                                   G_PARAM_READWRITE | 
++                                   G_PARAM_READWRITE |
+                                    G_PARAM_STATIC_STRINGS);
+ 
+ 
+@@ -197,7 +204,7 @@ bjb_settings_class_init (BjbSettingsClass *klass)
+                                    "Notes Font",
+                                    "Font for Notes",
+                                    NULL,
+-                                   G_PARAM_READWRITE | 
++                                   G_PARAM_READWRITE |
+                                    G_PARAM_STATIC_STRINGS);
+ 
+ 
+@@ -206,7 +213,7 @@ bjb_settings_class_init (BjbSettingsClass *klass)
+                                    "New Notes Color",
+                                    "Default Color for New Notes",
+                                    NULL,
+-                                   G_PARAM_READWRITE | 
++                                   G_PARAM_READWRITE |
+                                    G_PARAM_STATIC_STRINGS);
+ 
+ 
+@@ -215,7 +222,7 @@ bjb_settings_class_init (BjbSettingsClass *klass)
+                                    "Primary Location",
+                                    "Default Provider for New Notes",
+                                    NULL,
+-                                   G_PARAM_READWRITE | 
++                                   G_PARAM_READWRITE |
+                                    G_PARAM_STATIC_STRINGS);
+ 
+ 
+@@ -242,7 +249,7 @@ bjb_settings_use_system_font            (BjbSettings *settings)
+ void
+ bjb_settings_set_use_system_font        (BjbSettings *settings, gboolean value)
+ {
+-  settings->priv->use_system_font = value;  
++  settings->priv->use_system_font = value;
+ }
+ 
+ 
+diff --git a/src/libbiji/biji-manager.c b/src/libbiji/biji-manager.c
+index 2e074f5..5841b5d 100644
+--- a/src/libbiji/biji-manager.c
++++ b/src/libbiji/biji-manager.c
+@@ -1,16 +1,16 @@
+ /* bjb-note-manager.c
+  * Copyright (C) Pierre-Yves LUYTEN 2012 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+@@ -128,7 +128,7 @@ on_provider_abort_cb (BijiProvider *provider,
+   const BijiProviderInfo *info;
+ 
+   info = biji_provider_get_info (provider);
+-  g_hash_table_remove (self->priv->providers, (gpointer) info->unique_id);
++  g_hash_table_remove (self->priv->providers, info->unique_id);
+ 
+   g_object_unref (G_OBJECT (provider));
+ }
+@@ -149,7 +149,8 @@ _add_provider (BijiManager *self,
+   const BijiProviderInfo *info;
+ 
+   info = biji_provider_get_info (provider);
+-  g_hash_table_insert (self->priv->providers, (gpointer) info->unique_id, provider);
++  g_hash_table_insert (self->priv->providers,
++                       (gpointer) info->unique_id, provider);
+ 
+   g_signal_connect (provider, "loaded",
+                     G_CALLBACK (on_provider_loaded_cb), self);
+@@ -185,6 +186,7 @@ load_goa_client (BijiManager *self,
+         g_message ("Loading account %s", goa_account_get_id (account));
+         provider = biji_own_cloud_provider_new (self, object);
+         _add_provider (self, provider);
++        g_object_unref (provider);
+       }
+     }
+   }
+@@ -204,6 +206,7 @@ load_eds_registry (BijiManager *self,
+   {
+     provider = biji_memo_provider_new (self, l->data);
+     _add_provider (self, provider);
++    g_object_unref (provider);
+   }
+ 
+   g_list_free_full (list, g_object_unref);
+@@ -297,8 +300,8 @@ biji_manager_init (BijiManager *self)
+    * - local files stored notes = "local"
+    * - own cloud notes = account_get_id
+    */
+-
+-  priv->providers = g_hash_table_new (g_str_hash, g_str_equal);
++  priv->providers = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                           g_free, g_object_unref);
+ }
+ 
+ 
+@@ -348,6 +351,8 @@ biji_manager_finalize (GObject *object)
+   g_hash_table_destroy (manager->priv->items);
+   g_hash_table_destroy (manager->priv->archives);
+ 
++  g_hash_table_unref (manager->priv->providers);
++  g_clear_object (&manager->priv->local_provider);
+ 
+   G_OBJECT_CLASS (biji_manager_parent_class)->finalize (object);
+ }
+@@ -830,7 +835,7 @@ biji_manager_import_uri (BijiManager *manager,
+   BijiProvider *ret;
+ 
+   ret = biji_import_provider_new (manager, target_provider_id, uri);
+-  g_signal_connect (ret, "loaded", 
++  g_signal_connect (ret, "loaded",
+                     G_CALLBACK (on_provider_loaded_cb), manager);
+ 
+ }
+diff --git a/src/libbiji/biji-tracker.c b/src/libbiji/biji-tracker.c
+index 574472c..159264e 100644
+--- a/src/libbiji/biji-tracker.c
++++ b/src/libbiji/biji-tracker.c
+@@ -1,16 +1,16 @@
+ /* biji-tracker.c
+  * Copyright (C) Pierre-Yves LUYTEN 2012, 2013 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+@@ -215,7 +215,7 @@ biji_query_info_hash_finish (GObject      *source_object,
+ 
+       set->tracker_urn = g_strdup (tracker_sparql_cursor_get_string (cursor, BIJI_URN_COL, NULL));
+       set->title = g_strdup (tracker_sparql_cursor_get_string (cursor, BIJI_TITLE_COL, NULL));
+-      
++
+       if (g_time_val_from_iso8601 (tracker_sparql_cursor_get_string (cursor, BIJI_MTIME_COL, NULL), &time))
+         set->mtime = time.tv_sec;
+ 
+@@ -339,6 +339,8 @@ biji_get_all_notebooks_async (BijiManager *manager,
+     NULL);
+ 
+   bjb_query_async (manager, query, cb, NULL, user_data);
++
++  g_free (query);
+ }
+ 
+ 
+@@ -745,7 +747,7 @@ ensure_ressource_callback (GObject *source_object,
+ 
+ 
+ void
+-biji_tracker_ensure_ressource_from_info (BijiManager *manager, 
++biji_tracker_ensure_ressource_from_info (BijiManager *manager,
+                                          BijiInfoSet *info)
+ {
+   gchar *query;
+@@ -776,6 +778,8 @@ biji_tracker_ensure_ressource_from_info (BijiManager *manager,
+ 
+   tracker_sparql_connection_query_async (
+       get_connection (manager), query, NULL, ensure_ressource_callback, finisher);
++
++  g_free (query);
+ }
+ 
+ 
+diff --git a/src/libbiji/biji-zeitgeist.c b/src/libbiji/biji-zeitgeist.c
+index 34c71fa..29884f0 100644
+--- a/src/libbiji/biji-zeitgeist.c
++++ b/src/libbiji/biji-zeitgeist.c
+@@ -1,16 +1,16 @@
+ /* biji-zeitgeist.c
+  * Copyright (C) Pierre-Yves LUYTEN 2011 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.*/
+ 
+@@ -36,7 +36,7 @@ biji_zeitgeist_init (void)
+   event = zeitgeist_event_new_full (
+     NULL, NULL, "application://bijiben.desktop", NULL, NULL);
+ 
+-  ptr_arr = g_ptr_array_new ();
++  ptr_arr = g_ptr_array_new_with_free_func (g_object_unref);
+   g_ptr_array_add (ptr_arr, event);
+ 
+   ds = zeitgeist_data_source_new_full ("org.gnome.bijiben,dataprovider",
+@@ -47,7 +47,8 @@ biji_zeitgeist_init (void)
+   zg_dsr = zeitgeist_data_source_registry_new ();
+   zeitgeist_data_source_registry_register_data_source (zg_dsr, ds,
+                                                        NULL, NULL, NULL);
+-  g_ptr_array_set_free_func (ptr_arr, g_object_unref);
++  g_object_unref (ds);
++  g_object_unref (zg_dsr);
+   g_ptr_array_unref (ptr_arr);
+ 
+   return log;
+@@ -88,12 +89,12 @@ check_insert_create_zeitgeist (BijiNoteObj *note)
+   GPtrArray          *templates;
+   ZeitgeistEvent     *event;
+   ZeitgeistSubject   *subject;
+-  
++
+   uri = g_strdup_printf ("file://%s", biji_item_get_uuid (BIJI_ITEM (note)));
+   log = biji_manager_get_zg_log (biji_item_get_manager (BIJI_ITEM (note)));
+-  
++
+   templates = g_ptr_array_new ();
+-  event = zeitgeist_event_new_full (ZEITGEIST_ZG_CREATE_EVENT, 
++  event = zeitgeist_event_new_full (ZEITGEIST_ZG_CREATE_EVENT,
+                                     NULL,
+                                     "application://bijiben.desktop",
+                                     NULL, NULL);
+@@ -101,7 +102,7 @@ check_insert_create_zeitgeist (BijiNoteObj *note)
+   zeitgeist_subject_set_uri (subject, uri);
+   zeitgeist_event_add_subject (event, subject);
+   g_ptr_array_add (templates, event);
+-  
++
+   zeitgeist_log_find_events (log,
+                              zeitgeist_time_range_new_to_now (),
+                              templates,
+@@ -111,6 +112,9 @@ check_insert_create_zeitgeist (BijiNoteObj *note)
+                              NULL,
+                              (GAsyncReadyCallback) on_find_create_event,
+                              note);
++
++  g_ptr_array_unref (templates);
++  g_free (uri);
+ }
+ 
+ 
+@@ -161,9 +165,11 @@ insert_zeitgeist (BijiNoteObj *note,
+ 
+   zeitgeist_log_insert_event_no_reply (log, event, NULL);
+   g_free (uri);
++  g_object_unref (event);
++  g_object_unref (subject);
+ 
+ 
+-  /* 
++  /*
+    * Check if the note
+    * was already created into zeitgeist
+    */
+diff --git a/src/libbiji/provider/biji-memo-provider.c b/src/libbiji/provider/biji-memo-provider.c
+index 3083163..76f285f 100644
+--- a/src/libbiji/provider/biji-memo-provider.c
++++ b/src/libbiji/provider/biji-memo-provider.c
+@@ -19,7 +19,7 @@
+ 
+ /*
+  * http://tools.ietf.org/html/rfc2445
+- * 
++ *
+  * Evolution UI offers to sync Memo to local computer
+  * TODO: check this
+  */
+@@ -171,7 +171,7 @@ create_note_from_item (BijiMemoItem *item)
+   biji_manager_get_default_color (manager, &color);
+   biji_note_obj_set_rgba (note, &color);
+   g_hash_table_replace (item->self->priv->items,
+-                        item->set.url,
++                        g_strdup (item->set.url),
+                         note);
+ }
+ 
+@@ -280,7 +280,7 @@ on_object_list_got (GObject      *obj,
+       dtstart = time;
+     else
+       dtstart = 0;
+-    // e_cal_component_free_datetime()
++    e_cal_component_free_datetime(&tz);
+ 
+     e_cal_component_get_last_modified (co, &t); // or dtstart
+     if (time_val_from_icaltime (t, &time))
+@@ -362,6 +362,8 @@ on_notes_mined (GObject       *source_object,
+                            g_strdup (tracker_sparql_cursor_get_string (cursor, 1, NULL)));
+ 
+     }
++
++    g_object_unref (cursor);
+   }
+ 
+   e_cal_client_get_object_list (self->priv->client,
+@@ -650,7 +652,8 @@ biji_memo_provider_init (BijiMemoProvider *self)
+   priv = self->priv = G_TYPE_INSTANCE_GET_PRIVATE (self, BIJI_TYPE_MEMO_PROVIDER, BijiMemoProviderPrivate);
+ 
+   priv->queue = g_queue_new ();
+-  priv->items = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
++  priv->items = g_hash_table_new_full (g_str_hash, g_str_equal,
++                                       g_free, g_object_unref);
+   priv->tracker = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+   priv->memos = NULL;
+ 
+@@ -659,7 +662,13 @@ biji_memo_provider_init (BijiMemoProvider *self)
+ static void
+ biji_memo_provider_finalize (GObject *object)
+ {
+-  e_cal_client_free_icalcomp_slist (BIJI_MEMO_PROVIDER (object)->priv->memos);
++  BijiMemoProviderPrivate *priv = BIJI_MEMO_PROVIDER (object)->priv;
++
++  e_cal_client_free_icalcomp_slist (priv->memos);
++
++  g_hash_table_unref (priv->tracker);
++  g_hash_table_unref (priv->items);
++  g_queue_free_full (priv->queue, (GDestroyNotify) memo_item_free);
+ 
+   G_OBJECT_CLASS (biji_memo_provider_parent_class)->finalize (object);
+ }
+diff --git a/src/libbiji/provider/biji-own-cloud-provider.c b/src/libbiji/provider/biji-own-cloud-provider.c
+index 7a854e4..afd7bbb 100644
+--- a/src/libbiji/provider/biji-own-cloud-provider.c
++++ b/src/libbiji/provider/biji-own-cloud-provider.c
+@@ -1,17 +1,17 @@
+ /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*- */
+ /* biji-own-cloud-provider.c
+  * Copyright (C) Pierre-Yves LUYTEN 2013 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+@@ -137,6 +137,11 @@ biji_own_cloud_provider_finalize (GObject *object)
+   g_object_unref (self->priv->folder);
+ 
+   g_clear_pointer (&self->priv->info.name, g_free);
++  g_clear_pointer (&self->priv->info.datasource, g_free);
++
++  g_queue_free_full (self->priv->queue, g_object_unref);
++  g_hash_table_unref (self->priv->notes);
++  g_hash_table_unref (self->priv->tracker);
+ 
+   G_OBJECT_CLASS (biji_own_cloud_provider_parent_class)->finalize (object);
+ }
+@@ -790,9 +795,10 @@ biji_own_cloud_provider_constructed (GObject *obj)
+     {
+       priv->info.icon = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_INVALID);
+       gtk_image_set_pixel_size (GTK_IMAGE (priv->info.icon), 48);
+-      g_object_ref (priv->info.icon);
+     }
+ 
++    g_object_unref (icon);
++
+     owncloudclient = g_build_filename (
+         g_get_home_dir (),
+         ".local/share/data/ownCloud/folders/ownCloud",
+@@ -806,6 +812,8 @@ biji_own_cloud_provider_constructed (GObject *obj)
+     else
+ 			get_mount (self);
+ 
++    g_object_unref (client);
++
+     return;
+   }
+ 
+-- 
+cgit v0.12
+

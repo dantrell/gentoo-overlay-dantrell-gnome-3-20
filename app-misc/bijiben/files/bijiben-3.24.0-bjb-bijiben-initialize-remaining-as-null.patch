@@ -1,0 +1,29 @@
+From d3a8ba13bb6dfbdaa8a03f35c649c76f7b4b5252 Mon Sep 17 00:00:00 2001
+From: Jonathan Kang <jonathan121537@gmail.com>
+Date: Thu, 20 Apr 2017 20:06:55 +0800
+Subject: bjb-bijiben: initialize "remaining" as NULL
+
+"remaining" variable is not initialized as NULL. Fix that by
+initializing it as NULL.
+
+Fix commit 0c5e079ca1a3c323c6d1c99603ff06f10c535fed.
+---
+ src/bjb-bijiben.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/bjb-bijiben.c b/src/bjb-bijiben.c
+index 5ff346f..2ba9c84 100644
+--- a/src/bjb-bijiben.c
++++ b/src/bjb-bijiben.c
+@@ -353,7 +353,7 @@ bijiben_application_local_command_line (GApplication *application,
+ {
+   Bijiben *self;
+   gboolean version = FALSE;
+-  gchar **remaining;
++  gchar **remaining = NULL;
+   GOptionContext *context;
+   GError *error = NULL;
+   gint argc = 0;
+-- 
+cgit v0.12
+

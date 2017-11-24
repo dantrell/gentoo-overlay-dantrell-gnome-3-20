@@ -1,0 +1,58 @@
+From 59540468524d86524f51bd08fd7702a38a0aa4b1 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?I=C3=B1igo=20Mart=C3=ADnez?= <inigomartinez@gmail.com>
+Date: Sat, 6 May 2017 11:39:19 +0200
+Subject: biji-note-obj: added const qualifier to return type
+
+Added const qualifier to biji_note_obj_editor_get_selection function
+return in order to not discard the const qualifier from
+biji_webkit_editor_get_selection's return.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=771225
+---
+ src/bjb-editor-toolbar.c    | 2 +-
+ src/libbiji/biji-note-obj.c | 2 +-
+ src/libbiji/biji-note-obj.h | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/bjb-editor-toolbar.c b/src/bjb-editor-toolbar.c
+index 8df11aa..ad8a29f 100644
+--- a/src/bjb-editor-toolbar.c
++++ b/src/bjb-editor-toolbar.c
+@@ -172,7 +172,7 @@ on_link_clicked (GtkButton        *button,
+                  BjbEditorToolbar *self)
+ {
+   BjbSettings             *settings;
+-  gchar                   *link;
++  const gchar             *link;
+   GtkWidget               *window;
+   BijiNoteObj             *result;
+   GdkRGBA                  color;
+diff --git a/src/libbiji/biji-note-obj.c b/src/libbiji/biji-note-obj.c
+index b1eb36a..aa30157 100644
+--- a/src/libbiji/biji-note-obj.c
++++ b/src/libbiji/biji-note-obj.c
+@@ -892,7 +892,7 @@ biji_note_obj_editor_has_selection (BijiNoteObj *note)
+   return FALSE;
+ }
+ 
+-gchar *
++const gchar *
+ biji_note_obj_editor_get_selection (BijiNoteObj *note)
+ {
+   if (biji_note_obj_is_opened (note))
+diff --git a/src/libbiji/biji-note-obj.h b/src/libbiji/biji-note-obj.h
+index 2770fa4..d10f57d 100644
+--- a/src/libbiji/biji-note-obj.h
++++ b/src/libbiji/biji-note-obj.h
+@@ -212,7 +212,7 @@ void             biji_note_obj_editor_apply_format           (BijiNoteObj *note,
+ gboolean         biji_note_obj_editor_has_selection          (BijiNoteObj *note);
+ 
+ 
+-gchar           *biji_note_obj_editor_get_selection          (BijiNoteObj *note);
++const gchar     *biji_note_obj_editor_get_selection          (BijiNoteObj *note);
+ 
+ 
+ void             biji_note_obj_editor_cut                    (BijiNoteObj *note);
+-- 
+cgit v0.12
+

@@ -1,0 +1,32 @@
+From 257a48d87dde3347814ecf5a9beee0607334022d Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Tue, 25 Apr 2017 00:35:25 -0300
+Subject: note-view: segfault back button
+
+Fixed bug introduced in commit 389bb2e29786739b4a9d0199896f070e4ce85cdb
+which added code to clear editor-toolbar object in the finalization
+method of note-view.
+
+The problem is that, this object is already cleared by its parent
+container, when their parent window is destroyed.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=762648
+---
+ src/bjb-note-view.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/bjb-note-view.c b/src/bjb-note-view.c
+index 930d476..9943e99 100644
+--- a/src/bjb-note-view.c
++++ b/src/bjb-note-view.c
+@@ -81,7 +81,6 @@ bjb_note_view_finalize(GObject *object)
+   bjb_note_view_disconnect (self);
+ 
+   g_clear_object (&priv->view);
+-  g_clear_object (&priv->edit_bar);
+ 
+   G_OBJECT_CLASS (bjb_note_view_parent_class)->finalize (object);
+ }
+-- 
+cgit v0.12
+

@@ -5,7 +5,7 @@ GNOME2_LA_PUNT="yes"
 PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} pypy )
 VALA_USE_DEPEND="vapigen"
 
-inherit db-use flag-o-matic gnome2 python-any-r1 systemd vala virtualx
+inherit autotools db-use flag-o-matic gnome2 python-any-r1 systemd vala virtualx
 
 DESCRIPTION="Evolution groupware backend"
 HOMEPAGE="https://wiki.gnome.org/Apps/Evolution"
@@ -50,7 +50,7 @@ RDEPEND="
 	google? (
 		>=dev-libs/json-glib-1.0.4
 		>=dev-libs/libgdata-0.15.1:=
-		>=net-libs/webkit-gtk-2.4.9:3
+		>=net-libs/webkit-gtk-2.11.91:4
 	)
 	gnome-online-accounts? ( >=net-libs/gnome-online-accounts-3.8:= )
 	introspection? ( >=dev-libs/gobject-introspection-0.9.12:= )
@@ -75,6 +75,13 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=6c3cff9821913913aac2c8391771f0e978e501a9
+	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=8d07e3f02a63fbc1bc3a381b088ec2913f21c118
+	eapply "${FILESDIR}"/${PN}-3.21.90-bug-751588-port-to-webkit2.patch
+	eapply "${FILESDIR}"/${PN}-3.21.91-rename-webkitgtk-minimum-version-to-webkit2gtk-minimum-version.patch
+
+	eautoreconf
 	use vala && vala_src_prepare
 	gnome2_src_prepare
 }

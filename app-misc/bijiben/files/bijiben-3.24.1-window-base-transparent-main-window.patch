@@ -1,0 +1,46 @@
+From ef9698724a23be5d5f5233405324889bf25ca201 Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Sun, 30 Jul 2017 22:29:05 -0300
+Subject: window-base: Transparent main window
+
+When there is no note to be shown, the application window is tranparent.
+
+This issue was introduced by "Port to WebKit2" commit:
+fb7b8bbac5ef3591d2f940f3034a4390468ad01d.
+
+The code that added that "feature" to the application was removed.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=784824
+---
+ src/bjb-window-base.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/src/bjb-window-base.c b/src/bjb-window-base.c
+index 8156826..0c50a03 100644
+--- a/src/bjb-window-base.c
++++ b/src/bjb-window-base.c
+@@ -256,21 +256,12 @@ bjb_window_base_constructed (GObject *obj)
+   const gint32 *size;
+   gsize n_elements;
+   GVariant *variant;
+-  GdkVisual *rgba_visual;
+ 
+   G_OBJECT_CLASS (bjb_window_base_parent_class)->constructed (obj);
+ 
+   priv = self->priv;
+   priv->settings = bjb_app_get_settings ((gpointer) g_application_get_default ());
+ 
+-  /* Allow transparencies if possible */
+-  rgba_visual = gdk_screen_get_rgba_visual (gtk_window_get_screen (GTK_WINDOW (self)));
+-  if (rgba_visual)
+-  {
+-    gtk_widget_set_visual (GTK_WIDGET (self), rgba_visual);
+-    gtk_widget_set_app_paintable (GTK_WIDGET (self), TRUE);
+-  }
+-
+   gtk_window_set_position (GTK_WINDOW (self),GTK_WIN_POS_CENTER);
+   gtk_window_set_title (GTK_WINDOW (self), _(BIJIBEN_MAIN_WIN_TITLE));
+ 
+-- 
+cgit v0.12
+

@@ -1,0 +1,40 @@
+From f55eefec841486a448a9f29cae7baaf1440c0b33 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?I=C3=B1igo=20Mart=C3=ADnez?= <inigomartinez@gmail.com>
+Date: Sat, 6 May 2017 12:02:48 +0200
+Subject: biji-webkit-editor: Fixed mixed declarations and code
+
+https://bugzilla.gnome.org/show_bug.cgi?id=771225
+---
+ src/libbiji/editor/biji-webkit-editor.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/src/libbiji/editor/biji-webkit-editor.c b/src/libbiji/editor/biji-webkit-editor.c
+index 00c9452..add451f 100644
+--- a/src/libbiji/editor/biji-webkit-editor.c
++++ b/src/libbiji/editor/biji-webkit-editor.c
+@@ -228,6 +228,9 @@ biji_webkit_editor_set_font (BijiWebkitEditor *self, gchar *font)
+   PangoFontDescription *font_desc;
+   const gchar *family;
+   gint size;
++  GdkScreen *screen;
++  double dpi;
++  guint font_size;
+ 
+   /* parse : but we only parse font properties we'll be able
+    * to transfer to webkit editor
+@@ -240,9 +243,9 @@ biji_webkit_editor_set_font (BijiWebkitEditor *self, gchar *font)
+   if (!pango_font_description_get_size_is_absolute (font_desc))
+     size /= PANGO_SCALE;
+ 
+-  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (self));
+-  double dpi = screen ? gdk_screen_get_resolution (screen) : 96.0;
+-  guint font_size = size / 72. * dpi;
++  screen = gtk_widget_get_screen (GTK_WIDGET (self));
++  dpi = screen ? gdk_screen_get_resolution (screen) : 96.0;
++  font_size = size / 72. * dpi;
+ 
+   /* Set */
+   g_object_set (biji_webkit_editor_get_web_settings (),
+-- 
+cgit v0.12
+

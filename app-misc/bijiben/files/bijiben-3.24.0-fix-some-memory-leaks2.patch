@@ -1,0 +1,56 @@
+From 226c8314915e48cfc5414d99fcabde50cdb75ab5 Mon Sep 17 00:00:00 2001
+From: Jonathan Kang <jonathan121537@gmail.com>
+Date: Fri, 21 Apr 2017 10:50:29 +0800
+Subject: Fix some memory leaks
+
+Fix some memory leaks introduced by commit
+389bb2e29786739b4a9d0199896f070e4ce85cdb.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=762648
+---
+ src/bjb-controller.c         | 1 -
+ src/libbiji/biji-manager.c   | 2 +-
+ src/libbiji/biji-zeitgeist.c | 2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/bjb-controller.c b/src/bjb-controller.c
+index f23e718..6accc50 100644
+--- a/src/bjb-controller.c
++++ b/src/bjb-controller.c
+@@ -567,7 +567,6 @@ bjb_controller_apply_needle (BjbController *self)
+     else
+       update_controller_callback (result, self);
+ 
+-    result = g_list_first (result);  /* update_controller_callback() sorts it */
+     g_list_free (result);
+ 
+     return;
+diff --git a/src/libbiji/biji-manager.c b/src/libbiji/biji-manager.c
+index e1cb4b9..dc7ce46 100644
+--- a/src/libbiji/biji-manager.c
++++ b/src/libbiji/biji-manager.c
+@@ -150,7 +150,7 @@ _add_provider (BijiManager *self,
+ 
+   info = biji_provider_get_info (provider);
+   g_hash_table_insert (self->priv->providers,
+-                       (gpointer) info->unique_id, provider);
++                       g_strdup (info->unique_id), g_object_ref (provider));
+ 
+   g_signal_connect (provider, "loaded",
+                     G_CALLBACK (on_provider_loaded_cb), self);
+diff --git a/src/libbiji/biji-zeitgeist.c b/src/libbiji/biji-zeitgeist.c
+index 04da913..75da189 100644
+--- a/src/libbiji/biji-zeitgeist.c
++++ b/src/libbiji/biji-zeitgeist.c
+@@ -93,7 +93,7 @@ check_insert_create_zeitgeist (BijiNoteObj *note)
+   uri = g_strdup_printf ("file://%s", biji_item_get_uuid (BIJI_ITEM (note)));
+   log = biji_manager_get_zg_log (biji_item_get_manager (BIJI_ITEM (note)));
+ 
+-  templates = g_ptr_array_new ();
++  templates = g_ptr_array_new_with_free_func (g_object_unref);
+   event = zeitgeist_event_new_full (ZEITGEIST_ZG_CREATE_EVENT,
+                                     NULL,
+                                     "application://bijiben.desktop",
+-- 
+cgit v0.12
+

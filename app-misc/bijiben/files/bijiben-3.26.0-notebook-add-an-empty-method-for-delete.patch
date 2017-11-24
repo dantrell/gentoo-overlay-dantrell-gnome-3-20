@@ -1,0 +1,48 @@
+From 439b089fd9253d85654e121b886366a76223646d Mon Sep 17 00:00:00 2001
+From: Mohammed Sadiq <sadiq@sadiqpk.org>
+Date: Wed, 23 Aug 2017 15:35:49 +0530
+Subject: notebook: add an empty method for delete
+
+Since the notebook class wasn't having a delete method, bijiben
+was segfaulting when the user tries to delete a notebook from trash.
+
+So for now, just provide an empty method so that bijiben won't
+segfault any more.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=786675
+
+Signed-off-by: Isaque Galdino <igaldino@gmail.com>
+---
+ src/libbiji/biji-notebook.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/libbiji/biji-notebook.c b/src/libbiji/biji-notebook.c
+index 6153e8e..f426180 100644
+--- a/src/libbiji/biji-notebook.c
++++ b/src/libbiji/biji-notebook.c
+@@ -277,6 +277,14 @@ biji_notebook_trash (BijiItem *item)
+   return TRUE;
+ }
+ 
++static gboolean
++biji_notebook_delete (BijiItem *item)
++{
++  g_return_val_if_fail (BIJI_IS_NOTEBOOK (item), FALSE);
++
++  g_warning ("Notebooks delete is not yet implemented");
++  return FALSE;
++}
+ 
+ static gboolean
+ biji_notebook_restore (BijiItem  *item,
+@@ -504,6 +512,7 @@ biji_notebook_class_init (BijiNotebookClass *klass)
+   item_class->get_place = biji_notebook_get_place;
+   item_class->has_color = say_no;
+   item_class->trash = biji_notebook_trash;
++  item_class->delete = biji_notebook_delete;
+   item_class->restore = biji_notebook_restore;
+   item_class->is_collectable = say_no;
+   item_class->has_notebook = biji_notebook_has_notebook;
+-- 
+cgit v0.12
+

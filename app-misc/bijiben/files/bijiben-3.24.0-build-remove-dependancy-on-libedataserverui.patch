@@ -1,0 +1,27 @@
+From bff3cc849ca05d6017620ee9849888e84a963a71 Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Wed, 1 Mar 2017 15:04:32 -0300
+Subject: build: Remove dependancy on libedataserverui
+
+libedataserverui depends on WebKit2 and Bijiben is still on WebKit1, so
+in order to prevent naming clash between the those libraries we need to
+remove it, until Bibijen is ported to WebKit2.
+---
+ configure.ac | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 825693d..1ed1d30 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -72,7 +72,6 @@ PKG_CHECK_MODULES([TRACKER], [tracker-sparql-1.0], [sparql_version="tracker-spar
+ PKG_CHECK_MODULES(BIJIBEN,
+                   [ libecal-1.2 >= $EDS_REQUIRED_VERSION
+ 		    libedataserver-1.2 >= $EDS_REQUIRED_VERSION
+-		    libedataserverui-1.2 >= $EDS_REQUIRED_VERSION
+                     gio-unix-2.0
+                     glib-2.0 >= $GLIB_REQUIRED_VERSION
+                     goa-1.0
+-- 
+cgit v0.12
+

@@ -1,0 +1,34 @@
+From 10b3a74b11433b7c70418a6fdde162bd8d42adaf Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Mon, 4 Sep 2017 23:28:54 -0300
+Subject: note-obj: Critical error when creating a new note
+
+When creating a new note, Bijiben is thrown a message: "Glib critical
+error when creating a new note".
+
+That happens because when it's checking for old notes, it's also trying
+to convert new notes, which are null at the start of the process.
+
+This patches checks that and avoids that behaviour.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=787289
+---
+ src/libbiji/biji-note-obj.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/libbiji/biji-note-obj.c b/src/libbiji/biji-note-obj.c
+index bc963a7..ca69a74 100644
+--- a/src/libbiji/biji-note-obj.c
++++ b/src/libbiji/biji-note-obj.c
+@@ -830,7 +830,7 @@ biji_note_obj_get_html (BijiNoteObj *note)
+ {
+ 	gchar *content = BIJI_NOTE_OBJ_GET_CLASS (note)->get_html (note);
+ 
+-	if (is_webkit1 (content))
++	if (content && is_webkit1 (content))
+ 		{
+ 			content = convert_webkit1_to_webkit2 (content);
+ 			biji_note_obj_set_html (note, content);
+-- 
+cgit v0.12
+

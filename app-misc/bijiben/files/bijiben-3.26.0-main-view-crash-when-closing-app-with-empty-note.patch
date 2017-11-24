@@ -1,0 +1,50 @@
+From 9f937210ef8e3b13cdcb4fd962723063eb0419c4 Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Sun, 10 Sep 2017 12:41:03 -0300
+Subject: main-view: Crash when closing app with empty note
+
+Application is crashing when closing it in an empty note.
+
+When application is closed, it's raised an item-delete action. The
+item-delete process tries to get back to main view, but view are now
+destroyed, so it reaches a NULL pointer.
+
+This patch checks if view is NULL and then returns without further
+processing.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=787508
+---
+ src/bjb-main-view.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/src/bjb-main-view.c b/src/bjb-main-view.c
+index 5263c36..7c50d11 100644
+--- a/src/bjb-main-view.c
++++ b/src/bjb-main-view.c
+@@ -783,6 +783,11 @@ bjb_main_view_update_model (BjbMainView *self)
+ gboolean
+ bjb_main_view_get_selection_mode (BjbMainView *self)
+ {
++  /* if self->priv->view is NULL, that means the view was destroyed
++   * because the windows is being closed by an exit action, so it
++   * doesn't matter which SelectionMode we return.
++   */
++  if (self->priv->view == NULL) return FALSE;
+   return gd_main_view_get_selection_mode (self->priv->view);
+ }
+ 
+@@ -795,6 +800,11 @@ bjb_main_view_set_selection_mode (BjbMainView *self, gboolean mode)
+ GdMainViewType
+ bjb_main_view_get_view_type (BjbMainView *view)
+ {
++  /* if view->priv->view is NULL, that means the view was destroyed
++   * because the windows is being closed by an exit action, so it
++   * doesn't matter which ViewType we return.
++   */
++  if (view->priv->view == NULL) return GD_MAIN_VIEW_ICON;
+   return gd_main_view_get_view_type (view->priv->view);
+ }
+ 
+-- 
+cgit v0.12
+

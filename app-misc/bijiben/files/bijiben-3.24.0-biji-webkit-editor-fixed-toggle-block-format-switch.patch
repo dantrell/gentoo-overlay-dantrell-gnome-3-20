@@ -1,0 +1,54 @@
+From 533c0f6a7207a0a72083734c16ec603784c50804 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?I=C3=B1igo=20Mart=C3=ADnez?= <inigomartinez@gmail.com>
+Date: Sat, 6 May 2017 12:00:07 +0200
+Subject: biji-webkit-editor: Fixed toggle block format switch
+
+The toggle block format switch has been fixed from not covering all
+the available options.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=771225
+---
+ src/libbiji/editor/biji-webkit-editor.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
+
+diff --git a/src/libbiji/editor/biji-webkit-editor.c b/src/libbiji/editor/biji-webkit-editor.c
+index 6e96d93..00c9452 100644
+--- a/src/libbiji/editor/biji-webkit-editor.c
++++ b/src/libbiji/editor/biji-webkit-editor.c
+@@ -126,21 +126,20 @@ static void
+ biji_toggle_block_format (BijiWebkitEditor *self,
+                           BlockFormat block_format)
+ {
+-  const char *command = NULL;
+-
+   /* insert commands toggle the formatting */
+-  switch (block_format) {
+-  case BLOCK_FORMAT_UNORDERED_LIST:
+-    command = "insertUnorderedList";
+-    break;
+-  case BLOCK_FORMAT_ORDERED_LIST:
+-    command = "insertOrderedList";
+-    break;
+-  default:
+-    g_assert_not_reached ();
++  switch (block_format)
++  {
++    case BLOCK_FORMAT_NONE:
++      break;
++    case BLOCK_FORMAT_UNORDERED_LIST:
++      webkit_web_view_execute_editing_command (WEBKIT_WEB_VIEW (self), "insertUnorderedList");
++      break;
++    case BLOCK_FORMAT_ORDERED_LIST:
++      webkit_web_view_execute_editing_command (WEBKIT_WEB_VIEW (self), "insertOrderedList");
++      break;
++    default:
++      g_assert_not_reached ();
+   }
+-
+-  webkit_web_view_execute_editing_command (WEBKIT_WEB_VIEW (self), command);
+ }
+ 
+ void
+-- 
+cgit v0.12
+

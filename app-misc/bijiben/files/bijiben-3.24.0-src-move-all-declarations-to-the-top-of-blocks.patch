@@ -1,0 +1,59 @@
+From 3f4faecf8f718ea79de61b5fd9dfb51eac6fe571 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <philip.withnall@collabora.co.uk>
+Date: Sun, 23 Apr 2017 21:03:44 +0800
+Subject: src: Move all declarations to the top of blocks
+
+This fixes C90 style, which makes it easier to see all the memory a
+function allocates or handles throughout its body.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=762648
+---
+ src/libbiji/editor/biji-webkit-editor.c     | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/src/libbiji/editor/biji-webkit-editor.c b/src/libbiji/editor/biji-webkit-editor.c
+index 440de5b..6e96d93 100644
+--- a/src/libbiji/editor/biji-webkit-editor.c
++++ b/src/libbiji/editor/biji-webkit-editor.c
+@@ -1,16 +1,16 @@
+ /* biji-webkit-editor.c
+  * Copyright (C) Pierre-Yves LUYTEN 2012 <py@luyten.fr>
+- * 
++ *
+  * bijiben is free software: you can redistribute it and/or modify it
+  * under the terms of the GNU General Public License as published by the
+  * Free Software Foundation, either version 3 of the License, or
+  * (at your option) any later version.
+- * 
++ *
+  * bijiben is distributed in the hope that it will be useful, but
+  * WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  * See the GNU General Public License for more details.
+- * 
++ *
+  * You should have received a copy of the GNU General Public License along
+  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+@@ -227,14 +227,16 @@ void
+ biji_webkit_editor_set_font (BijiWebkitEditor *self, gchar *font)
+ {
+   PangoFontDescription *font_desc;
++  const gchar *family;
++  gint size;
+ 
+   /* parse : but we only parse font properties we'll be able
+    * to transfer to webkit editor
+    * Maybe is there a better way than webkitSettings,
+    * eg applying format to the whole body */
+   font_desc = pango_font_description_from_string (font);
+-  const gchar * family = pango_font_description_get_family (font_desc);
+-  gint size = pango_font_description_get_size (font_desc);
++  family = pango_font_description_get_family (font_desc);
++  size = pango_font_description_get_size (font_desc);
+ 
+   if (!pango_font_description_get_size_is_absolute (font_desc))
+     size /= PANGO_SCALE;
+-- 
+cgit v0.12
+

@@ -1,0 +1,34 @@
+From efcabf00020fe01fee75a3f55ae7a48e83de37d6 Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Sun, 11 Jun 2017 15:10:31 -0300
+Subject: local-provider: Remove warning about .Trash folder
+
+When $HOME/.local/share/bijiben directory doesn't exist, application
+creates it, but it also complaints about another directory that doesn't
+exist: $HOME/.local/share/bijiben/.Trash.
+
+This patch removes that warning message because the .Trash directory
+will be created anyway.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=783471
+---
+ src/libbiji/provider/biji-local-provider.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/libbiji/provider/biji-local-provider.c b/src/libbiji/provider/biji-local-provider.c
+index 72c41df..733df70 100644
+--- a/src/libbiji/provider/biji-local-provider.c
++++ b/src/libbiji/provider/biji-local-provider.c
+@@ -79,7 +79,8 @@ load_location_error (GFile *location,
+   gchar *path;
+ 
+   path = g_file_get_path (location);
+-  g_printerr ("Unable to load location %s: %s", path, error->message);
++	if (!g_strrstr (path, ".Trash"))
++  	g_printerr ("Unable to load location %s: %s", path, error->message);
+   g_free (path);
+   g_error_free (error);
+ }
+-- 
+cgit v0.12
+

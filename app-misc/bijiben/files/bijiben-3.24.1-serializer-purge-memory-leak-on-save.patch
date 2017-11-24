@@ -1,0 +1,30 @@
+From 1048328eae48ebb9de6be3a7286259d671c5034d Mon Sep 17 00:00:00 2001
+From: Mohammed Sadiq <sadiq@sadiqpk.org>
+Date: Fri, 16 Jun 2017 07:40:19 +0530
+Subject: serializer: Purge memory leak on save
+
+The html text wasn't freed after the text was saved. This was causing
+a bit huge memory leak
+
+https://bugzilla.gnome.org/show_bug.cgi?id=783847
+
+Signed-off-by: Isaque Galdino <igaldino@gmail.com>
+---
+ src/libbiji/serializer/biji-lazy-serializer.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/libbiji/serializer/biji-lazy-serializer.c b/src/libbiji/serializer/biji-lazy-serializer.c
+index 1e5c2ae..843e01f 100644
+--- a/src/libbiji/serializer/biji-lazy-serializer.c
++++ b/src/libbiji/serializer/biji-lazy-serializer.c
+@@ -162,6 +162,7 @@ serialize_html (BijiLazySerializer *self)
+     return;
+ 
+   xmlTextWriterWriteRaw(priv->writer, BAD_CAST html);
++  g_free (html);
+ }
+ 
+ static gboolean
+-- 
+cgit v0.12
+

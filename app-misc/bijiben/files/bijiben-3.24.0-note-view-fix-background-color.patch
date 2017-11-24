@@ -1,0 +1,33 @@
+From ea3610066fd643f8fb7c5317721ef1dcb0bd6325 Mon Sep 17 00:00:00 2001
+From: Isaque Galdino <igaldino@gmail.com>
+Date: Fri, 17 Mar 2017 10:28:27 -0300
+Subject: note-view: Fix background color
+
+Background color was not being used in text view/editor. The code to
+actually set the background was not even there.
+
+After fixing that, as a side effect, it also fixed the text editor which
+was messing up all text during text edition.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=761765
+---
+ src/bjb-note-view.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/bjb-note-view.c b/src/bjb-note-view.c
+index 2ca1ef6..985ed0d 100644
+--- a/src/bjb-note-view.c
++++ b/src/bjb-note-view.c
+@@ -179,6 +179,9 @@ on_note_color_changed_cb (BijiNoteObj *note, BjbNoteView *self)
+   g_return_if_fail (BIJI_IS_NOTE_OBJ (note));
+ 
+   biji_note_obj_get_rgba (note, &color);
++
++  webkit_web_view_set_background_color (WEBKIT_WEB_VIEW (priv->view), &color);
++
+   if (color.red < 0.5)
+     font_color = "white";
+   else
+-- 
+cgit v0.12
+

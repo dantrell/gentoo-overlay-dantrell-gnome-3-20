@@ -1,0 +1,37 @@
+From 97cd9faec88615d71c99989cbab42fccd778cb9f Mon Sep 17 00:00:00 2001
+From: Mohammed Sadiq <sadiq@sadiqpk.org>
+Date: Fri, 16 Jun 2017 07:54:03 +0530
+Subject: local-note: Purge memory leak when deleting note
+
+The path obtained for debug text was leaking, fix that.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=783848
+
+Signed-off-by: Isaque Galdino <igaldino@gmail.com>
+---
+ src/libbiji/provider/biji-local-note.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/libbiji/provider/biji-local-note.c b/src/libbiji/provider/biji-local-note.c
+index c0841a2..5273ae5 100644
+--- a/src/libbiji/provider/biji-local-note.c
++++ b/src/libbiji/provider/biji-local-note.c
+@@ -286,11 +286,14 @@ static gboolean
+ local_note_delete (BijiItem *item)
+ {
+   BijiLocalNote *self;
++  gchar *file_path;
+ 
+   g_return_val_if_fail (BIJI_IS_LOCAL_NOTE (item), FALSE);
+   self = BIJI_LOCAL_NOTE (item);
+ 
+-  g_debug ("local note delete : %s", g_file_get_path (self->priv->location));
++  file_path = g_file_get_path (self->priv->location);
++  g_debug ("local note delete : %s", file_path);
++  g_free (file_path);
+ 
+   biji_note_delete_from_tracker (BIJI_NOTE_OBJ (self));
+   g_file_delete_async (self->priv->location,
+-- 
+cgit v0.12
+

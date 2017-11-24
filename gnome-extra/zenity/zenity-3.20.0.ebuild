@@ -24,12 +24,11 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-util/itstool
+	gnome-base/gnome-common
 	>=sys-devel/gettext-0.19.4
 	virtual/pkgconfig
 	test? ( app-text/yelp-tools )
 "
-# eautoreconf needs:
-#	>=gnome-base/gnome-common-2.12
 
 src_configure() {
 	gnome2_src_configure \
