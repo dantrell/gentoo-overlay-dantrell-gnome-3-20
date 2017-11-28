@@ -1,0 +1,56 @@
+From 86dab2b755d70a9be296df5909c48ee97967609b Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 9 Sep 2016 00:07:11 +0200
+Subject: [PATCH 366/595] Bug 771044 - [WK2] Composer deletes too much text
+
+When saving the selection, only append the selection end mark to the end of the
+container if the following statements are met:
+
+* container is not text
+* the offset is not 0 (that would be when the selection starts/end in the
+  beginning of node)
+* offset is bigger by one than the count of the container's children that are
+  elements
+
+For more see https://developer.mozilla.org/en-US/docs/Web/API/Range/endOffset
+
+In the next cycle we really need to simplify the logic inside the
+e_editor_dom_selection_save()..
+---
+ .../webkit-editor/web-extension/e-editor-dom-functions.c  | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 2865d4b029..3838f54283 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -12802,6 +12802,11 @@ e_editor_dom_selection_save (EEditorPage *editor_page)
+ 					WEBKIT_DOM_NODE (start_marker),
+ 					NULL);
+ 			goto insert_end_marker;
++		} else if (offset != 0 && WEBKIT_DOM_IS_ELEMENT (container) &&
++			   offset == webkit_dom_element_get_child_element_count (WEBKIT_DOM_ELEMENT (container)) + 1) {
++			webkit_dom_node_append_child (
++				container, WEBKIT_DOM_NODE (start_marker), NULL);
++			goto insert_end_marker;
+ 		} else {
+ 			if (webkit_dom_node_get_first_child (container)) {
+ 				marker_node = webkit_dom_node_insert_before (
+@@ -12915,10 +12920,13 @@ e_editor_dom_selection_save (EEditorPage *editor_page)
+ 		           !WEBKIT_DOM_IS_HTML_BODY_ELEMENT (parent_node)) {
+ 			split_node = parent_node;
+ 			split_node = webkit_dom_node_get_next_sibling (split_node);
+-		} else {
++		} else if (offset != 0 && WEBKIT_DOM_IS_ELEMENT (container) &&
++			   offset == webkit_dom_element_get_child_element_count (WEBKIT_DOM_ELEMENT (container)) + 1) {
+ 			webkit_dom_node_append_child (
+ 				container, WEBKIT_DOM_NODE (end_marker), NULL);
+ 			goto out;
++		} else {
++			split_node = container;
+ 		}
+ 	}
+ 
+-- 
+2.15.0
+

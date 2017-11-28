@@ -1,0 +1,57 @@
+From ce4018e9957062bf4e8bcbc984d13162542eeb92 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 25 Oct 2016 14:22:06 +0200
+Subject: [PATCH 474/595] Bug 773236 - Memory leak from
+ e-editor-dom-functions.c:save_history_for_input
+
+Free the history event before removing it from the history.
+---
+ .../web-extension/e-editor-undo-redo-manager.c          | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index e60feb40fb..64a3d08091 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -2243,8 +2243,11 @@ e_editor_undo_redo_manager_set_operation_in_progress (EEditorUndoRedoManager *ma
+ }
+ 
+ static void
+-free_history_event_content (EEditorHistoryEvent *event)
++free_history_event (EEditorHistoryEvent *event)
+ {
++	if (event == NULL)
++		return;
++
+ 	switch (event->type) {
+ 		case HISTORY_INPUT:
+ 		case HISTORY_DELETE:
+@@ -2283,15 +2286,6 @@ free_history_event_content (EEditorHistoryEvent *event)
+ 		default:
+ 			break;
+ 	}
+-}
+-
+-static void
+-free_history_event (EEditorHistoryEvent *event)
+-{
+-	if (event == NULL)
+-		return;
+-
+-	free_history_event_content (event);
+ 
+ 	g_free (event);
+ }
+@@ -2300,8 +2294,7 @@ static void
+ remove_history_event (EEditorUndoRedoManager *manager,
+                       GList *item)
+ {
+-	free_history_event_content (item->data);
+-
++	free_history_event (item->data);
+ 	manager->priv->history = g_list_delete_link (manager->priv->history, item);
+ 	manager->priv->history_size--;
+ }
+-- 
+2.15.0
+

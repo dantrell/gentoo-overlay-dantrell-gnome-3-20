@@ -1,0 +1,37 @@
+From 42f3d73ad1af40328de55544a69af2963b72568a Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 22 Sep 2016 11:24:28 +0200
+Subject: [PATCH 398/595] Cannot switch the list type when it has just one
+ level
+
+Remove the original list after we insert a newly created one, otherwise
+the newly created one won't be added to the DOM.
+---
+ .../webkit-editor/web-extension/e-editor-dom-functions.c    |  3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 69cb4e402a..3801b12c56 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -16714,7 +16714,6 @@ format_change_list_from_list (EEditorPage *editor_page,
+ 
+ 		if (selection_end) {
+ 			source_list_clone = webkit_dom_node_clone_node_with_error (current_list, FALSE, NULL);
+-			remove_node_if_empty (current_list);
+ 			after_selection_end = TRUE;
+ 		}
+ 
+@@ -16752,8 +16751,8 @@ format_change_list_from_list (EEditorPage *editor_page,
+ 			NULL);
+ 
+ 	remove_node_if_empty (source_list);
+-
+ 	remove_node_if_empty (source_list_clone);
++	remove_node_if_empty (current_list);
+ 
+ 	merge_lists_if_possible (WEBKIT_DOM_NODE (new_list));
+ }
+-- 
+2.15.0
+

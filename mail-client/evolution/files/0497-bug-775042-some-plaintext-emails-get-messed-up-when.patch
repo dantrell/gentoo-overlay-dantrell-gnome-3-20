@@ -1,0 +1,28 @@
+From a8930261bbfc1ae303d119bad61f38fb12cbd1e5 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 25 Nov 2016 09:07:00 +0100
+Subject: [PATCH 497/595] Bug 775042 - Some plaintext emails get messed up when
+ replied to, through plain -> HTML -> plain conversion
+
+Don't forget to change new line characters to BR elements in PRE
+elements when switching to plain text mode, otherwise the quote
+characters will be inserted just to the beginning of the PRE element.
+---
+ .../web-extension/e-editor-dom-functions.c         |  1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 22061a4006..cd7e0408fc 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7928,6 +7928,7 @@ process_content_to_plain_text_changing_composer_mode (EEditorPage *editor_page)
+ 
+ 	if (blockquote) {
+ 		wrap_paragraphs_in_quoted_content (editor_page);
++		preserve_pre_line_breaks_in_element (document, WEBKIT_DOM_ELEMENT (body));
+ 		quote_plain_text_elements_after_wrapping_in_document (editor_page);
+ 	}
+ 
+-- 
+2.15.0
+

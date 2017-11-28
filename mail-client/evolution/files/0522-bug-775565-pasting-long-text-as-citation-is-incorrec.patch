@@ -1,0 +1,28 @@
+From 022f4e2c901707c69405d13b58fe54471845678b Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 6 Dec 2016 17:21:28 +0100
+Subject: [PATCH 522/595] Bug 775565 - Pasting long text as citation is
+ incorrectly formatted with line wrapping
+
+Only wrap the block if it's not a preformatted one.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 2a7529f966..c8b7e90b82 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -5474,7 +5474,8 @@ e_editor_dom_quote_and_insert_text_into_selection (EEditorPage *editor_page,
+ 		while (node) {
+ 			WebKitDOMNode *next_sibling;
+ 
+-			node = WEBKIT_DOM_NODE (e_editor_dom_wrap_paragraph_length (editor_page, WEBKIT_DOM_ELEMENT (node), word_wrap_length - 2));
++			if (!WEBKIT_DOM_IS_HTML_PRE_ELEMENT (node))
++				node = WEBKIT_DOM_NODE (e_editor_dom_wrap_paragraph_length (editor_page, WEBKIT_DOM_ELEMENT (node), word_wrap_length - 2));
+ 
+ 			webkit_dom_node_normalize (node);
+ 			e_editor_dom_quote_plain_text_element_after_wrapping (editor_page, WEBKIT_DOM_ELEMENT (node), 1);
+-- 
+2.15.0
+

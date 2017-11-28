@@ -1,0 +1,680 @@
+From aad7e7c2e78b12dd632623961d51a36f94b6ca37 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Corentin=20No=C3=ABl?= <corentin@elementary.io>
+Date: Mon, 11 Jul 2016 15:10:00 +0200
+Subject: Bug 768496 - Fix some Camel annotations and rename structures
+
+---
+ camel/camel-cipher-context.c   |  8 +++----
+ camel/camel-cipher-context.h   | 18 +++++++--------
+ camel/camel-data-wrapper.c     |  2 +-
+ camel/camel-html-parser.c      |  4 ++--
+ camel/camel-html-parser.h      |  4 ++--
+ camel/camel-mime-filter-html.c |  2 +-
+ camel/camel-mime-filter.c      | 10 ++++----
+ camel/camel-mime-parser.c      | 18 +++++++--------
+ camel/camel-mime-parser.h      |  8 +++----
+ camel/camel-mime-part.c        |  6 ++---
+ camel/camel-mime-utils.c       | 52 +++++++++++++++++++++---------------------
+ camel/camel-mime-utils.h       | 13 +++++++----
+ camel/camel-service.c          |  2 +-
+ camel/camel-smime-context.c    |  4 ++--
+ camel/camel-smime-context.h    |  6 ++---
+ camel/camel-store.c            |  2 +-
+ camel/camel-stream-buffer.c    |  4 ++--
+ camel/camel-stream-mem.c       |  4 ++--
+ camel/camel-vtrash-folder.c    |  2 +-
+ camel/camel-vtrash-folder.h    |  6 ++---
+ 20 files changed, 89 insertions(+), 86 deletions(-)
+
+diff --git a/camel/camel-cipher-context.c b/camel/camel-cipher-context.c
+index efd4ba1..c20a70a 100644
+--- a/camel/camel-cipher-context.c
++++ b/camel/camel-cipher-context.c
+@@ -1172,7 +1172,7 @@ camel_cipher_validity_clone (CamelCipherValidity *vin)
+  **/
+ gint
+ camel_cipher_validity_add_certinfo (CamelCipherValidity *vin,
+-                                    enum _camel_cipher_validity_mode_t mode,
++                                    CamelCipherValidityMode mode,
+                                     const gchar *name,
+                                     const gchar *email)
+ {
+@@ -1190,7 +1190,7 @@ camel_cipher_validity_add_certinfo (CamelCipherValidity *vin,
+  **/
+ gint
+ camel_cipher_validity_add_certinfo_ex (CamelCipherValidity *vin,
+-                                       camel_cipher_validity_mode_t mode,
++                                       CamelCipherValidityMode mode,
+                                        const gchar *name,
+                                        const gchar *email,
+                                        gpointer cert_data,
+@@ -1242,7 +1242,7 @@ camel_cipher_validity_add_certinfo_ex (CamelCipherValidity *vin,
+  **/
+ gpointer
+ camel_cipher_validity_get_certinfo_property (CamelCipherValidity *vin,
+-					     camel_cipher_validity_mode_t mode,
++					     CamelCipherValidityMode mode,
+ 					     gint info_index,
+ 					     const gchar *name)
+ {
+@@ -1285,7 +1285,7 @@ camel_cipher_validity_get_certinfo_property (CamelCipherValidity *vin,
+  **/
+ void
+ camel_cipher_validity_set_certinfo_property (CamelCipherValidity *vin,
+-					     camel_cipher_validity_mode_t mode,
++					     CamelCipherValidityMode mode,
+ 					     gint info_index,
+ 					     const gchar *name,
+ 					     gpointer value,
+diff --git a/camel/camel-cipher-context.h b/camel/camel-cipher-context.h
+index bebdd93..191a24d 100644
+--- a/camel/camel-cipher-context.h
++++ b/camel/camel-cipher-context.h
+@@ -87,19 +87,19 @@ typedef enum _camel_cipher_validity_sign_t {
+ 	CAMEL_CIPHER_VALIDITY_SIGN_BAD,
+ 	CAMEL_CIPHER_VALIDITY_SIGN_UNKNOWN,
+ 	CAMEL_CIPHER_VALIDITY_SIGN_NEED_PUBLIC_KEY
+-} camel_cipher_validity_sign_t;
++} CamelCipherValiditySign;
+ 
+ typedef enum _camel_cipher_validity_encrypt_t {
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT_NONE,
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT_WEAK,
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT_ENCRYPTED, /* encrypted, unknown strenght */
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT_STRONG
+-} camel_cipher_validity_encrypt_t;
++} CamelCipherValidityEncrypt;
+ 
+ typedef enum _camel_cipher_validity_mode_t {
+ 	CAMEL_CIPHER_VALIDITY_SIGN,
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT
+-} camel_cipher_validity_mode_t;
++} CamelCipherValidityMode;
+ 
+ struct _CamelCipherCertInfoProperty {
+ 	gchar *name;
+@@ -124,13 +124,13 @@ struct _CamelCipherValidity {
+ 	GQueue children;
+ 
+ 	struct {
+-		enum _camel_cipher_validity_sign_t status;
++		CamelCipherValiditySign status;
+ 		gchar *description;
+ 		GQueue signers;	/* CamelCipherCertInfo's */
+ 	} sign;
+ 
+ 	struct {
+-		enum _camel_cipher_validity_encrypt_t status;
++		CamelCipherValidityEncrypt status;
+ 		gchar *description;
+ 		GQueue encrypters;	/* CamelCipherCertInfo's */
+ 	} encrypt;
+@@ -300,12 +300,12 @@ CamelCipherValidity *
+ 		camel_cipher_validity_clone	(CamelCipherValidity *vin);
+ gint		camel_cipher_validity_add_certinfo
+ 						(CamelCipherValidity *vin,
+-						 camel_cipher_validity_mode_t mode,
++						 CamelCipherValidityMode mode,
+ 						 const gchar *name,
+ 						 const gchar *email);
+ gint		camel_cipher_validity_add_certinfo_ex (
+ 						CamelCipherValidity *vin,
+-						camel_cipher_validity_mode_t mode,
++						CamelCipherValidityMode mode,
+ 						const gchar *name,
+ 						const gchar *email,
+ 						gpointer cert_data,
+@@ -313,12 +313,12 @@ gint		camel_cipher_validity_add_certinfo_ex (
+ 						CamelCipherCloneFunc cert_data_clone);
+ gpointer	camel_cipher_validity_get_certinfo_property
+ 						(CamelCipherValidity *vin,
+-						 camel_cipher_validity_mode_t mode,
++						 CamelCipherValidityMode mode,
+ 						 gint info_index,
+ 						 const gchar *name);
+ void		camel_cipher_validity_set_certinfo_property
+ 						(CamelCipherValidity *vin,
+-						 camel_cipher_validity_mode_t mode,
++						 CamelCipherValidityMode mode,
+ 						 gint info_index,
+ 						 const gchar *name,
+ 						 gpointer value,
+diff --git a/camel/camel-data-wrapper.c b/camel/camel-data-wrapper.c
+index f48795d..2baca21 100644
+--- a/camel/camel-data-wrapper.c
++++ b/camel/camel-data-wrapper.c
+@@ -536,7 +536,7 @@ camel_data_wrapper_get_mime_type (CamelDataWrapper *data_wrapper)
+  * camel_data_wrapper_get_mime_type_field:
+  * @data_wrapper: a #CamelDataWrapper
+  *
+- * Returns: the parsed form of the data wrapper's MIME type
++ * Returns: (transfer none): the parsed form of the data wrapper's MIME type
+  **/
+ CamelContentType *
+ camel_data_wrapper_get_mime_type_field (CamelDataWrapper *data_wrapper)
+diff --git a/camel/camel-html-parser.c b/camel/camel-html-parser.c
+index 1a6d0e5..1e5d30d 100644
+--- a/camel/camel-html-parser.c
++++ b/camel/camel-html-parser.c
+@@ -40,7 +40,7 @@ struct _CamelHTMLParserPrivate {
+ 		*inptr,
+ 		*inend,
+ 		*start;
+-	enum _camel_html_parser_t state;
++	CamelHTMLParserState state;
+ 	gchar *charset;
+ 	gint eof;
+ 	GString *tag;
+@@ -111,7 +111,7 @@ void camel_html_parser_set_data (CamelHTMLParser *hp, const gchar *start, gint l
+ 	p->eof = last;
+ }
+ 
+-camel_html_parser_t camel_html_parser_step (CamelHTMLParser *hp, const gchar **datap, gint *lenp)
++CamelHTMLParserState camel_html_parser_step (CamelHTMLParser *hp, const gchar **datap, gint *lenp)
+ {
+ 	return tokenize_step (hp->priv, (gchar **) datap, lenp);
+ }
+diff --git a/camel/camel-html-parser.h b/camel/camel-html-parser.h
+index e4ced82..b299a4d 100644
+--- a/camel/camel-html-parser.h
++++ b/camel/camel-html-parser.h
+@@ -73,7 +73,7 @@ typedef enum _camel_html_parser_t {
+ 	CAMEL_HTML_PARSER_VAL_ENT,		/* entity in value */
+ 	CAMEL_HTML_PARSER_EOD,			/* end of current data */
+ 	CAMEL_HTML_PARSER_EOF			/* end of file */
+-} camel_html_parser_t;
++} CamelHTMLParserState;
+ 
+ struct _CamelHTMLParser {
+ 	GObject parent;
+@@ -88,7 +88,7 @@ GType		camel_html_parser_get_type	(void);
+ CamelHTMLParser      *camel_html_parser_new	(void);
+ 
+ void camel_html_parser_set_data (CamelHTMLParser *hp, const gchar *start, gint len, gint last);
+-camel_html_parser_t camel_html_parser_step (CamelHTMLParser *hp, const gchar **datap, gint *lenp);
++CamelHTMLParserState camel_html_parser_step (CamelHTMLParser *hp, const gchar **datap, gint *lenp);
+ const gchar *camel_html_parser_left (CamelHTMLParser *hp, gint *lenp);
+ const gchar *camel_html_parser_tag (CamelHTMLParser *hp);
+ const gchar *camel_html_parser_attr (CamelHTMLParser *hp, const gchar *name);
+diff --git a/camel/camel-mime-filter-html.c b/camel/camel-mime-filter-html.c
+index be1469d..8bf9377 100644
+--- a/camel/camel-mime-filter-html.c
++++ b/camel/camel-mime-filter-html.c
+@@ -77,7 +77,7 @@ mime_filter_html_run (CamelMimeFilter *mime_filter,
+                       gint last)
+ {
+ 	CamelMimeFilterHTMLPrivate *priv;
+-	camel_html_parser_t state;
++	CamelHTMLParserState state;
+ 	gchar *outp;
+ 
+ 	priv = CAMEL_MIME_FILTER_HTML_GET_PRIVATE (mime_filter);
+diff --git a/camel/camel-mime-filter.c b/camel/camel-mime-filter.c
+index a063f76..0141c9e 100644
+--- a/camel/camel-mime-filter.c
++++ b/camel/camel-mime-filter.c
+@@ -201,10 +201,10 @@ filter_run (CamelMimeFilter *f,
+ /**
+  * camel_mime_filter_filter:
+  * @filter: a #CamelMimeFilter object
+- * @in: input buffer
++ * @in: (array length=len): input buffer
+  * @len: length of @in
+  * @prespace: amount of prespace
+- * @out: (out): pointer to the output buffer (to be set)
++ * @out: (out) (array length=outlen): pointer to the output buffer (to be set)
+  * @outlen: (out): pointer to the length of the output buffer (to be set)
+  * @outprespace: (out): pointer to the output prespace length (to be set)
+  *
+@@ -236,10 +236,10 @@ camel_mime_filter_filter (CamelMimeFilter *filter,
+ /**
+  * camel_mime_filter_complete:
+  * @filter: a #CamelMimeFilter object
+- * @in: input buffer
++ * @in: (array length=len): input buffer
+  * @len: length of @in
+  * @prespace: amount of prespace
+- * @out: (out): pointer to the output buffer (to be set)
++ * @out: (out) (array length=outlen): pointer to the output buffer (to be set)
+  * @outlen: (out): pointer to the length of the output buffer (to be set)
+  * @outprespace: (out): pointer to the output prespace length (to be set)
+  *
+@@ -296,7 +296,7 @@ camel_mime_filter_reset (CamelMimeFilter *filter)
+ /**
+  * camel_mime_filter_backup:
+  * @filter: a #CamelMimeFilter object
+- * @data: data buffer to backup
++ * @data (array length=length): data buffer to backup
+  * @length: length of @data
+  *
+  * Saves @data to be used as prespace input data to the next call to
+diff --git a/camel/camel-mime-parser.c b/camel/camel-mime-parser.c
+index ca1e63c..dccf063 100644
+--- a/camel/camel-mime-parser.c
++++ b/camel/camel-mime-parser.c
+@@ -64,7 +64,7 @@ struct _header_scan_state {
+ 
+     /* global state */
+ 
+-	camel_mime_parser_state_t state;
++	CamelMimeParserState state;
+ 
+ 	/* for building headers during scanning */
+ 	gchar *outbuf;
+@@ -111,7 +111,7 @@ struct _header_scan_state {
+ struct _header_scan_stack {
+ 	struct _header_scan_stack *parent;
+ 
+-	camel_mime_parser_state_t savestate; /* state at invocation of this part */
++	CamelMimeParserState savestate; /* state at invocation of this part */
+ 
+ #ifdef MEMPOOL
+ 	CamelMemPool *pool;	/* memory pool to keep track of headers/etc at this level */
+@@ -625,10 +625,10 @@ camel_mime_parser_drop_step (CamelMimeParser *parser)
+ /**
+  * camel_mime_parser_step:
+  * @parser: MIME parser object
+- * @databuffer: Pointer to accept a pointer to the data
++ * @databuffer: (inout) (array length=datalength) (nullable): Pointer to accept a pointer to the data
+  * associated with this step (if any).  May be %NULL,
+  * in which case datalength is also ingored.
+- * @datalength: Pointer to accept a pointer to the data
++ * @datalength: (inout) (nullable): Pointer to accept a pointer to the data
+  * length associated with this step (if any).
+  *
+  * Parse the next part of the MIME message.  If _unstep()
+@@ -647,7 +647,7 @@ camel_mime_parser_drop_step (CamelMimeParser *parser)
+  * Returns: The current new state of the parser
+  * is returned.
+  **/
+-camel_mime_parser_state_t
++CamelMimeParserState
+ camel_mime_parser_step (CamelMimeParser *parser,
+                         gchar **databuffer,
+                         gsize *datalength)
+@@ -677,8 +677,8 @@ camel_mime_parser_step (CamelMimeParser *parser,
+ /**
+  * camel_mime_parser_read:
+  * @parser: MIME parser object
+- * @databuffer:
+- * @len:
++ * @databuffer: (out) (array): The data buffer
++ * @len: The length of data to read
+  * @error: return location for a #GError, or %NULL
+  *
+  * Read at most @len bytes from the internal mime parser buffer.
+@@ -864,7 +864,7 @@ camel_mime_parser_seek (CamelMimeParser *parser,
+  *
+  * Returns: The current parser state.
+  **/
+-camel_mime_parser_state_t
++CamelMimeParserState
+ camel_mime_parser_state (CamelMimeParser *parser)
+ {
+ 	struct _header_scan_state *s = _PRIVATE (parser);
+@@ -883,7 +883,7 @@ camel_mime_parser_state (CamelMimeParser *parser)
+  **/
+ void
+ camel_mime_parser_push_state (CamelMimeParser *mp,
+-                              camel_mime_parser_state_t newstate,
++                              CamelMimeParserState newstate,
+                               const gchar *boundary)
+ {
+ 	struct _header_scan_stack *h;
+diff --git a/camel/camel-mime-parser.h b/camel/camel-mime-parser.h
+index bbec727..ce5c098 100644
+--- a/camel/camel-mime-parser.h
++++ b/camel/camel-mime-parser.h
+@@ -76,7 +76,7 @@ typedef enum _camel_mime_parser_state_t {
+ 	CAMEL_MIME_PARSER_STATE_BODY_END,       /* end of message */
+ 	CAMEL_MIME_PARSER_STATE_MULTIPART_END,  /* end of multipart  */
+ 	CAMEL_MIME_PARSER_STATE_MESSAGE_END     /* end of message */
+-} camel_mime_parser_state_t;
++} CamelMimeParserState;
+ 
+ struct _CamelMimeParser {
+ 	GObject parent;
+@@ -113,11 +113,11 @@ void camel_mime_parser_scan_pre_from (CamelMimeParser *parser, gboolean scan_pre
+ gint camel_mime_parser_set_header_regex (CamelMimeParser *parser, gchar *matchstr);
+ 
+ /* normal interface */
+-camel_mime_parser_state_t camel_mime_parser_step (CamelMimeParser *parser, gchar **databuffer, gsize *datalength);
++CamelMimeParserState camel_mime_parser_step (CamelMimeParser *parser, gchar **databuffer, gsize *datalength);
+ void camel_mime_parser_unstep (CamelMimeParser *parser);
+ void camel_mime_parser_drop_step (CamelMimeParser *parser);
+-camel_mime_parser_state_t camel_mime_parser_state (CamelMimeParser *parser);
+-void camel_mime_parser_push_state (CamelMimeParser *mp, camel_mime_parser_state_t newstate, const gchar *boundary);
++CamelMimeParserState camel_mime_parser_state (CamelMimeParser *parser);
++void camel_mime_parser_push_state (CamelMimeParser *mp, CamelMimeParserState newstate, const gchar *boundary);
+ 
+ /* read through the parser */
+ gssize camel_mime_parser_read (CamelMimeParser *parser, const gchar **databuffer, gssize len, GError **error);
+diff --git a/camel/camel-mime-part.c b/camel/camel-mime-part.c
+index e8e452d..263a041 100644
+--- a/camel/camel-mime-part.c
++++ b/camel/camel-mime-part.c
+@@ -1134,9 +1134,9 @@ camel_mime_part_new (void)
+ /**
+  * camel_mime_part_set_content:
+  * @mime_part: a #CamelMimePart
+- * @data: data to put into the part
++ * @data: (array length=length) (nullable): data to put into the part
+  * @length: length of @data
+- * @type: Content-Type of the data
++ * @type: (nullable): Content-Type of the data
+  *
+  * Utility function used to set the content of a mime part object to
+  * be the provided data. If @length is 0, this routine can be used as
+@@ -1353,7 +1353,7 @@ camel_mime_part_set_content_languages (CamelMimePart *mime_part,
+  *
+  * Get the Content-Type of a MIME part.
+  *
+- * Returns: the parsed #CamelContentType of the MIME part
++ * Returns: (transfer none): the parsed #CamelContentType of the MIME part
+  **/
+ CamelContentType *
+ camel_mime_part_get_content_type (CamelMimePart *mime_part)
+diff --git a/camel/camel-mime-utils.c b/camel/camel-mime-utils.c
+index 30d6d0a..51ff904 100644
+--- a/camel/camel-mime-utils.c
++++ b/camel/camel-mime-utils.c
+@@ -179,12 +179,12 @@ static const guchar tohex[16] = {
+ 
+ /**
+  * camel_uuencode_close:
+- * @in: input stream
++ * @in: (array length=len): input stream
+  * @len: input stream length
+- * @out: output stream
+- * @uubuf: temporary buffer of 60 bytes
+- * @state: holds the number of bits that are stored in @save
+- * @save: leftover bits that have not yet been encoded
++ * @out: (inout) (array): output stream
++ * @uubuf: (inout) (array fixed-size=60): temporary buffer of 60 bytes
++ * @state: (inout): holds the number of bits that are stored in @save
++ * @save: (inout) (array length=state): leftover bits that have not yet been encoded
+  *
+  * Uuencodes a chunk of data. Call this when finished encoding data
+  * with camel_uuencode_step() to flush off the last little bit.
+@@ -263,12 +263,12 @@ camel_uuencode_close (guchar *in,
+ 
+ /**
+  * camel_uuencode_step:
+- * @in: input stream
++ * @in: (array length=len): input stream
+  * @len: input stream length
+- * @out: output stream
+- * @uubuf: temporary buffer of 60 bytes
+- * @state: holds the number of bits that are stored in @save
+- * @save: leftover bits that have not yet been encoded
++ * @out: (inout) (array): output stream
++ * @uubuf: (inout) (array fixed-size=60): temporary buffer of 60 bytes
++ * @state: (inout): holds the number of bits that are stored in @save
++ * @save: (inout) (array length=state): leftover bits that have not yet been encoded
+  *
+  * Uuencodes a chunk of data. Performs an 'encode step', only encodes
+  * blocks of 45 characters to the output at a time, saves left-over
+@@ -381,11 +381,11 @@ camel_uuencode_step (guchar *in,
+ 
+ /**
+  * camel_uudecode_step:
+- * @in: input stream
++ * @in: (array length=inlen): input stream
+  * @inlen: max length of data to decode
+- * @out: output stream
+- * @state: holds the number of bits that are stored in @save
+- * @save: leftover bits that have not yet been decoded
++ * @out: (inout) (array): output stream
++ * @state: (inout): holds the number of bits that are stored in @save
++ * @save: (inout) (array length=state): leftover bits that have not yet been decoded
+  *
+  * Uudecodes a chunk of data. Performs a 'decode step' on a chunk of
+  * uuencoded data. Assumes the "begin mode filename" line has
+@@ -490,11 +490,11 @@ camel_uudecode_step (guchar *in,
+ 
+ /**
+  * camel_quoted_encode_close:
+- * @in: input stream
++ * @in: (array length=len): input stream
+  * @len: length of the input
+- * @out: output string
+- * @state: holds the number of bits that are stored in @save
+- * @save: leftover bits that have not yet been encoded
++ * @out: (inout) (array): output string
++ * @state: (inout): holds the number of bits that are stored in @save
++ * @save: (inout) (array length=state): leftover bits that have not yet been encoded
+  *
+  * Quoted-printable encodes a block of text. Call this when finished
+  * encoding data with camel_quoted_encode_step() to flush off
+@@ -536,11 +536,11 @@ camel_quoted_encode_close (guchar *in,
+ 
+ /**
+  * camel_quoted_encode_step:
+- * @in: input stream
++ * @in: (array length=len): input stream
+  * @len: length of the input
+- * @out: output string
+- * @state: holds the number of bits that are stored in @save
+- * @save: leftover bits that have not yet been encoded
++ * @out: (inout) (array): output string
++ * @state: (inout): holds the number of bits that are stored in @save
++ * @save: (inout) (array length=state): leftover bits that have not yet been encoded
+  *
+  * Quoted-printable encodes a block of text. Performs an 'encode
+  * step', saves left-over state in state and save (initialise to -1 on
+@@ -645,11 +645,11 @@ camel_quoted_encode_step (guchar *in,
+ 
+ /**
+  * camel_quoted_decode_step:
+- * @in: input stream
++ * @in: (array length=len): input stream
+  * @len: max length of data to decode
+- * @out: output stream
+- * @savestate: holds the number of bits that are stored in @save
+- * @saveme: leftover bits that have not yet been decoded
++ * @out: (inout) (array): output stream
++ * @savestate: (inout): holds the number of bits that are stored in @saveme
++ * @saveme: (inout) (array length=savestate): leftover bits that have not yet been decoded
+  *
+  * Decodes a block of quoted-printable encoded data. Performs a
+  * 'decode step' on a chunk of QP encoded data.
+diff --git a/camel/camel-mime-utils.h b/camel/camel-mime-utils.h
+index f45769c..2a51044 100644
+--- a/camel/camel-mime-utils.h
++++ b/camel/camel-mime-utils.h
+@@ -35,9 +35,12 @@
+ /* maximum hard size of a line from camel_header_fold() */
+ #define CAMEL_FOLD_MAX_SIZE (998)
+ 
+-#define CAMEL_UUDECODE_STATE_INIT   (0)
+-#define CAMEL_UUDECODE_STATE_BEGIN  (1 << 16)
+-#define CAMEL_UUDECODE_STATE_END    (1 << 17)
++typedef enum {
++	CAMEL_UUDECODE_STATE_INIT = 0,
++	CAMEL_UUDECODE_STATE_BEGIN = (1 << 16),
++	CAMEL_UUDECODE_STATE_END = (1 << 17)
++} CamelUUDecodeState;
++
+ #define CAMEL_UUDECODE_STATE_MASK   (CAMEL_UUDECODE_STATE_BEGIN | CAMEL_UUDECODE_STATE_END)
+ 
+ G_BEGIN_DECLS
+@@ -75,11 +78,11 @@ typedef enum _camel_header_address_t {
+ 	CAMEL_HEADER_ADDRESS_NONE,	/* uninitialised */
+ 	CAMEL_HEADER_ADDRESS_NAME,
+ 	CAMEL_HEADER_ADDRESS_GROUP
+-} camel_header_address_t;
++} CamelHeaderAddressType;
+ 
+ typedef struct _camel_header_address {
+ 	struct _camel_header_address *next;
+-	camel_header_address_t type;
++	CamelHeaderAddressType type;
+ 	gchar *name;
+ 	union {
+ 		gchar *addr;
+diff --git a/camel/camel-service.c b/camel/camel-service.c
+index 6f21f00..ee669ff 100644
+--- a/camel/camel-service.c
++++ b/camel/camel-service.c
+@@ -1562,7 +1562,7 @@ camel_service_set_proxy_resolver (CamelService *service,
+ 
+ /**
+  * camel_service_ref_session:
+- * @service: a #CamelService
++ * @service: (type CamelService): a #CamelService
+  *
+  * Returns the #CamelSession associated with the service.
+  *
+diff --git a/camel/camel-smime-context.c b/camel/camel-smime-context.c
+index d6a0433..e75aecd 100644
+--- a/camel/camel-smime-context.c
++++ b/camel/camel-smime-context.c
+@@ -66,7 +66,7 @@ struct _CamelSMIMEContextPrivate {
+ 	CERTCertDBHandle *certdb;
+ 
+ 	gchar *encrypt_key;
+-	camel_smime_sign_t sign_mode;
++	CamelSMIMESign sign_mode;
+ 
+ 	gint password_tries;
+ 	guint send_encrypt_key_prefs : 1;
+@@ -1355,7 +1355,7 @@ camel_smime_context_set_encrypt_key (CamelSMIMEContext *context,
+ /* set signing mode, clearsigned multipart/signed or enveloped */
+ void
+ camel_smime_context_set_sign_mode (CamelSMIMEContext *context,
+-                                   camel_smime_sign_t type)
++                                   CamelSMIMESign type)
+ {
+ 	context->priv->sign_mode = type;
+ }
+diff --git a/camel/camel-smime-context.h b/camel/camel-smime-context.h
+index 10e6b0e..b1dd0e9 100644
+--- a/camel/camel-smime-context.h
++++ b/camel/camel-smime-context.h
+@@ -51,14 +51,14 @@ G_BEGIN_DECLS
+ typedef enum _camel_smime_sign_t {
+ 	CAMEL_SMIME_SIGN_CLEARSIGN,
+ 	CAMEL_SMIME_SIGN_ENVELOPED
+-} camel_smime_sign_t;
++} CamelSMIMESign;
+ 
+ typedef enum _camel_smime_describe_t {
+ 	CAMEL_SMIME_SIGNED = 1 << 0,
+ 	CAMEL_SMIME_ENCRYPTED = 1 << 1,
+ 	CAMEL_SMIME_CERTS = 1 << 2,
+ 	CAMEL_SMIME_CRLS = 1 << 3
+-} camel_smime_describe_t;
++} CamelSMIMEDescribe;
+ 
+ typedef struct _CamelSMIMEContext CamelSMIMEContext;
+ typedef struct _CamelSMIMEContextClass CamelSMIMEContextClass;
+@@ -80,7 +80,7 @@ CamelCipherContext *camel_smime_context_new (CamelSession *session);
+ /* nick to use for SMIMEEncKeyPrefs attribute for signed data */
+ void camel_smime_context_set_encrypt_key (CamelSMIMEContext *context, gboolean use, const gchar *key);
+ /* set signing mode, clearsigned multipart/signed or enveloped */
+-void camel_smime_context_set_sign_mode (CamelSMIMEContext *context, camel_smime_sign_t type);
++void camel_smime_context_set_sign_mode (CamelSMIMEContext *context, CamelSMIMESign type);
+ 
+ guint32 camel_smime_context_describe_part (CamelSMIMEContext *context, struct _CamelMimePart *part);
+ 
+diff --git a/camel/camel-store.c b/camel/camel-store.c
+index 43411d2..09f2163 100644
+--- a/camel/camel-store.c
++++ b/camel/camel-store.c
+@@ -281,7 +281,7 @@ cs_delete_cached_folder (CamelStore *store,
+ 
+ static CamelFolder *
+ store_get_special (CamelStore *store,
+-                   camel_vtrash_folder_t type)
++                   CamelVTrashFolderType type)
+ {
+ 	CamelFolder *folder;
+ 	GPtrArray *folders;
+diff --git a/camel/camel-stream-buffer.c b/camel/camel-stream-buffer.c
+index e001136..4ef6d49 100644
+--- a/camel/camel-stream-buffer.c
++++ b/camel/camel-stream-buffer.c
+@@ -402,7 +402,7 @@ camel_stream_buffer_new (CamelStream *stream,
+ /**
+  * camel_stream_buffer_gets:
+  * @sbf: a #CamelStreamBuffer object
+- * @buf: Memory to write the string to.
++ * @buf: (out) (array): Memory to write the string to.
+  * @max: Maxmimum number of characters to store.
+  * @cancellable: optional #GCancellable object, or %NULL
+  * @error: return location for a #GError, or %NULL
+@@ -480,7 +480,7 @@ camel_stream_buffer_gets (CamelStreamBuffer *sbf,
+  * and returns it in allocated memory. The trailing newline (and carriage
+  * return if any) are not included in the returned string.
+  *
+- * Returns: the line read, which the caller must free when done with,
++ * Returns: (nullable): the line read, which the caller must free when done with,
+  * or %NULL on eof. If an error occurs, @error will be set.
+  **/
+ gchar *
+diff --git a/camel/camel-stream-mem.c b/camel/camel-stream-mem.c
+index 3a9e38e..0120834 100644
+--- a/camel/camel-stream-mem.c
++++ b/camel/camel-stream-mem.c
+@@ -269,7 +269,7 @@ camel_stream_mem_new (void)
+ 
+ /**
+  * camel_stream_mem_new_with_buffer:
+- * @buffer: a memory buffer to use as the stream data
++ * @buffer: (array length=len): a memory buffer to use as the stream data
+  * @len: length of @buffer
+  *
+  * Create a new memory stream using @buffer as the stream data.
+@@ -387,7 +387,7 @@ camel_stream_mem_set_byte_array (CamelStreamMem *mem,
+ /**
+  * camel_stream_mem_set_buffer:
+  * @mem: a #CamelStreamMem object
+- * @buffer: a memory buffer
++ * @buffer: (array length=len): a memory buffer
+  * @len: length of @buffer
+  *
+  * Set @buffer to be the backing data to the existing #CamelStreamMem, @mem.
+diff --git a/camel/camel-vtrash-folder.c b/camel/camel-vtrash-folder.c
+index d554a60..7362009 100644
+--- a/camel/camel-vtrash-folder.c
++++ b/camel/camel-vtrash-folder.c
+@@ -242,7 +242,7 @@ camel_vtrash_folder_init (CamelVTrashFolder *vtrash_folder)
+  **/
+ CamelFolder *
+ camel_vtrash_folder_new (CamelStore *parent_store,
+-                         camel_vtrash_folder_t type)
++                         CamelVTrashFolderType type)
+ {
+ 	CamelVTrashFolder *vtrash;
+ 
+diff --git a/camel/camel-vtrash-folder.h b/camel/camel-vtrash-folder.h
+index ceb17ad..bf0c6d4 100644
+--- a/camel/camel-vtrash-folder.h
++++ b/camel/camel-vtrash-folder.h
+@@ -58,12 +58,12 @@ typedef enum {
+ 	CAMEL_VTRASH_FOLDER_TRASH,
+ 	CAMEL_VTRASH_FOLDER_JUNK,
+ 	CAMEL_VTRASH_FOLDER_LAST
+-} camel_vtrash_folder_t;
++} CamelVTrashFolderType;
+ 
+ struct _CamelVTrashFolder {
+ 	CamelVeeFolder parent;
+ 
+-	camel_vtrash_folder_t type;
++	CamelVTrashFolderType type;
+ 	guint32 bit;
+ };
+ 
+@@ -73,7 +73,7 @@ struct _CamelVTrashFolderClass {
+ 
+ GType		camel_vtrash_folder_get_type	(void);
+ CamelFolder *	camel_vtrash_folder_new		(CamelStore *parent_store,
+-						 camel_vtrash_folder_t type);
++						 CamelVTrashFolderType type);
+ 
+ G_END_DECLS
+ 
+-- 
+cgit v0.12
+

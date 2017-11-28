@@ -1,0 +1,25 @@
+From 6ff97b3bfa48db0f784e34847874a2f2891165b5 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 10 Oct 2016 10:44:50 +0200
+Subject: [PATCH 436/595] Correct possible uninitialized variable usage
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 9d2effc289..1d32565568 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4179,7 +4179,7 @@ e_editor_dom_move_quoted_block_level_up (EEditorPage *editor_page)
+ 	}
+ 
+ 	if (citation_level == 1) {
+-		gchar *inner_html;
++		gchar *inner_html = NULL;
+ 		WebKitDOMElement *paragraph, *element;
+ 
+ 		if (WEBKIT_DOM_IS_ELEMENT (block)) {
+-- 
+2.15.0
+

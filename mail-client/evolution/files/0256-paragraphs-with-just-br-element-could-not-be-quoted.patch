@@ -1,0 +1,30 @@
+From 8390814209ab65af04c1d970320ee22472e22eb7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 17 Aug 2016 17:07:14 +0200
+Subject: [PATCH 256/595] Paragraphs with just BR element could not be quoted
+ properly
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 0a906e2566..30f9f9d207 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4600,7 +4600,11 @@ quote_plain_text_recursive (WebKitDOMDocument *document,
+ 		}
+ 
+ 		if (WEBKIT_DOM_IS_HTML_BR_ELEMENT (node)) {
+-			move_next = TRUE;
++			if (!prev_sibling && !next_sibling) {
++				insert_quote_symbols_before_node (
++					document, node, quote_level, FALSE);
++			} else
++				move_next = TRUE;
+ 			goto next_node;
+ 		}
+ 
+-- 
+2.15.0
+

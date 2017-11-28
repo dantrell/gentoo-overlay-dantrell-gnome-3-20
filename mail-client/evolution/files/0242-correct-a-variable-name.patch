@@ -1,0 +1,25 @@
+From 8e1bc6a68f799b39cef5fdceff89ad807010b102 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 15 Aug 2016 14:30:14 +0200
+Subject: [PATCH 242/595] Correct a variable name
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 9ccfcfe0d1..6f694a6761 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -287,7 +287,7 @@ PKG_CHECK_MODULES([GNOME_PLATFORM],
+ 	 libxml-2.0 >= libxml_minimum_version
+ 	 shared-mime-info >= shared_mime_info_minimum_version
+ 	 gsettings-desktop-schemas >= gsettings_desktop_schemas_minimum_version
+-	 webkit2gtk-4.0 >= webkitgtk_minimum_version
++	 webkit2gtk-4.0 >= webkit2gtk_minimum_version
+ 	 $GIO_UNIX_REQUIREMENT])
+ 
+ GNOME_DESKTOP_DEPENDENCY=""
+-- 
+2.15.0
+

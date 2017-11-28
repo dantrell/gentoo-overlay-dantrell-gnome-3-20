@@ -1,0 +1,162 @@
+From 8bb0e3e6521412e7f251fa53ab96ed1f04a076b2 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Thu, 18 Aug 2016 14:18:42 +0200
+Subject: [PATCH 268/595] Bug 769618 - Emacs Key Theme Not Recognized in the
+ Composer
+
+---
+ calendar/gui/e-comp-editor.c |  3 ++
+ composer/e-msg-composer.c    |  3 ++
+ e-util/e-misc-utils.c        | 74 ++++++++++++++++++++++++++++++++++++++++++++
+ e-util/e-misc-utils.h        |  3 ++
+ e-util/test-html-editor.c    |  3 ++
+ 5 files changed, 86 insertions(+)
+
+diff --git a/calendar/gui/e-comp-editor.c b/calendar/gui/e-comp-editor.c
+index 469ba8e25b..d16838983e 100644
+--- a/calendar/gui/e-comp-editor.c
++++ b/calendar/gui/e-comp-editor.c
+@@ -2126,6 +2126,9 @@ e_comp_editor_constructed (GObject *object)
+ 
+ 	G_OBJECT_CLASS (e_comp_editor_parent_class)->constructed (object);
+ 
++	g_signal_connect (comp_editor, "key-press-event",
++		G_CALLBACK (e_util_check_gtk_bindings_in_key_press_event_cb), NULL);
++
+ 	comp_editor->priv->calendar_settings = e_util_ref_settings ("org.gnome.evolution.calendar");
+ 	comp_editor->priv->ui_manager = gtk_ui_manager_new ();
+ 
+diff --git a/composer/e-msg-composer.c b/composer/e-msg-composer.c
+index e1983fab87..e2c0856048 100644
+--- a/composer/e-msg-composer.c
++++ b/composer/e-msg-composer.c
+@@ -2689,6 +2689,9 @@ msg_composer_key_press_event (GtkWidget *widget,
+ 		}
+ 	}
+ 
++	if (e_util_check_gtk_bindings_in_key_press_event_cb (widget, (GdkEvent *) event))
++		return TRUE;
++
+ 	/* Chain up to parent's key_press_event() method. */
+ 	return GTK_WIDGET_CLASS (e_msg_composer_parent_class)->
+ 		key_press_event (widget, event);
+diff --git a/e-util/e-misc-utils.c b/e-util/e-misc-utils.c
+index 3dcc7f0034..960cf87138 100644
+--- a/e-util/e-misc-utils.c
++++ b/e-util/e-misc-utils.c
+@@ -51,6 +51,8 @@
+ #include <camel/camel.h>
+ #include <libedataserver/libedataserver.h>
+ 
++#include <webkit2/webkit2.h>
++
+ #include "e-alert-dialog.h"
+ #include "e-alert-sink.h"
+ #include "e-client-cache.h"
+@@ -3509,3 +3511,75 @@ e_util_save_image_from_clipboard (GtkClipboard *clipboard)
+ 
+ 	return uri;
+ }
++
++/**
++ * e_util_check_gtk_bindings_in_key_press_event_cb:
++ * @widget: a #GtkWidget, most often a #GtkWindow
++ * @event: a #GdkEventKey
++ *
++ * A callback function for GtkWidget::key-press-event signal,
++ * which checks whether currently focused widget inside @widget,
++ * if it's a #GtkWindow, or a toplevel window containing the @widget,
++ * will consume the @event due to gtk+ bindings and if so, then
++ * it'll stop processing the event further. When it's connected
++ * on a #GtkWindow, then it can prevent the event to be used
++ * for shortcuts of actions.
++ *
++ * Returns: %TRUE to stop other handlers from being invoked for
++ *    the event, %FALSE to propagate the event further.
++ *
++ * Since: 3.22
++ **/
++gboolean
++e_util_check_gtk_bindings_in_key_press_event_cb (GtkWidget *widget,
++						 GdkEvent *event)
++{
++	GdkEventKey *key_event = (GdkEventKey *) event;
++	GtkWindow *window = NULL;
++	GtkWidget *focused;
++
++	g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
++	g_return_val_if_fail (event != NULL, FALSE);
++	g_return_val_if_fail (event->type == GDK_KEY_PRESS, FALSE);
++
++	if (GTK_IS_WINDOW (widget)) {
++		window = GTK_WINDOW (widget);
++	} else {
++		GtkWidget *toplevel;
++
++		toplevel = gtk_widget_get_toplevel (widget);
++		if (GTK_IS_WINDOW (toplevel))
++			window = GTK_WINDOW (toplevel);
++	}
++
++	if (!window)
++		return FALSE;
++
++	focused = gtk_window_get_focus (window);
++	if (!focused)
++		return FALSE;
++
++	if (gtk_bindings_activate_event (G_OBJECT (focused), key_event))
++		return TRUE;
++
++	if (WEBKIT_IS_WEB_VIEW (focused) &&
++	    (key_event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) != 0) {
++		GtkWidget *text_view;
++		gboolean may_use;
++
++		/* WebKit uses GtkTextView to process key bindings. Do the same. */
++		text_view = gtk_text_view_new ();
++		may_use = gtk_bindings_activate_event (G_OBJECT (text_view), key_event);
++		gtk_widget_destroy (text_view);
++
++		if (may_use) {
++			gboolean result = FALSE;
++
++			g_signal_emit_by_name (focused, "key-press-event", event, &result);
++
++			return result;
++		}
++	}
++
++	return FALSE;
++}
+diff --git a/e-util/e-misc-utils.h b/e-util/e-misc-utils.h
+index 9afe95c463..1da68a98a5 100644
+--- a/e-util/e-misc-utils.h
++++ b/e-util/e-misc-utils.h
+@@ -296,6 +296,9 @@ void		e_util_init_main_thread		(GThread *thread);
+ gboolean	e_util_is_main_thread		(GThread *thread);
+ gchar *		e_util_save_image_from_clipboard
+ 						(GtkClipboard *clipboard);
++gboolean	e_util_check_gtk_bindings_in_key_press_event_cb
++						(GtkWidget *widget,
++						 GdkEvent *event);
+ 
+ G_END_DECLS
+ 
+diff --git a/e-util/test-html-editor.c b/e-util/test-html-editor.c
+index 86502c42a4..d7d6f603f9 100644
+--- a/e-util/test-html-editor.c
++++ b/e-util/test-html-editor.c
+@@ -493,6 +493,9 @@ create_new_editor_cb (GObject *source_object,
+ 		widget, "destroy",
+ 		G_CALLBACK (editor_destroyed_cb), NULL);
+ 
++	g_signal_connect (widget, "key-press-event",
++		G_CALLBACK (e_util_check_gtk_bindings_in_key_press_event_cb), NULL);
++
+ 	container = widget;
+ 
+ 	widget = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+-- 
+2.15.0
+

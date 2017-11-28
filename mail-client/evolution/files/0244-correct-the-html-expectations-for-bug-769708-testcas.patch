@@ -1,0 +1,27 @@
+From f0948b2f08aa82f1631a4fc5191022473bb95c9d Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 15 Aug 2016 15:22:28 +0200
+Subject: [PATCH 244/595] Correct the HTML expectations for bug 769708 testcase
+
+---
+ e-util/test-html-editor-units.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/e-util/test-html-editor-units.c b/e-util/test-html-editor-units.c
+index 39e2c81689..ed03b1a796 100644
+--- a/e-util/test-html-editor-units.c
++++ b/e-util/test-html-editor-units.c
+@@ -2663,7 +2663,9 @@ test_bug_769708 (TestFixture *fixture)
+ 	if (!test_utils_run_simple_test (fixture,
+ 		"",
+ 		HTML_PREFIX_PLAIN "<p style=\"width: 71ch;\">aaa</p><div><span><p style=\"width: 71ch;\">--&nbsp;</p>"
+-		"<p style=\"width: 71ch;\"<br></p><p style=\"width: 71ch;\">user &lt;user@no.where&gt;</p></span></div>" HTML_SUFFIX,
++		"<p style=\"width: 71ch;\"><br></p>"
++		"<p style=\"width: 71ch;\">user &lt;<a href=\"mailto:user@no.where\">user@no.where</a>&gt;</p>"
++		"</span></div>" HTML_SUFFIX,
+ 		"aaa\n"
+ 		"-- \n"
+ 		"user <user@no.where>"))
+-- 
+2.15.0
+

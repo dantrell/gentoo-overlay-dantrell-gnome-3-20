@@ -1,0 +1,31 @@
+From 1468ab95bc54aed42a1ec52753d96c172e5ccb71 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 17 Aug 2016 17:11:44 +0200
+Subject: [PATCH 259/595] Remove the zero width space characters from the HTML
+ output
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 823436d76c..e7065bf8b0 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -8126,6 +8126,13 @@ e_editor_dom_process_content_to_html_for_exporting (EEditorPage *editor_page)
+ 	html_content = webkit_dom_element_get_outer_html (
+ 		WEBKIT_DOM_ELEMENT (document_clone));
+ 
++	if (strstr (html_content, UNICODE_ZERO_WIDTH_SPACE)) {
++		GString *processed;
++
++		processed = e_str_replace_string (html_content, UNICODE_ZERO_WIDTH_SPACE, "");
++		g_free (html_content);
++		html_content = g_string_free (processed, FALSE);
++	}
+ 
+ 	return html_content;
+ }
+-- 
+2.15.0
+

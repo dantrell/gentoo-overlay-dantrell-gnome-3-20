@@ -1,0 +1,38 @@
+From 07154c958a9c3720a8ffcd0300478238660d2136 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 9 Mar 2017 11:06:58 +0100
+Subject: [PATCH 586/595] Possible crash while refreshing spellcheck
+
+Avoid possible crash if the BODY contains only text nodes and not any elements.
+Normally this can't happen unless the user drag and drops (or inserts) some HTML
+content that was not written in the composer and the composer mode is set to
+HTML.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index c669176301..a66bbc1c71 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -697,6 +697,8 @@ e_editor_dom_force_spell_check_for_current_paragraph (EEditorPage *editor_page)
+ 	e_editor_page_block_selection_changed (editor_page);
+ 
+ 	parent = get_parent_block_element (WEBKIT_DOM_NODE (selection_end_marker));
++	if (!parent)
++		parent = WEBKIT_DOM_ELEMENT (body);
+ 
+ 	/* Append some text on the end of the element */
+ 	text = webkit_dom_document_create_text_node (document, "-x-evo-end");
+@@ -706,6 +708,8 @@ e_editor_dom_force_spell_check_for_current_paragraph (EEditorPage *editor_page)
+ 		NULL);
+ 
+ 	parent = get_parent_block_element (WEBKIT_DOM_NODE (selection_start_marker));
++	if (!parent)
++		parent = WEBKIT_DOM_ELEMENT (body);
+ 
+ 	/* Create range that's pointing on the end of this text */
+ 	end_range = webkit_dom_document_create_range (document);
+-- 
+2.15.0
+

@@ -1,0 +1,311 @@
+From 20a0f442abd364b39c7d249e3ad2b53df20f8c1b Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 20 Sep 2016 11:07:28 +0200
+Subject: [PATCH 396/595] Introduce new debug domains for WebKit parts
+
+webkit:editor - things associated with EWebKitContentEditor
+webkit:undo - things associated with undo and redo handling in EWebKitContentEditor
+webkit:preview - things associated with message preview, printing, ...
+webkit - things mentioned above together
+---
+ e-util/e-html-editor.c                             |  2 +-
+ mail/e-mail-printer.c                              |  4 +-
+ .../web-extension/e-editor-dom-functions.c         | 29 +++++++++
+ .../web-extension/e-editor-undo-redo-manager.c     | 69 +++++++++++++++++-----
+ web-extensions/e-web-extension-main.c              |  2 +-
+ web-extensions/e-web-extension.c                   |  3 +-
+ 6 files changed, 90 insertions(+), 19 deletions(-)
+
+diff --git a/e-util/e-html-editor.c b/e-util/e-html-editor.c
+index a5715ee9ab..39070eec48 100644
+--- a/e-util/e-html-editor.c
++++ b/e-util/e-html-editor.c
+@@ -345,7 +345,7 @@ html_editor_update_actions (EHTMLEditor *editor)
+ 
+ 	cnt_editor = e_html_editor_get_content_editor (editor);
+ 
+-	if (camel_debug ("wex"))
++	if (camel_debug ("webkit") || camel_debug ("webkit:editor"))
+ 		printf ("%s: flags:%d(%x)\n", G_STRFUNC, flags, flags);
+ 
+ 	visible = (flags & E_CONTENT_EDITOR_NODE_IS_IMAGE);
+diff --git a/mail/e-mail-printer.c b/mail/e-mail-printer.c
+index 4e6439497a..e49f8cd3dd 100644
+--- a/mail/e-mail-printer.c
++++ b/mail/e-mail-printer.c
+@@ -167,7 +167,7 @@ mail_printer_print_finished_cb (WebKitPrintOperation *print_operation,
+ {
+ 	AsyncContext *async_context;
+ 
+-	if (camel_debug ("wex"))
++	if (camel_debug ("webkit") || camel_debug ("webkit:preview"))
+ 		printf ("%s\n", G_STRFUNC);
+ 
+ 	async_context = g_task_get_task_data (task);
+@@ -185,7 +185,7 @@ mail_printer_print_failed_cb (WebKitPrintOperation *print_operation,
+ {
+ 	AsyncContext *async_context;
+ 
+-	if (camel_debug ("wex"))
++	if (camel_debug ("webkit") || camel_debug ("webkit:preview"))
+ 		printf ("%s\n", G_STRFUNC);
+ 
+ 	async_context = g_task_get_task_data (task);
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 2236e9f44b..69cb4e402a 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -5084,6 +5084,11 @@ remove_new_lines_around_citations (const gchar *input)
+ 
+ 	g_string_append (str, p);
+ 
++	if (camel_debug ("webkit") || camel_debug ("webkit:editor")) {
++		printf ("EWebKitContentEditor - %s\n", G_STRFUNC);
++		printf ("\toutput: '%s'\n", str->str);
++	}
++
+ 	return str;
+ }
+ 
+@@ -5172,6 +5177,10 @@ parse_html_into_blocks (EEditorPage *editor_page,
+ 	else
+ 		regex_nbsp = g_regex_new ("^\\s{1}|\\s{2,}|\x9|\\s$", 0, 0, NULL);
+ 
++	if (camel_debug ("webkit") || camel_debug ("webkit:editor")) {
++		printf ("EWebKitContentEditor - %s\n", G_STRFUNC);
++		printf ("\tinput: '%s'\n", input);
++	}
+ 	html = remove_new_lines_around_citations (input);
+ 
+ 	prev_token = html->str;
+@@ -5196,6 +5205,9 @@ parse_html_into_blocks (EEditorPage *editor_page,
+ 			processing_last = TRUE;
+ 		}
+ 
++		if (camel_debug ("webkit") || camel_debug ("webkit:editor"))
++			printf ("\tto_process: '%s'\n", to_process);
++
+ 		if (!*to_process && processing_last) {
+ 			g_free (to_process);
+ 			to_process = g_strdup (next_token);
+@@ -5249,6 +5261,9 @@ parse_html_into_blocks (EEditorPage *editor_page,
+ 			gchar *truncated = g_strdup (to_insert);
+ 			gchar *rest_to_insert;
+ 
++			if (camel_debug ("webkit") || camel_debug ("webkit:editor"))
++				printf ("\tto_insert: '%s'\n", to_insert);
++
+ 			empty = !*truncated && strlen (to_insert) > 0;
+ 
+ 			rest_to_insert = g_regex_replace_eval (
+@@ -5374,8 +5389,17 @@ parse_html_into_blocks (EEditorPage *editor_page,
+ 		parsed = replace_citation_marks_to_citations (inner_html);
+ 		webkit_dom_element_set_inner_html (parent, parsed->str, NULL);
+ 
++		if (camel_debug ("webkit") || camel_debug ("webkit:editor"))
++			printf ("\tparsed content: '%s'\n", inner_html);
++
+ 		g_free (inner_html);
+ 		g_string_free (parsed, TRUE);
++	} else if (camel_debug ("webkit") || camel_debug ("webkit:editor")) {
++		gchar *inner_html;
++
++		inner_html = webkit_dom_element_get_inner_html (parent);
++		printf ("\tparsed content: '%s'\n", inner_html);
++		g_free (inner_html);
+ 	}
+ 
+ 	g_string_free (html, TRUE);
+@@ -5879,11 +5903,16 @@ e_editor_dom_convert_content (EEditorPage *editor_page,
+ 			WEBKIT_DOM_HTML_ELEMENT (content_wrapper), preferred_text, NULL);
+ 	else {
+ 		gchar *inner_text;
++		WebKitDOMNode *last_child;
+ 
+ 		inner_text = webkit_dom_html_element_get_inner_text (body);
+ 		webkit_dom_html_element_set_inner_text (
+ 			WEBKIT_DOM_HTML_ELEMENT (content_wrapper), inner_text, NULL);
+ 
++		last_child = webkit_dom_node_get_last_child (WEBKIT_DOM_NODE (content_wrapper));
++		if (WEBKIT_DOM_IS_HTML_BR_ELEMENT (last_child))
++			remove_node (last_child);
++
+ 		g_free (inner_text);
+ 	}
+ 
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index bd9f9484a8..299bce0bd9 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -55,10 +55,44 @@ enum {
+ 	PROP_EDITOR_PAGE
+ };
+ 
++const gchar* event_type_string[] = {
++	"HISTORY_ALIGNMENT",
++	"HISTORY_AND",
++	"HISTORY_BLOCK_FORMAT",
++	"HISTORY_BOLD",
++	"HISTORY_CELL_DIALOG",
++	"HISTORY_DELETE",
++	"HISTORY_FONT_COLOR",
++	"HISTORY_FONT_SIZE",
++	"HISTORY_HRULE_DIALOG",
++	"HISTORY_INDENT",
++	"HISTORY_INPUT",
++	"HISTORY_IMAGE",
++	"HISTORY_IMAGE_DIALOG",
++	"HISTORY_INSERT_HTML",
++	"HISTORY_ITALIC",
++	"HISTORY_LINK_DIALOG",
++	"HISTORY_MONOSPACE",
++	"HISTORY_PAGE_DIALOG",
++	"HISTORY_PASTE",
++	"HISTORY_PASTE_AS_TEXT",
++	"HISTORY_PASTE_QUOTED",
++	"HISTORY_REMOVE_LINK",
++	"HISTORY_REPLACE",
++	"HISTORY_REPLACE_ALL",
++	"HISTORY_CITATION_SPLIT",
++	"HISTORY_SMILEY",
++	"HISTORY_START",
++	"HISTORY_STRIKETHROUGH",
++	"HISTORY_TABLE_DIALOG",
++	"HISTORY_TABLE_INPUT",
++	"HISTORY_UNDERLINE",
++	"HISTORY_WRAP",
++	"HISTORY_UNQUOTE"
++};
++
+ #define HISTORY_SIZE_LIMIT 30
+ 
+-#define d(x)
+-
+ G_DEFINE_TYPE (EEditorUndoRedoManager, e_editor_undo_redo_manager, G_TYPE_OBJECT)
+ 
+ EEditorUndoRedoManager *
+@@ -174,7 +208,6 @@ restore_selection_to_history_event_state (EEditorPage *editor_page,
+ 	g_clear_object (&dom_selection);
+ }
+ 
+-#if d(1)+0
+ static void
+ print_node_inner_html (WebKitDOMNode *node)
+ {
+@@ -196,7 +229,7 @@ static void
+ print_history_event (EEditorHistoryEvent *event)
+ {
+ 	if (event->type != HISTORY_START && event->type != HISTORY_AND) {
+-		printf ("  HISTORY EVENT: %d ; \n", event->type);
++		printf ("  %s\n", event_type_string[event->type]);
+ 		printf ("    before: start_x: %u ; start_y: %u ; end_x: %u ; end_y: %u ;\n",
+ 			event->before.start.x, event->before.start.y, event->before.end.x, event->before.end.y);
+ 		printf ("    after:  start_x: %u ; start_y: %u ; end_x: %u ; end_y: %u ;\n",
+@@ -306,7 +339,6 @@ print_redo_events (EEditorUndoRedoManager *manager)
+ 
+ 	printf ("------------------\n");
+ }
+-#endif
+ 
+ static gboolean
+ event_selection_was_collapsed (EEditorHistoryEvent *ev)
+@@ -2290,8 +2322,10 @@ e_editor_undo_redo_manager_insert_history_event (EEditorUndoRedoManager *manager
+ 	if (manager->priv->operation_in_progress)
+ 		return;
+ 
+-	d (printf ("\nINSERTING EVENT:\n"));
+-	d (print_history_event (event));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo")) {
++		printf ("\nINSERTING EVENT:\n");
++		print_history_event (event);
++	}
+ 
+ 	remove_forward_redo_history_events_if_needed (manager);
+ 
+@@ -2310,7 +2344,8 @@ e_editor_undo_redo_manager_insert_history_event (EEditorUndoRedoManager *manager
+ 	manager->priv->history = g_list_prepend (manager->priv->history, event);
+ 	manager->priv->history_size++;
+ 
+-	d (print_history (manager));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo"))
++		print_history (manager);
+ 
+ 	g_object_notify (G_OBJECT (manager), "can-undo");
+ }
+@@ -2442,8 +2477,10 @@ e_editor_undo_redo_manager_undo (EEditorUndoRedoManager *manager)
+ 	history = manager->priv->history;
+ 	event = history->data;
+ 
+-	d (printf ("\nUNDOING EVENT:\n"));
+-	d (print_history_event (event));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo")) {
++		printf ("\nUNDOING EVENT:\n");
++		print_history_event (event);
++	}
+ 
+ 	manager->priv->operation_in_progress = TRUE;
+ 
+@@ -2537,7 +2574,8 @@ e_editor_undo_redo_manager_undo (EEditorUndoRedoManager *manager)
+ 		manager->priv->history = manager->priv->history->next;
+ 	}
+ 
+-	d (print_undo_events (manager));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo"))
++		print_undo_events (manager);
+ 
+ 	manager->priv->operation_in_progress = FALSE;
+ 
+@@ -2573,8 +2611,10 @@ e_editor_undo_redo_manager_redo (EEditorUndoRedoManager *manager)
+ 	history = manager->priv->history;
+ 	event = history->prev->data;
+ 
+-	d (printf ("\nREDOING EVENT:\n"));
+-	d (print_history_event (event));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo")) {
++		printf ("\nREDOING EVENT:\n");
++		print_history_event (event);
++	}
+ 
+ 	editor_page = editor_undo_redo_manager_ref_editor_page (manager);
+ 	g_return_if_fail (editor_page != NULL);
+@@ -2684,7 +2724,8 @@ e_editor_undo_redo_manager_redo (EEditorUndoRedoManager *manager)
+ 
+ 	manager->priv->history = manager->priv->history->prev;
+ 
+-	d (print_redo_events (manager));
++	if (camel_debug ("webkit") || camel_debug ("webkit:undo"))
++		print_redo_events (manager);
+ 
+ 	manager->priv->operation_in_progress = FALSE;
+ 
+diff --git a/web-extensions/e-web-extension-main.c b/web-extensions/e-web-extension-main.c
+index 5276734491..15256381b7 100644
+--- a/web-extensions/e-web-extension-main.c
++++ b/web-extensions/e-web-extension-main.c
+@@ -43,7 +43,7 @@ webkit_web_extension_initialize (WebKitWebExtension *wk_extension)
+ 
+ 	camel_debug_init ();
+ 
+-	if (camel_debug ("wex"))
++	if (camel_debug ("webkit") || camel_debug ("webkit:preview"))
+ 		printf ("%s\n", G_STRFUNC);
+ 
+ 	extension = e_web_extension_get ();
+diff --git a/web-extensions/e-web-extension.c b/web-extensions/e-web-extension.c
+index 0492077147..1cc24d2725 100644
+--- a/web-extensions/e-web-extension.c
++++ b/web-extensions/e-web-extension.c
+@@ -334,8 +334,9 @@ handle_method_call (GDBusConnection *connection,
+ 	if (g_strcmp0 (interface_name, E_WEB_EXTENSION_INTERFACE) != 0)
+ 		return;
+ 
+-	if (camel_debug ("wex"))
++	if (camel_debug ("webkit") || camel_debug ("webkit:preview"))
+ 		printf ("EWebExtension - %s - %s\n", G_STRFUNC, method_name);
++
+ 	if (g_strcmp0 (method_name, "RegisterElementClicked") == 0) {
+ 		const gchar *element_class = NULL;
+ 
+-- 
+2.15.0
+

@@ -1,0 +1,58 @@
+From 63c80a1d291add2252709741f2a0e3f711f53479 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Wed, 21 Dec 2016 11:36:22 +0100
+Subject: [PATCH 536/595] Crash on paste of a vCard into a message composer
+ body
+
+This had been reported downstream as:
+https://bugzilla.redhat.com/show_bug.cgi?id=1406510
+
+Copying (right click Copy) a contact from the Contacts page and
+the trying to Paste into the body of a new email message, causes
+a crash in webkit_editor_paste_clipboard_targets_cb().
+---
+ e-util/e-html-editor-actions.c          | 3 +++
+ modules/webkit-editor/e-webkit-editor.c | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/e-util/e-html-editor-actions.c b/e-util/e-html-editor-actions.c
+index 54b9329282..a14491fc92 100644
+--- a/e-util/e-html-editor-actions.c
++++ b/e-util/e-html-editor-actions.c
+@@ -557,6 +557,9 @@ clipboard_text_received_for_paste_as_text (GtkClipboard *clipboard,
+ {
+ 	EContentEditor *cnt_editor;
+ 
++	if (!text || !*text)
++		return;
++
+ 	cnt_editor = e_html_editor_get_content_editor (editor);
+ 	e_content_editor_insert_content (
+ 		cnt_editor,
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 08b4dd522d..410be6a6d6 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5665,6 +5665,7 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 
+ 		webkit_editor_insert_image (E_CONTENT_EDITOR (wk_editor), uri);
+ 
++		g_free (content);
+ 		g_free (uri);
+ 
+ 		return;
+@@ -5676,8 +5677,10 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 	/* Prefer plain text over HTML when in the plain text mode, but only
+ 	 * when pasting content from outside the editor view. */
+ 
+-	if (!content && !*content)
++	if (!content || !*content) {
++		g_free (content);
+ 		return;
++	}
+ 
+ 	if (is_html)
+ 		webkit_editor_insert_content (
+-- 
+2.15.0
+

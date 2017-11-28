@@ -1,0 +1,25 @@
+From 6636197166618397f0ea4ca1484dda54657ca09a Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 17 Aug 2016 17:12:42 +0200
+Subject: [PATCH 260/595] Correct a typo in the comment
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index e7065bf8b0..8f022840f1 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4507,7 +4507,7 @@ quote_plain_text_recursive (WebKitDOMDocument *document,
+ 
+ 		/* Even in plain text mode we can have some basic html element
+ 		 * like anchor and others. When Forwaring e-mail as Quoted EMFormat
+-		 * generates header that contatains <b> tags (bold font).
++		 * generates header that contains <b> tags (bold font).
+ 		 * We have to treat these elements separately to avoid
+ 		 * modifications of theirs inner texts */
+ 		is_html_node =
+-- 
+2.15.0
+

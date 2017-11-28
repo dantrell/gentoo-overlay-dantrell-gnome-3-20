@@ -1,0 +1,32 @@
+From 9b50a0cb9e200334a9d5e7cd544381fa9cb10a6b Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 15 Nov 2016 13:39:25 +0100
+Subject: [PATCH 491/595] Messages could not be sometimes quoted correctly
+
+Don't use async call when setting whether message will be converted in
+situ.
+---
+ modules/webkit-editor/e-webkit-editor.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index d72c8cb016..6dbf8035ac 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -1693,11 +1693,11 @@ static void
+ set_convert_in_situ (EWebKitEditor *wk_editor,
+                      gboolean value)
+ {
+-	e_util_invoke_g_dbus_proxy_call_with_error_check (
++	e_util_invoke_g_dbus_proxy_call_sync_wrapper_with_error_check (
+ 		wk_editor->priv->web_extension,
+ 		"SetConvertInSitu",
+ 		g_variant_new ("(tb)", current_page_id (wk_editor), value),
+-		wk_editor->priv->cancellable);
++		NULL);
+ }
+ 
+ static void
+-- 
+2.15.0
+

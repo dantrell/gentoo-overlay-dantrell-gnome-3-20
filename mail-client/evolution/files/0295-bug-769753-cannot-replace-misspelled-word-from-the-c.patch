@@ -1,0 +1,26 @@
+From 1a3f2e11448528f8d1b7597bf15feb13c3a66dc7 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 23 Aug 2016 07:15:35 +0200
+Subject: [PATCH 295/595] Bug 769753 - Cannot replace misspelled word from the
+ context menu ][
+
+---
+ modules/webkit-editor/web-extension/e-editor-web-extension.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index 5f06110da2..912ebdd275 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -560,7 +560,7 @@ static const gchar *introspection_xml =
+ "    </method>"
+ "    <method name='DOMReplaceCaretWord'>"
+ "      <arg type='t' name='page_id' direction='in'/>"
+-"      <arg type='s' name='replacement' direction='out'/>"
++"      <arg type='s' name='replacement' direction='in'/>"
+ "    </method>"
+ "<!-- ********************************************************* -->"
+ "<!--     Functions that are used in EComposerPrivate           -->"
+-- 
+2.15.0
+

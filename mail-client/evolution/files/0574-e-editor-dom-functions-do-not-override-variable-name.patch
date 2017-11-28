@@ -1,0 +1,58 @@
+From 2b752527dde1d0a479dad934e0b0a1799543bf24 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Thu, 9 Feb 2017 13:00:26 +0100
+Subject: [PATCH 574/595] e-editor-dom-functions: Do not override variable name
+ from parent block
+
+The 'length' is used for the 'for' cycle and also inside the 'for'.
+Better to not clash on them, to not cause confusion.
+---
+ .../web-extension/e-editor-dom-functions.c             | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index b89672d4e4..dcc6b0ac9c 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7229,21 +7229,21 @@ process_node_to_plain_text_for_exporting (EEditorPage *editor_page,
+ 
+ 				if (!g_str_has_prefix (css_align + 13, "left")) {
+ 					gchar *align;
+-					gint length;
++					gint len;
+ 
+ 					if (g_str_has_prefix (css_align + 13, "center"))
+-						length = (word_wrap_length - g_utf8_strlen (content, -1)) / 2;
++						len = (word_wrap_length - g_utf8_strlen (content, -1)) / 2;
+ 					else
+-						length = word_wrap_length - g_utf8_strlen (content, -1);
++						len = word_wrap_length - g_utf8_strlen (content, -1);
+ 
+-					if (length < 0)
+-						length = 0;
++					if (len < 0)
++						len = 0;
+ 
+ 					if (g_str_has_suffix (content, " ")) {
+-						char *tmp;
++						gchar *tmp;
+ 
+-						length++;
+-						align = g_strnfill (length, ' ');
++						len++;
++						align = g_strnfill (len, ' ');
+ 
+ 						tmp = g_strndup (content, g_utf8_strlen (content, -1) -1);
+ 
+@@ -7251,7 +7251,7 @@ process_node_to_plain_text_for_exporting (EEditorPage *editor_page,
+ 							align, tmp, NULL);
+ 						g_free (tmp);
+ 					} else {
+-						align = g_strnfill (length, ' ');
++						align = g_strnfill (len, ' ');
+ 
+ 						content_with_align = g_strconcat (
+ 							align, content, NULL);
+-- 
+2.15.0
+

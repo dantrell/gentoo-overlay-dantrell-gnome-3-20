@@ -1,0 +1,60 @@
+From 14ad2ed7ea90f830a4e7e0e2abf647e708d41c60 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 15 Aug 2016 17:53:46 +0200
+Subject: [PATCH 246/595] Correct LDFLAGS of some new libraries and modules
+
+---
+ modules/itip-formatter/web-extension/Makefile.am | 2 +-
+ modules/webkit-editor/web-extension/Makefile.am  | 2 +-
+ web-extensions/Makefile.am                       | 5 +++--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/modules/itip-formatter/web-extension/Makefile.am b/modules/itip-formatter/web-extension/Makefile.am
+index a519744d88..87df8e66bd 100644
+--- a/modules/itip-formatter/web-extension/Makefile.am
++++ b/modules/itip-formatter/web-extension/Makefile.am
+@@ -21,6 +21,6 @@ libmoduleitipformatterwebextension_la_LIBADD =		\
+ 	$(WEB_EXTENSIONS_LIBS)
+ 
+ libmoduleitipformatterwebextension_la_LDFLAGS =		\
+-	-module -avoid-version -no-undefined
++	-module -avoid-version $(NO_UNDEFINED) $(CODE_COVERAGE_LDFLAGS)
+ 
+ -include $(top_srcdir)/git.mk
+diff --git a/modules/webkit-editor/web-extension/Makefile.am b/modules/webkit-editor/web-extension/Makefile.am
+index f2a7b02afe..2d312536e0 100644
+--- a/modules/webkit-editor/web-extension/Makefile.am
++++ b/modules/webkit-editor/web-extension/Makefile.am
+@@ -33,6 +33,6 @@ libewebkiteditorwebextension_la_LIBADD =		\
+ 	$(WEB_EXTENSIONS_LIBS)
+ 
+ libewebkiteditorwebextension_la_LDFLAGS = \
+-	-module -avoid-version -no-undefined
++	-module -avoid-version $(NO_UNDEFINED) $(CODE_COVERAGE_LDFLAGS)
+ 
+ -include $(top_srcdir)/git.mk
+diff --git a/web-extensions/Makefile.am b/web-extensions/Makefile.am
+index 07854c2e19..d98f361ab2 100644
+--- a/web-extensions/Makefile.am
++++ b/web-extensions/Makefile.am
+@@ -16,6 +16,8 @@ libedomutils_la_LIBADD =				\
+ 	$(EVOLUTION_DATA_SERVER_LIBS)			\
+ 	$(GNOME_PLATFORM_LIBS)
+ 
++libedomutils_la_LDFLAGS = -avoid-version $(NO_UNDEFINED) $(CODE_COVERAGE_LDFLAGS)
++
+ libewebextension_la_SOURCES =				\
+ 	e-web-extension.h				\
+ 	e-web-extension-names.h				\
+@@ -38,7 +40,6 @@ libewebextension_la_LIBADD =				\
+ 	$(GNOME_PLATFORM_LIBS)				\
+ 	$(WEB_EXTENSIONS_LIBS)
+ 
+-libewebextension_la_LDFLAGS =				\
+-	-module -avoid-version -no-undefined
++libewebextension_la_LDFLAGS = -module -avoid-version $(NO_UNDEFINED) $(CODE_COVERAGE_LDFLAGS)
+ 
+ -include $(top_srcdir)/git.mk
+-- 
+2.15.0
+

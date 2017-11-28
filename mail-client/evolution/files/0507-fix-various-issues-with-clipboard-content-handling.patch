@@ -1,0 +1,207 @@
+From 533c9ce03e231edd46a846c4db10036355402674 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 30 Nov 2016 08:59:48 +0100
+Subject: [PATCH 507/595] Fix various issues with clipboard content handling
+
+ * Prefer image content over the text/* one.
+ * In HTML mode before trying to save the image from the clipboard (to be
+   later inserted into the editor) save the clipboard's text/* content as
+   if we fail to save the image (not necessary by our fault - looks like
+   the current web engines (WebKitGTK+, Gecko) have some problems
+   copying the IMG element with SRCSET attribute - see [0]). If this
+   fails then the source application can cancel the content and we could
+   not fallback to at least some content.
+ * Mark editor as changed when an image is inserted.
+
+Reported as https://bugzilla.redhat.com/show_bug.cgi?id=1307205
+
+[0] - https://bugzilla.redhat.com/show_bug.cgi?id=1307205#c10
+---
+ composer/e-msg-composer.c               |  22 +++----
+ modules/webkit-editor/e-webkit-editor.c | 106 ++++++++++++++------------------
+ 2 files changed, 57 insertions(+), 71 deletions(-)
+
+diff --git a/composer/e-msg-composer.c b/composer/e-msg-composer.c
+index a2a9b89323..eff9059bcb 100644
+--- a/composer/e-msg-composer.c
++++ b/composer/e-msg-composer.c
+@@ -1723,6 +1723,17 @@ msg_composer_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 	editor = e_msg_composer_get_editor (composer);
+ 	cnt_editor = e_html_editor_get_content_editor (editor);
+ 
++	if (!e_content_editor_get_html_mode (cnt_editor) &&
++	    gtk_targets_include_image (targets, n_targets, TRUE)) {
++		e_composer_paste_image (composer, clipboard);
++		return;
++	}
++
++	if (gtk_targets_include_uri (targets, n_targets)) {
++		e_composer_paste_uris (composer, clipboard);
++		return;
++	}
++
+ 	/* Order is important here to ensure common use cases are
+ 	 * handled correctly.  See GNOME bug #603715 for details. */
+ 	if (gtk_targets_include_text (targets, n_targets) ||
+@@ -1734,17 +1745,6 @@ msg_composer_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 		return;
+ 	}
+ 
+-	if (gtk_targets_include_uri (targets, n_targets)) {
+-		e_composer_paste_uris (composer, clipboard);
+-		return;
+-	}
+-
+-	if (!e_content_editor_get_html_mode (cnt_editor) &&
+-	    gtk_targets_include_image (targets, n_targets, TRUE)) {
+-		e_composer_paste_image (composer, clipboard);
+-		return;
+-	}
+-
+ 	if (composer->priv->last_signal_was_paste_primary) {
+ 		e_content_editor_paste_primary (cnt_editor);
+ 	} else
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 6dbf8035ac..2b0b30815f 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5606,6 +5606,9 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+                                           gint n_targets,
+                                           EWebKitEditor *wk_editor)
+ {
++	gchar *content = NULL;
++	gboolean is_html = FALSE;
++
+ 	if (targets == NULL || n_targets < 0)
+ 		return;
+ 
+@@ -5613,76 +5616,36 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 	if (!gtk_widget_has_focus (GTK_WIDGET (wk_editor)))
+ 		gtk_widget_grab_focus (GTK_WIDGET (wk_editor));
+ 
+-	/* Order is important here to ensure common use cases are
+-	 * handled correctly.  See GNOME bug #603715 for details. */
+-	/* Prefer plain text over HTML when in the plain text mode, but only
+-	 * when pasting content from outside the editor view. */
++	/* Save the text content before we try to insert the image as it could
++	 * happen that we fail to save the image from clipboard (not by our
++	 * fault - right now it looks like current web engines can't handle IMG
++	 * with SRCSET attribute in clipboard correctly). And if this fails the
++	 * source application can cancel the content and we could not fallback
++	 * to at least some content. */
+ 	if (wk_editor->priv->html_mode ||
+ 	    webkit_editor_paste_prefer_text_html (wk_editor)) {
+-		gchar *content = NULL;
+-
+ 		if (e_targets_include_html (targets, n_targets)) {
+-			if (!(content = e_clipboard_wait_for_html (clipboard)))
+-				return;
+-
+-			webkit_editor_insert_content (
+-				E_CONTENT_EDITOR (wk_editor),
+-				content,
+-				E_CONTENT_EDITOR_INSERT_TEXT_HTML);
+-
+-			g_free (content);
+-			return;
+-		}
+-
+-		if (gtk_targets_include_text (targets, n_targets)) {
+-			if (!(content = gtk_clipboard_wait_for_text (clipboard)))
+-				return;
+-
+-			webkit_editor_insert_content (
+-				E_CONTENT_EDITOR (wk_editor),
+-				content,
+-				E_CONTENT_EDITOR_INSERT_TEXT_PLAIN |
+-				E_CONTENT_EDITOR_INSERT_CONVERT);
+-
+-			g_free (content);
+-			return;
+-		}
++			content = e_clipboard_wait_for_html (clipboard);
++			is_html = TRUE;
++		} else if (gtk_targets_include_text (targets, n_targets))
++			content = gtk_clipboard_wait_for_text (clipboard)
+ 	} else {
+-		gchar *content = NULL;
+-
+-		if (gtk_targets_include_text (targets, n_targets)) {
+-			if (!(content = gtk_clipboard_wait_for_text (clipboard)))
+-				return;
+-
+-			webkit_editor_insert_content (
+-				E_CONTENT_EDITOR (wk_editor),
+-				content,
+-				E_CONTENT_EDITOR_INSERT_TEXT_PLAIN |
+-				E_CONTENT_EDITOR_INSERT_CONVERT);
+-
+-			g_free (content);
+-			return;
+-		}
+-
+-		if (e_targets_include_html (targets, n_targets)) {
+-			if (!(content = e_clipboard_wait_for_html (clipboard)))
+-				return;
+-
+-			webkit_editor_insert_content (
+-				E_CONTENT_EDITOR (wk_editor),
+-				content,
+-				E_CONTENT_EDITOR_INSERT_TEXT_HTML);
+-
+-			g_free (content);
+-			return;
++		if (gtk_targets_include_text (targets, n_targets))
++			content = gtk_clipboard_wait_for_text (clipboard);
++		else if (e_targets_include_html (targets, n_targets)) {
++			content = e_clipboard_wait_for_html (clipboard);
++			is_html = TRUE;
+ 		}
+ 	}
+ 
+-	if (gtk_targets_include_image (targets, n_targets, TRUE)) {
++	if (wk_editor->priv->html_mode &&
++	    gtk_targets_include_image (targets, n_targets, TRUE)) {
+ 		gchar *uri;
+ 
+ 		if (!(uri = e_util_save_image_from_clipboard (clipboard)))
+-			return;
++			goto fallback;
++
++		webkit_editor_set_changed (wk_editor, TRUE);
+ 
+ 		webkit_editor_insert_image (E_CONTENT_EDITOR (wk_editor), uri);
+ 
+@@ -5690,6 +5653,29 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 
+ 		return;
+ 	}
++
++ fallback:
++	/* Order is important here to ensure common use cases are
++	 * handled correctly.  See GNOME bug #603715 for details. */
++	/* Prefer plain text over HTML when in the plain text mode, but only
++	 * when pasting content from outside the editor view. */
++
++	if (!content && !*content)
++		return;
++
++	if (is_html)
++		webkit_editor_insert_content (
++			E_CONTENT_EDITOR (wk_editor),
++			content,
++			E_CONTENT_EDITOR_INSERT_TEXT_HTML);
++	else
++		webkit_editor_insert_content (
++			E_CONTENT_EDITOR (wk_editor),
++			content,
++			E_CONTENT_EDITOR_INSERT_TEXT_PLAIN |
++			E_CONTENT_EDITOR_INSERT_CONVERT);
++
++	g_free (content);
+ }
+ 
+ static void
+-- 
+2.15.0
+

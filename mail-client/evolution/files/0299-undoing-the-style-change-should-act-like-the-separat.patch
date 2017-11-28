@@ -1,0 +1,35 @@
+From 7082cee57849dc243d55874543e292f331b8d862 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 23 Aug 2016 10:03:09 +0200
+Subject: [PATCH 299/595] Undoing the style change should act like the separate
+ history event
+
+Previously we were jumping straight to the next item. This could cause problems
+and also try to be consistent with LO Writer.
+---
+ modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index c28bab77ab..f72cd86d96 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -2458,15 +2458,6 @@ e_editor_undo_redo_manager_undo (EEditorUndoRedoManager *manager)
+ 		case HISTORY_STRIKETHROUGH:
+ 		case HISTORY_UNDERLINE:
+ 		case HISTORY_FONT_SIZE:
+-			if (event_selection_was_collapsed (event)) {
+-				if (history->next) {
+-					manager->priv->history = history->next;
+-					e_editor_undo_redo_manager_undo (manager);
+-				}
+-				manager->priv->operation_in_progress = FALSE;
+-				g_object_unref (editor_page);
+-				return;
+-			}
+ 		case HISTORY_ALIGNMENT:
+ 		case HISTORY_BLOCK_FORMAT:
+ 		case HISTORY_MONOSPACE:
+-- 
+2.15.0
+

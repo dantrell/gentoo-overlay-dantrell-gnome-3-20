@@ -1,0 +1,41 @@
+From 41630182352eece73fb0d9185e01e6c38ae4f713 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 6 Sep 2016 18:37:43 +0200
+Subject: [PATCH 358/595] Change URL and e-mail pattern regular expressions
+
+The evolution could crash when replying to an HTML message inside pcre
+library recursion, which could cause stack overflow.
+
+This had been reported downstream at:
+https://bugzilla.redhat.com/show_bug.cgi?id=1370514
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.h b/modules/webkit-editor/web-extension/e-editor-dom-functions.h
+index 67481f1b9e..8ea0982d46 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.h
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.h
+@@ -27,8 +27,8 @@
+ 
+ /* stephenhay from https://mathiasbynens.be/demo/url-regex */
+ #define URL_PROTOCOLS "news|telnet|nntp|file|https?|s?ftp|webcal|localhost|ssh"
+-#define URL_PATTERN_BASE "(?=((?:(?:(?:" URL_PROTOCOLS ")\\:\\/\\/)|(?:www\\.|ftp\\.))[^\\s\\/\\$\\.\\?#].[^\\s]*)"
+-#define URL_PATTERN_NO_NBSP ")((?:(?!&nbsp;).)*)"
++#define URL_PATTERN_BASE "(?=((?:(?:(?:" URL_PROTOCOLS ")\\:\\/\\/)|(?:www\\.|ftp\\.))[^\\s\\/\\$\\.\\?#].[^\\s]*+)"
++#define URL_PATTERN_NO_NBSP ")((?:(?!&nbsp;).)*+)"
+ #define URL_PATTERN URL_PATTERN_BASE URL_PATTERN_NO_NBSP
+ #define URL_PATTERN_SPACE URL_PATTERN_BASE "\\s$" URL_PATTERN_NO_NBSP
+ /* Taken from camel-url-scanner.c */
+@@ -37,7 +37,7 @@
+ /* http://www.w3.org/TR/html5/forms.html#valid-e-mail-address */
+ #define E_MAIL_PATTERN \
+ 	"[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}"\
+-	"[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"
++	"[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*+"
+ 
+ #define E_MAIL_PATTERN_SPACE E_MAIL_PATTERN "\\s"
+ 
+-- 
+2.15.0
+

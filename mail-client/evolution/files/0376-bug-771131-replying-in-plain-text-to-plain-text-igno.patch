@@ -1,0 +1,31 @@
+From 1362feb764d630e91c8c2ddcc2c02017b898b8c7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 12 Sep 2016 09:58:19 +0200
+Subject: [PATCH 376/595] Bug 771131 - Replying in plain text to plain text
+ ignores quotation level
+
+We were not inserting the citation start marker in parse_html_into_blocks() when
+it was after the text to process and the line did not started with BR element.
+Only the citation end mark was inserted in this case, thus the citation was not
+constructed properly.
+---
+ .../web-extension/e-editor-dom-functions.c         |  3 ++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 5ebe8b0827..2fd63bf9f5 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -5305,6 +5305,9 @@ parse_html_into_blocks (EEditorPage *editor_page,
+ 		if (with_br && citation_start && citation_start != with_br + 4)
+ 			append_citation_mark (document, parent, "##CITATION_START##");
+ 
++		if (!with_br && citation_start && citation_start != to_process)
++			append_citation_mark (document, parent, "##CITATION_START##");
++
+ 		if (citation_end && citation_end != to_process)
+ 			append_citation_mark (document, parent, "##CITATION_END##");
+ 
+-- 
+2.15.0
+

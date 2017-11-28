@@ -1,0 +1,27 @@
+From 60ed33c67cd0e037ad2e922a0038edbd2906be8c Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 1 Dec 2016 11:05:37 +0100
+Subject: [PATCH 514/595] Copy action is no available in EWebView's context
+ menu
+
+Regression introduced in ba1f878
+---
+ e-util/e-web-view.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index ad27cba0c1..9901dd0542 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -1833,7 +1833,7 @@ web_view_selectable_update_actions (ESelectable *selectable,
+ 	if (web_extension) {
+ 		GVariant *result;
+ 
+-		result = g_dbus_proxy_get_cached_property (web_view->priv->web_extension, "ClipboardActions");
++		result = g_dbus_proxy_get_cached_property (web_view->priv->web_extension, "ClipboardFlags");
+ 		if (result) {
+ 			EClipboardFlags clipboard_actions = g_variant_get_uint32 (result);
+ 			g_variant_unref (result);
+-- 
+2.15.0
+

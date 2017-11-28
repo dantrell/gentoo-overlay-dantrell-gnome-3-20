@@ -1,0 +1,36 @@
+From 283b9786bbda4691196be79c46c9722bf3fdcfbb Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 6 Dec 2016 16:35:12 +0100
+Subject: [PATCH 524/595] Let the Control + C shortcut behave the same way as
+ Control + Shift
+
+Some of the internal flags were not set and the code for determining
+whether we own the clipboards content could fail.
+---
+ modules/webkit-editor/e-webkit-editor.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index f233831309..cd857d142c 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5885,12 +5885,13 @@ webkit_editor_key_press_event (GtkWidget *widget,
+ 	    ((event)->keyval == GDK_KEY_v))) {
+ 		if (!e_content_editor_emit_paste_clipboard (E_CONTENT_EDITOR (widget)))
+ 			webkit_editor_paste (E_CONTENT_EDITOR (widget));
+-
+ 		return TRUE;
+ 	}
+ 
+-	if (((event)->state & GDK_CONTROL_MASK) &&
+-	    ((event)->keyval == GDK_KEY_Insert)) {
++	if ((((event)->state & GDK_CONTROL_MASK) &&
++	    ((event)->keyval == GDK_KEY_Insert)) ||
++	    (((event)->state & GDK_CONTROL_MASK) &&
++	    ((event)->keyval == GDK_KEY_c))) {
+ 		webkit_editor_copy (E_CONTENT_EDITOR (wk_editor));
+ 		return TRUE;
+ 	}
+-- 
+2.15.0
+

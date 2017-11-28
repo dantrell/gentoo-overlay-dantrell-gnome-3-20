@@ -1,0 +1,37 @@
+From 6799fc9cd4408d3593a9f5373391329ad4f1e9de Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 23 Aug 2016 15:25:55 +0200
+Subject: [PATCH 306/595] Undoing or redoing the font format changes does not
+ reflect the changes in the UI
+
+We need to notify the UI process about the changes that were made while
+performing the undo and redo operations.
+---
+ modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 7ebb856102..cd443c5a31 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -2526,6 +2526,8 @@ e_editor_undo_redo_manager_undo (EEditorUndoRedoManager *manager)
+ 
+ 	manager->priv->operation_in_progress = FALSE;
+ 
++	e_editor_page_emit_selection_changed (editor_page);
++
+ 	g_object_unref (editor_page);
+ 
+ 	g_object_notify (G_OBJECT (manager), "can-undo");
+@@ -2671,6 +2673,8 @@ e_editor_undo_redo_manager_redo (EEditorUndoRedoManager *manager)
+ 
+ 	manager->priv->operation_in_progress = FALSE;
+ 
++	e_editor_page_emit_selection_changed (editor_page);
++
+ 	g_object_unref (editor_page);
+ 
+ 	g_object_notify (G_OBJECT (manager), "can-undo");
+-- 
+2.15.0
+

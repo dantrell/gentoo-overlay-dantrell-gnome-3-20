@@ -1,0 +1,42 @@
+From bb5de5bf3efa2f9d8058a83d925e5f0990c4b133 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 15 Aug 2016 09:53:30 +0200
+Subject: [PATCH 234/595] Bug 769707 - [WK2] Signature lost on send
+
+Don't skip the processing of the signature.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 041c59a4c8..e62e275d84 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7204,22 +7204,20 @@ process_node_to_plain_text_for_exporting (EEditorPage *editor_page,
+ 
+ 			first_child = webkit_dom_node_get_first_child (child);
+ 
+-			skip_node = TRUE;
+ 			/* Don't generate any text if the signature is set to None. */
+ 			id = webkit_dom_element_get_id (WEBKIT_DOM_ELEMENT (first_child));
+ 			if (g_strcmp0 (id, "none") == 0) {
+ 				g_free (id);
+ 
+ 				remove_node (child);
++				skip_node = TRUE;
+ 				goto next;
+ 			}
+ 			g_free (id);
+ 
+-			if (html_mode) {
++			if (html_mode)
+ 				convert_element_from_html_to_plain_text (
+ 					editor_page, WEBKIT_DOM_ELEMENT (first_child), NULL, NULL);
+-				skip_node = FALSE;
+-			}
+ 
+ 			goto next;
+ 		}
+-- 
+2.15.0
+

@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 flag-o-matic readme.gentoo-r1
+inherit autotools gnome2 flag-o-matic readme.gentoo-r1
 
 DESCRIPTION="Integrated mail, addressbook and calendaring functionality"
 HOMEPAGE="https://wiki.gnome.org/Apps/Evolution"
@@ -33,7 +33,7 @@ COMMON_DEPEND="
 	>=gnome-extra/evolution-data-server-${PV}:=[gtk,weather?]
 	>=media-libs/libcanberra-0.25[gtk3]
 	>=net-libs/libsoup-2.42:2.4
-	>=net-libs/webkit-gtk-2.2:3
+	>=net-libs/webkit-gtk-2.13.90:4
 	>=x11-libs/cairo-1.9.15:=[glib]
 	>=x11-libs/gdk-pixbuf-2.24:2
 	>=x11-libs/gtk+-3.10:3
@@ -70,7 +70,6 @@ DEPEND="${COMMON_DEPEND}
 	app-text/yelp-tools
 	dev-util/gtk-doc-am
 	>=dev-util/intltool-0.40.0
-	dev-util/itstool
 	>=gnome-base/gnome-common-2.12
 	virtual/pkgconfig
 "
@@ -92,6 +91,15 @@ x-scheme-handler/https=firefox.desktop
 
 (replace firefox.desktop with the name of the appropriate .desktop
 file from /usr/share/applications if you use a different browser)."
+
+src_prepare() {
+	# From GNOME:
+	# 	https://git.gnome.org/browse/evolution/log/?h=gnome-3-22
+	eapply "${FILESDIR}"
+
+	eautoreconf
+	gnome2_src_prepare
+}
 
 src_configure() {
 	# Use NSS/NSPR only if 'ssl' is enabled.

@@ -1,0 +1,27 @@
+From dc40b309e4a2794d6df192145b497fde6d7c6979 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 12 Sep 2016 07:18:29 +0200
+Subject: [PATCH 374/595] After pressing the return key, caret is moved to a
+ wrong place
+
+Fix one query selector after the P -> DIV move.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 252db50451..df11c7c33b 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -2483,7 +2483,7 @@ fix_paragraph_structure_after_pressing_enter (EEditorPage *editor_page)
+ 	/* When pressing Enter on empty line in the list (or after heading elements)
+ 	 * WebKit will end that list and inserts <div><br></div> so mark it for wrapping. */
+ 	list = webkit_dom_document_query_selector_all (
+-		document, "body > div > br", NULL);
++		document, "body > div:not([data-evo-paragraph]) > br", NULL);
+ 
+ 	length = webkit_dom_node_list_get_length (list);
+ 	for (ii = 0; ii < length; ii++) {
+-- 
+2.15.0
+

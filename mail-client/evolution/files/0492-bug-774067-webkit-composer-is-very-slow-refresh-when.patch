@@ -1,0 +1,41 @@
+From 0de465d6a13ed3e9cbe9e01370ded4f84ed925c2 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 15 Nov 2016 15:26:48 +0100
+Subject: [PATCH 492/595] Bug 774067 - Webkit composer is very slow refresh
+ when typing
+
+Disable the accelerated compositing mode in WebKitGTK+ as we don't need
+it at all in Evolution (definitely not in composer, but right now
+disable it even for preview) and for some video drivers like vboxvideo
+and modesetting there is a big performance hit.
+---
+ shell/main.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/shell/main.c b/shell/main.c
+index 0ece81d2a9..ea9ce99263 100644
+--- a/shell/main.c
++++ b/shell/main.c
+@@ -590,10 +590,16 @@ main (gint argc,
+ 	g_object_unref (settings);
+ #endif
+ 
+-	/* FIXME WK2 - Look if we still need this it looks like it's not. */
+-	/* Workaround https://bugzilla.gnome.org/show_bug.cgi?id=683548 */
+-	if (!quit)
++	if (!quit) {
++		/* Until there will be a proper WebKitGTK+ API for disabling the
++		 * accelerated compositing mode, we need to use the environment
++		 * variable. See https://bugzilla.gnome.org/show_bug.cgi?id=774067 */
++		g_setenv("WEBKIT_DISABLE_COMPOSITING_MODE", "1", TRUE);
++
++		/* FIXME WK2 - Look if we still need this it looks like it's not. */
++		/* Workaround https://bugzilla.gnome.org/show_bug.cgi?id=683548 */
+ 		g_type_ensure (WEBKIT_TYPE_WEB_VIEW);
++	}
+ 
+ 	shell = create_default_shell ();
+ 	if (!shell)
+-- 
+2.15.0
+

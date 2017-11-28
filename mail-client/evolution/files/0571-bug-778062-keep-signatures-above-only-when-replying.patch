@@ -1,0 +1,125 @@
+From f4ebb7ce7a1b79b58497cdba45a2a63da119211d Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 7 Feb 2017 17:46:49 +0100
+Subject: [PATCH 571/595] Bug 778062 - Keep signatures above only when replying
+
+---
+ .../web-extension/e-composer-dom-functions.c          |  4 ++--
+ .../web-extension/e-editor-dom-functions.c            |  2 ++
+ modules/webkit-editor/web-extension/e-editor-page.c   | 19 +++++++++++++++++++
+ modules/webkit-editor/web-extension/e-editor-page.h   |  6 ++++++
+ 4 files changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-composer-dom-functions.c b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+index 934e88cd44..fca578c129 100644
+--- a/modules/webkit-editor/web-extension/e-composer-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+@@ -104,7 +104,7 @@ move_caret_after_signature_inserted (EEditorPage *editor_page)
+ 
+ 	document = e_editor_page_get_document (editor_page);
+ 
+-	top_signature = use_top_signature ();
++	top_signature = e_editor_page_get_allow_top_signature (editor_page) && use_top_signature ();
+ 	start_bottom = start_typing_at_bottom ();
+ 
+ 	body = webkit_dom_document_get_body (document);
+@@ -288,7 +288,7 @@ e_composer_dom_insert_signature (EEditorPage *editor_page,
+ 
+ 	/* "Edit as New Message" sets is_message_from_edit_as_new.
+ 	 * Always put the signature at the bottom for that case. */
+-	top_signature = use_top_signature ();
++	top_signature = e_editor_page_get_allow_top_signature (editor_page) && use_top_signature ();
+ 
+ 	html_mode = e_editor_page_get_html_mode (editor_page);
+ 
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index b449c85512..94120c7190 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -1368,6 +1368,7 @@ move_elements_to_body (EEditorPage *editor_page)
+ 
+ 	list = webkit_dom_document_query_selector_all (
+ 		document, "span.-x-evo-to-body[data-credits]", NULL);
++	e_editor_page_set_allow_top_signature (editor_page, webkit_dom_node_list_get_length (list) > 0);
+ 	for (jj = 0, ii = webkit_dom_node_list_get_length (list); ii--; jj++) {
+ 		char *credits;
+ 		WebKitDOMElement *element;
+@@ -5823,6 +5824,7 @@ e_editor_dom_convert_content (EEditorPage *editor_page,
+ 	/* Move credits to the body */
+ 	list = webkit_dom_document_query_selector_all (
+ 		document, "span.-x-evo-to-body[data-credits]", NULL);
++	e_editor_page_set_allow_top_signature (editor_page, webkit_dom_node_list_get_length (list) > 0);
+ 	for (jj = 0, ii = webkit_dom_node_list_get_length (list); ii--; jj++) {
+ 		char *credits;
+ 		WebKitDOMElement *element;
+diff --git a/modules/webkit-editor/web-extension/e-editor-page.c b/modules/webkit-editor/web-extension/e-editor-page.c
+index 0ed0cffd40..e059356c64 100644
+--- a/modules/webkit-editor/web-extension/e-editor-page.c
++++ b/modules/webkit-editor/web-extension/e-editor-page.c
+@@ -63,6 +63,7 @@ struct _EEditorPagePrivate {
+ 	gboolean composition_in_progress;
+ 	gboolean pasting_content_from_itself;
+ 	gboolean renew_history_after_coordinates;
++	gboolean allow_top_signature;
+ 
+ 	GHashTable *inline_images;
+ 
+@@ -254,6 +255,7 @@ e_editor_page_init (EEditorPage *editor_page)
+ 	editor_page->priv->pasting_content_from_itself = FALSE;
+ 	editor_page->priv->composition_in_progress = FALSE;
+ 	editor_page->priv->renew_history_after_coordinates = TRUE;
++	editor_page->priv->allow_top_signature = FALSE;
+ 	editor_page->priv->spell_check_on_scroll_event_source_id = 0;
+ 	editor_page->priv->mail_settings = e_util_ref_settings ("org.gnome.evolution.mail");
+ 	editor_page->priv->word_wrap_length = g_settings_get_int (editor_page->priv->mail_settings, "composer-word-wrap-length");
+@@ -782,6 +784,23 @@ e_editor_page_set_composition_in_progress (EEditorPage *editor_page,
+ 	editor_page->priv->composition_in_progress = value;
+ }
+ 
++gboolean
++e_editor_page_get_allow_top_signature (EEditorPage *editor_page)
++{
++	g_return_val_if_fail (E_IS_EDITOR_PAGE (editor_page), FALSE);
++
++	return editor_page->priv->allow_top_signature;
++}
++
++void
++e_editor_page_set_allow_top_signature (EEditorPage *editor_page,
++				       gboolean value)
++{
++	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
++
++	editor_page->priv->allow_top_signature = value;
++}
++
+ guint
+ e_editor_page_get_spell_check_on_scroll_event_source_id (EEditorPage *editor_page)
+ {
+diff --git a/modules/webkit-editor/web-extension/e-editor-page.h b/modules/webkit-editor/web-extension/e-editor-page.h
+index f3cc7ac0a4..201fb53ac1 100644
+--- a/modules/webkit-editor/web-extension/e-editor-page.h
++++ b/modules/webkit-editor/web-extension/e-editor-page.h
+@@ -178,6 +178,11 @@ gboolean	e_editor_page_is_composition_in_progress
+ void		e_editor_page_set_composition_in_progress
+ 						(EEditorPage *editor_page,
+ 						 gboolean value);
++gboolean	e_editor_page_get_allow_top_signature
++						(EEditorPage *editor_page);
++void		e_editor_page_set_allow_top_signature
++						(EEditorPage *editor_page,
++						 gboolean value);
+ guint		e_editor_page_get_spell_check_on_scroll_event_source_id
+ 						(EEditorPage *editor_page);
+ void		e_editor_page_set_spell_check_on_scroll_event_source_id
+@@ -195,6 +200,7 @@ void		e_editor_page_emit_undo_redo_state_changed
+ void		e_editor_page_emit_user_changed_default_colors
+ 						(EEditorPage *editor_page,
+ 						 gboolean suppress_color_changes);
++
+ G_END_DECLS
+ 
+ #endif /* E_EDITOR_PAGE_H */
+-- 
+2.15.0
+

@@ -1,0 +1,25 @@
+From f955af43a7f682cd789baaabace2f19c9786ccb8 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 30 Nov 2016 09:18:31 +0100
+Subject: [PATCH 508/595] Fix the build
+
+---
+ modules/webkit-editor/e-webkit-editor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 2b0b30815f..cd98f1c464 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5628,7 +5628,7 @@ webkit_editor_paste_clipboard_targets_cb (GtkClipboard *clipboard,
+ 			content = e_clipboard_wait_for_html (clipboard);
+ 			is_html = TRUE;
+ 		} else if (gtk_targets_include_text (targets, n_targets))
+-			content = gtk_clipboard_wait_for_text (clipboard)
++			content = gtk_clipboard_wait_for_text (clipboard);
+ 	} else {
+ 		if (gtk_targets_include_text (targets, n_targets))
+ 			content = gtk_clipboard_wait_for_text (clipboard);
+-- 
+2.15.0
+

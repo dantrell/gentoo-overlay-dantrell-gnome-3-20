@@ -1,0 +1,31 @@
+From 9cef72782a0d62e1c52ba05637ea0d02e6df4c1d Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 30 Nov 2016 15:48:36 +0100
+Subject: [PATCH 511/595] EEditorDOMFunctions: Critical warning and possible
+ crash when we cannot append the end node for spell checking
+
+If we fail to obtain a parent node of the last element in the viewport
+we still tried to append to it, but that only caused a critical warning,
+but as a consequence a WebKitDOMRange object was not created and we
+tried to unref it that lead to a crash. Be sure that we always append
+the spell check end node.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index cd7e0408fc..f9ade5eb15 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -888,7 +888,7 @@ e_editor_dom_force_spell_check_in_viewport (EEditorPage *editor_page)
+ 
+ 		parent = get_parent_block_element (WEBKIT_DOM_NODE (last_element));
+ 		webkit_dom_node_append_child (
+-			WEBKIT_DOM_NODE (parent), WEBKIT_DOM_NODE (text), NULL);
++			WEBKIT_DOM_NODE (parent ? parent : last_element), WEBKIT_DOM_NODE (text), NULL);
+ 	} else
+ 		webkit_dom_node_append_child (
+ 			WEBKIT_DOM_NODE (body), WEBKIT_DOM_NODE (text), NULL);
+-- 
+2.15.0
+

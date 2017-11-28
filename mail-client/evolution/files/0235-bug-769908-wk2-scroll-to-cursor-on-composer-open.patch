@@ -1,0 +1,34 @@
+From 7fcea18100e271975795cc8e77bc3efa4e658e50 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 15 Aug 2016 10:07:29 +0200
+Subject: [PATCH 235/595] Bug 769908 - [WK2] Scroll to cursor on composer open
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index e62e275d84..b644666b7a 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -8415,6 +8415,8 @@ e_editor_dom_process_content_after_load (EEditorPage *editor_page)
+ 		dom_set_links_active (document, FALSE);
+ 		e_editor_page_set_convert_in_situ (editor_page, FALSE);
+ 
++		e_editor_dom_scroll_to_caret (editor_page);
++
+ 		e_editor_dom_register_input_event_listener_on_body (editor_page);
+ 		register_html_events_handlers (editor_page, body);
+ 
+@@ -8465,6 +8467,8 @@ e_editor_dom_process_content_after_load (EEditorPage *editor_page)
+ 	e_editor_dom_set_monospace_font_family_on_body (
+ 		WEBKIT_DOM_ELEMENT (body), e_editor_page_get_html_mode (editor_page));
+ 
++	e_editor_dom_scroll_to_caret (editor_page);
++
+ 	dom_window = webkit_dom_document_get_default_view (document);
+ 
+ 	webkit_dom_event_target_add_event_listener (
+-- 
+2.15.0
+

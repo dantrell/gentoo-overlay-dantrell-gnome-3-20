@@ -1,0 +1,70 @@
+From 90ab2afd5f4f8453f1b63ed799a2f40e9c499911 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 10 Jan 2017 19:24:40 +0100
+Subject: [PATCH 551/595] Fix few more memory leaks
+
+---
+ mail/e-cid-request.c                        | 3 +++
+ mail/em-folder-utils.c                      | 2 +-
+ modules/webkit-editor/e-webkit-editor.c     | 2 ++
+ plugins/publish-calendar/publish-calendar.c | 2 ++
+ 4 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/mail/e-cid-request.c b/mail/e-cid-request.c
+index e7529f7569..b89c591039 100644
+--- a/mail/e-cid-request.c
++++ b/mail/e-cid-request.c
+@@ -112,8 +112,11 @@ e_cid_request_process_sync (EContentRequest *request,
+ 		}
+ 
+ 		g_bytes_unref (bytes);
++	} else {
++		g_byte_array_free (byte_array, TRUE);
+ 	}
+ 
++	g_object_unref (output_stream);
+ 	g_object_unref (mime_part);
+ 	g_object_unref (part);
+ 
+diff --git a/mail/em-folder-utils.c b/mail/em-folder-utils.c
+index 479d8783f6..7a1dc095e4 100644
+--- a/mail/em-folder-utils.c
++++ b/mail/em-folder-utils.c
+@@ -125,7 +125,7 @@ emft_copy_folders__exec (struct _EMCopyFolders *m,
+ 	while (pending) {
+ 		CamelFolderInfo *info = pending->data;
+ 
+-		pending = g_list_remove_link (pending, pending);
++		pending = g_list_delete_link (pending, pending);
+ 		while (info) {
+ 			CamelFolder *fromfolder, *tofolder;
+ 			GPtrArray *uids;
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 410be6a6d6..e1f522461e 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -2117,6 +2117,8 @@ webkit_editor_insert_image_from_mime_part (EContentEditor *editor,
+ 
+ 	g_free (base64_encoded);
+ 	g_free (mime_type);
++	g_free (cid_uri);
++	g_free (src);
+ 	g_object_unref (stream);
+ }
+ 
+diff --git a/plugins/publish-calendar/publish-calendar.c b/plugins/publish-calendar/publish-calendar.c
+index dfa4e17037..c8436447e7 100644
+--- a/plugins/publish-calendar/publish-calendar.c
++++ b/plugins/publish-calendar/publish-calendar.c
+@@ -909,6 +909,8 @@ publish_calendar_locations (EPlugin *epl,
+ 
+ 	g_object_unref (builder);
+ 
++	g_object_set_data_full (G_OBJECT (toplevel), "publish-calendar-ui-data", ui, g_free);
++
+ 	return toplevel;
+ }
+ 
+-- 
+2.15.0
+

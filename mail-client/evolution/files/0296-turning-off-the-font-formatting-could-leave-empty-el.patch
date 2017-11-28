@@ -1,0 +1,230 @@
+From ca94746a39f4b01ed16b8af447d0acd3807b55e8 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 23 Aug 2016 09:59:08 +0200
+Subject: [PATCH 296/595] Turning off the font formatting could leave empty
+ elements in DOM
+
+This was mostly caused by leaving the zero width space in the element and not
+removing it.
+---
+ .../web-extension/e-editor-dom-functions.c         | 70 ++++++++++++++--------
+ .../web-extension/e-editor-dom-functions.h         |  3 -
+ .../web-extension/e-editor-undo-redo-manager.c     | 29 ++++++++-
+ web-extensions/e-dom-utils.c                       |  3 +
+ web-extensions/e-dom-utils.h                       |  3 +
+ 5 files changed, 78 insertions(+), 30 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index fd37006ab7..186bb8be23 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -14481,7 +14481,7 @@ set_font_style (WebKitDOMDocument *document,
+                 gboolean value)
+ {
+ 	WebKitDOMElement *element;
+-	WebKitDOMNode *parent;
++	WebKitDOMNode *parent, *clone = NULL;
+ 
+ 	element = webkit_dom_document_get_element_by_id (document, "-x-evo-selection-end-marker");
+ 	parent = webkit_dom_node_get_parent_node (WEBKIT_DOM_NODE (element));
+@@ -14529,24 +14529,33 @@ set_font_style (WebKitDOMDocument *document,
+ 			!webkit_dom_node_get_next_sibling (sibling);
+ 
+ 		if (no_sibling) {
+-			WebKitDOMNode *clone;
+-			WebKitDOMNode *sibling;
++			gboolean do_clone = TRUE;
++			gchar *text_content = NULL;
++			WebKitDOMNode *child;
+ 
+-			clone = webkit_dom_node_clone_node_with_error (
+-				WEBKIT_DOM_NODE (parent), FALSE, NULL);
++			if ((text_content = webkit_dom_node_get_text_content (parent)) &&
++			    (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) == 0))
++				do_clone = FALSE;
++
++			g_free (text_content);
++
++			if (do_clone) {
++				clone = webkit_dom_node_clone_node_with_error (
++					WEBKIT_DOM_NODE (parent), FALSE, NULL);
++
++				while ((child = webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (element))))
++					webkit_dom_node_insert_before (
++						clone,
++						child,
++						webkit_dom_node_get_first_child (clone),
++						NULL);
+ 
+-			while ((sibling = webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (element))))
+ 				webkit_dom_node_insert_before (
++					webkit_dom_node_get_parent_node (parent),
+ 					clone,
+-					sibling,
+-					webkit_dom_node_get_first_child (clone),
++					webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (parent)),
+ 					NULL);
+-
+-			webkit_dom_node_insert_before (
+-				webkit_dom_node_get_parent_node (parent),
+-				clone,
+-				webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (parent)),
+-				NULL);
++			}
+ 		}
+ 
+ 		webkit_dom_node_insert_before (
+@@ -14568,13 +14577,27 @@ set_font_style (WebKitDOMDocument *document,
+ 				NULL);
+ 		}
+ 
+-		webkit_dom_html_element_insert_adjacent_text (
+-			WEBKIT_DOM_HTML_ELEMENT (parent),
+-			"afterend",
+-			UNICODE_ZERO_WIDTH_SPACE,
+-			NULL);
++		if (!WEBKIT_DOM_IS_HTML_BODY_ELEMENT (webkit_dom_node_get_parent_node (parent))) {
++			WebKitDOMNode *first_child;
+ 
+-		remove_node_if_empty (parent);
++			if ((first_child = webkit_dom_node_get_first_child (parent))) {
++				gchar *text_content = NULL;
++
++				text_content = webkit_dom_node_get_text_content (first_child);
++
++				if (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) != 0)
++					webkit_dom_html_element_insert_adjacent_text (
++						WEBKIT_DOM_HTML_ELEMENT (parent),
++						"afterend",
++						UNICODE_ZERO_WIDTH_SPACE,
++						NULL);
++
++				g_free (text_content);
++			}
++
++			remove_node_if_empty (parent);
++			remove_node_if_empty (clone);
++		}
+ 	}
+ 
+ 	return NULL;
+@@ -15141,8 +15164,8 @@ unmonospace_selection (EEditorPage *editor_page)
+ 		node = next_sibling;
+ 	}
+ 
+-	if (!webkit_dom_node_get_first_child (clone))
+-		remove_node (clone);
++	remove_node_if_empty (clone);
++	remove_node_if_empty (monospace);
+ 
+ 	/* Just one block was selected and we hit the selection end point. */
+ 	if (selection_end)
+@@ -15227,8 +15250,7 @@ unmonospace_selection (EEditorPage *editor_page)
+ 		node = next_sibling;
+ 	}
+ 
+-	if (!webkit_dom_node_get_first_child (clone))
+-		remove_node (clone);
++	remove_node_if_empty (clone);
+  out:
+ 	e_editor_dom_selection_restore (editor_page);
+ }
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.h b/modules/webkit-editor/web-extension/e-editor-dom-functions.h
+index 747dd11e8a..67481f1b9e 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.h
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.h
+@@ -25,9 +25,6 @@
+ 
+ #include "e-editor-page.h"
+ 
+-#define UNICODE_ZERO_WIDTH_SPACE "\xe2\x80\x8b"
+-#define UNICODE_NBSP "\xc2\xa0"
+-
+ /* stephenhay from https://mathiasbynens.be/demo/url-regex */
+ #define URL_PROTOCOLS "news|telnet|nntp|file|https?|s?ftp|webcal|localhost|ssh"
+ #define URL_PATTERN_BASE "(?=((?:(?:(?:" URL_PROTOCOLS ")\\:\\/\\/)|(?:www\\.|ftp\\.))[^\\s\\/\\$\\.\\?#].[^\\s]*)"
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 6ccbe11db4..46e50bf6e6 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -1889,7 +1889,7 @@ undo_input (EEditorUndoRedoManager *manager,
+ 	WebKitDOMDOMWindow *dom_window = NULL;
+ 	WebKitDOMDOMSelection *dom_selection = NULL;
+ 	WebKitDOMNode *node, *anchor_node, *tmp_node;
+-	gboolean remove_anchor;
++	gboolean remove_anchor, remove_last_character_from_font_style = FALSE;
+ 
+ 	document = e_editor_page_get_document (editor_page);
+ 	dom_window = webkit_dom_document_get_default_view (document);
+@@ -1931,15 +1931,38 @@ undo_input (EEditorUndoRedoManager *manager,
+ 		g_free (text_content);
+ 	} else if (WEBKIT_DOM_IS_TEXT (anchor_node)) {
+ 		gchar *text_content;
++		glong length;
+ 
+ 		text_content = webkit_dom_node_get_text_content (anchor_node);
+-		if (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) == 0)
++		length = g_utf8_strlen (text_content, -1);
++		if (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) == 0) {
++			length -= 1;
+ 			webkit_dom_dom_selection_modify (dom_selection, "extend", "left", "character");
++		}
+ 
+ 		g_free (text_content);
++
++		node = webkit_dom_node_get_parent_node (anchor_node);
++		if (length == 1 &&
++		    ((element_has_tag (WEBKIT_DOM_ELEMENT (node), "b")) ||
++		    (element_has_tag (WEBKIT_DOM_ELEMENT (node), "i")) ||
++		    (element_has_tag (WEBKIT_DOM_ELEMENT (node), "u")) ||
++		    (element_has_tag (WEBKIT_DOM_ELEMENT (node), "tt")) ||
++		    (element_has_tag (WEBKIT_DOM_ELEMENT (node), "strike"))))
++			remove_last_character_from_font_style = TRUE;
+ 	}
+ 
+-	e_editor_dom_exec_command (editor_page, E_CONTENT_EDITOR_COMMAND_DELETE, NULL);
++	if (remove_last_character_from_font_style) {
++		WebKitDOMText *text;
++
++		text = webkit_dom_document_create_text_node (document, UNICODE_ZERO_WIDTH_SPACE);
++		webkit_dom_node_replace_child (
++			node,
++			WEBKIT_DOM_NODE (text),
++			anchor_node,
++			NULL);
++	} else
++		e_editor_dom_exec_command (editor_page, E_CONTENT_EDITOR_COMMAND_DELETE, NULL);
+ 
+ 	if (remove_anchor) {
+ 		WebKitDOMNode *child;
+diff --git a/web-extensions/e-dom-utils.c b/web-extensions/e-dom-utils.c
+index b7c531a307..5322c171ad 100644
+--- a/web-extensions/e-dom-utils.c
++++ b/web-extensions/e-dom-utils.c
+@@ -1609,6 +1609,9 @@ remove_node_if_empty (WebKitDOMNode *node)
+ 			if (text_content && !*text_content)
+ 				remove_node (node);
+ 
++			if (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) == 0)
++				remove_node (node);
++
+ 			g_free (text_content);
+ 		}
+ 	} else
+diff --git a/web-extensions/e-dom-utils.h b/web-extensions/e-dom-utils.h
+index 3ec289df03..0a7d5365b5 100644
+--- a/web-extensions/e-dom-utils.h
++++ b/web-extensions/e-dom-utils.h
+@@ -27,6 +27,9 @@
+ 
+ #include <gtk/gtk.h>
+ 
++#define UNICODE_ZERO_WIDTH_SPACE "\xe2\x80\x8b"
++#define UNICODE_NBSP "\xc2\xa0"
++
+ G_BEGIN_DECLS
+ 
+ void 		e_dom_utils_replace_local_image_links
+-- 
+2.15.0
+

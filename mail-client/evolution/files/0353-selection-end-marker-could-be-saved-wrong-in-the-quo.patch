@@ -1,0 +1,31 @@
+From 6c4519413ff4119648e3aa62f786c14f3dbb61f7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 5 Sep 2016 14:52:58 +0200
+Subject: [PATCH 353/595] Selection end marker could be saved wrong in the
+ quoted content
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 1d8bfdecdb..eb2f7bbd27 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -12882,8 +12882,11 @@ e_editor_dom_selection_save (EEditorPage *editor_page)
+ 		           !WEBKIT_DOM_IS_HTML_BODY_ELEMENT (parent_node)) {
+ 			split_node = parent_node;
+ 			split_node = webkit_dom_node_get_next_sibling (split_node);
+-		} else
+-			split_node = container;
++		} else {
++			webkit_dom_node_append_child (
++				container, WEBKIT_DOM_NODE (end_marker), NULL);
++			goto out;
++		}
+ 	}
+ 
+ 	/* Don't save selection straight into body */
+-- 
+2.15.0
+

@@ -1,0 +1,187 @@
+From d51377f389bd221921c48426e1cd29fa8a364eaa Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 14 Oct 2016 09:18:40 +0200
+Subject: [PATCH 449/595] Bug 772590 - Hitting Backspace causes mail contents
+ to shrink font size momentarily
+
+If WebKit's rendering is slow it could happen that a workaround that we used in
+WebKit1 (to fix the WebKit wrapping the content after the caret into the
+SPAN) could cause the font to noticeably switch between monospace and
+proportional.
+---
+ modules/webkit-editor/e-webkit-editor.c            |  7 +++
+ .../web-extension/e-editor-dom-functions.c         | 50 ----------------------
+ .../web-extension/e-editor-undo-redo-manager.c     | 13 +-----
+ 3 files changed, 8 insertions(+), 62 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index bdf27332b4..01081c12a8 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -973,6 +973,13 @@ webkit_editor_update_styles (EContentEditor *editor)
+ 		"  outline: 1px dotted red;\n"
+ 		"}\n");
+ 
++	g_string_append (
++		stylesheet,
++		"body[data-evo-plain-text] "
++		"{\n"
++		"  font-family: Monospace; \n"
++		"}\n");
++
+ 	g_string_append (
+ 		stylesheet,
+ 		"body[data-evo-plain-text] img.-x-evo-smiley-img, "
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 4413d91767..0154025197 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -2843,37 +2843,6 @@ body_keypress_event_cb (WebKitDOMElement *element,
+ 	g_clear_object (&range);
+ }
+ 
+-void
+-e_editor_dom_set_monospace_font_family_on_body (WebKitDOMElement *body,
+-                                                gboolean html_mode)
+-{
+-	/* If copying some content in view, WebKit adds various information about
+-	 * the content's style (such as color, font size, ..) to the resulting HTML
+-	 * to correctly apply the style when pasting the content later. The thing
+-	 * is that in plain text mode the only font allowed is the monospaced one,
+-	 * but we are forcing it through user style sheet in WebKitWebSettings and
+-	 * sadly WebKit doesn't count with it, so when the content is pasted,
+-	 * WebKit wraps it inside SPANs and sets the font-family style on them.
+-	 * The problem is that when we switch to the HTML mode, the pasted content
+-	 * will have the monospaced font set. To avoid it we need to set the
+-	 * font-family style to the body, so WebKit will know about it and will
+-	 * avoid the described behaviour. */
+-	/* When we are deleting a content from the PRE elements we need to turn
+-	 * this off, otherwise we will end with the same unwanted behavior (the
+-	 * text between the caret and the end of the element will be wrapped
+-	 * inside a SPAN element. */
+-	if (!html_mode) {
+-		element_rename_attribute (WEBKIT_DOM_ELEMENT (body), "data-style", "style");
+-		webkit_dom_element_set_attribute (
+-			WEBKIT_DOM_ELEMENT (body),
+-			"style",
+-			"font-family: Monospace;",
+-			NULL);
+-	} else {
+-		element_rename_attribute (WEBKIT_DOM_ELEMENT (body), "style", "data-style");
+-	}
+-}
+-
+ static void
+ body_keydown_event_cb (WebKitDOMElement *element,
+                        WebKitDOMUIEvent *event,
+@@ -2939,8 +2908,6 @@ body_keydown_event_cb (WebKitDOMElement *element,
+ 	if (delete_key || backspace_key) {
+ 		if (e_editor_dom_key_press_event_process_delete_or_backspace_key (editor_page, key_code, control_key, delete_key))
+ 			webkit_dom_event_prevent_default (WEBKIT_DOM_EVENT (event));
+-		else if (!e_editor_page_get_html_mode (editor_page))
+-			e_editor_dom_set_monospace_font_family_on_body (element, TRUE);
+ 		goto out;
+ 	}
+ 
+@@ -3935,13 +3902,6 @@ body_keyup_event_cb (WebKitDOMElement *element,
+ 
+ 	key_code = webkit_dom_ui_event_get_key_code (event);
+ 	if (key_code == HTML_KEY_CODE_BACKSPACE || key_code == HTML_KEY_CODE_DELETE) {
+-		if (!e_editor_page_get_html_mode (editor_page)) {
+-			WebKitDOMHTMLElement *body;
+-
+-			body = webkit_dom_document_get_body (document);
+-
+-			e_editor_dom_set_monospace_font_family_on_body (WEBKIT_DOM_ELEMENT (body), FALSE);
+-		}
+ 		e_editor_dom_body_key_up_event_process_backspace_or_delete (editor_page, key_code == HTML_KEY_CODE_DELETE);
+ 
+ 		/* The content was wrapped and the coordinates
+@@ -6038,8 +5998,6 @@ e_editor_dom_convert_content (EEditorPage *editor_page,
+ 	 * callback won't be set up. */
+ 
+ 	register_html_events_handlers (editor_page, body);
+-	e_editor_dom_set_monospace_font_family_on_body (
+-		WEBKIT_DOM_ELEMENT (body), e_editor_page_get_html_mode (editor_page));
+ 
+ 	g_free (inner_html);
+ }
+@@ -8551,9 +8509,6 @@ e_editor_dom_process_content_after_load (EEditorPage *editor_page)
+ 	else
+ 		e_editor_dom_turn_spell_check_off (editor_page);
+ 
+-	e_editor_dom_set_monospace_font_family_on_body (
+-		WEBKIT_DOM_ELEMENT (body), e_editor_page_get_html_mode (editor_page));
+-
+ 	e_editor_dom_scroll_to_caret (editor_page);
+ 
+ 	dom_window = webkit_dom_document_get_default_view (document);
+@@ -10597,13 +10552,11 @@ e_editor_dom_check_if_conversion_needed (EEditorPage *editor_page)
+ void
+ e_editor_dom_process_content_after_mode_change (EEditorPage *editor_page)
+ {
+-	WebKitDOMDocument *document;
+ 	EEditorUndoRedoManager *manager;
+ 	gboolean html_mode;
+ 
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	document = e_editor_page_get_document (editor_page);
+ 	html_mode = e_editor_page_get_html_mode (editor_page);
+ 
+ 	if (html_mode)
+@@ -10611,9 +10564,6 @@ e_editor_dom_process_content_after_mode_change (EEditorPage *editor_page)
+ 	else
+ 		process_content_to_plain_text_changing_composer_mode (editor_page);
+ 
+-	e_editor_dom_set_monospace_font_family_on_body (
+-		WEBKIT_DOM_ELEMENT (webkit_dom_document_get_body (document)), html_mode);
+-
+ 	manager = e_editor_page_get_undo_redo_manager (editor_page);
+ 	e_editor_undo_redo_manager_clean_history (manager);
+ }
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 5082e6c94a..3e23716933 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -937,27 +937,18 @@ redo_delete (EEditorPage *editor_page,
+              EEditorHistoryEvent *event)
+ {
+ 	EEditorUndoRedoManager *manager;
+-	WebKitDOMDocument *document;
+ 	WebKitDOMDocumentFragment *fragment = event->data.fragment;
+ 	WebKitDOMNode *node;
+-	WebKitDOMHTMLElement *body;
+-	gboolean delete_key, control_key, html_mode;
++	gboolean delete_key, control_key;
+ 	glong length = 1;
+ 	gint ii;
+ 
+ 	manager = e_editor_page_get_undo_redo_manager (editor_page);
+-	document = e_editor_page_get_document (editor_page);
+-	html_mode = e_editor_page_get_html_mode (editor_page);
+ 	restore_selection_to_history_event_state (editor_page, event->before);
+ 
+ 	delete_key = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (event->data.fragment), "history-delete-key"));
+ 	control_key = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (event->data.fragment), "history-control-key"));
+ 
+-	body = webkit_dom_document_get_body (document);
+-
+-	if (!html_mode)
+-		e_editor_dom_set_monospace_font_family_on_body (WEBKIT_DOM_ELEMENT (body), TRUE);
+-
+ 	if (!delete_key && e_editor_dom_key_press_event_process_backspace_key (editor_page))
+ 		goto out;
+ 
+@@ -1034,8 +1025,6 @@ redo_delete (EEditorPage *editor_page,
+ 	e_editor_page_set_renew_history_after_coordinates (editor_page, FALSE);
+ 	e_editor_dom_body_key_up_event_process_backspace_or_delete (editor_page, delete_key);
+ 	e_editor_page_set_renew_history_after_coordinates (editor_page, TRUE);
+-	if (!html_mode)
+-		e_editor_dom_set_monospace_font_family_on_body (WEBKIT_DOM_ELEMENT (body), FALSE);
+ 
+ 	restore_selection_to_history_event_state (editor_page, event->after);
+ 
+-- 
+2.15.0
+

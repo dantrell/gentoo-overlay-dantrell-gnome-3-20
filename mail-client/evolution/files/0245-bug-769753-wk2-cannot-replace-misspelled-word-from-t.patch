@@ -1,0 +1,75 @@
+From fe2ac575be78675189ee5766ce92ad3c9d31fcd7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 15 Aug 2016 16:06:06 +0200
+Subject: [PATCH 245/595] Bug 769753 - [WK2] Cannot replace misspelled word
+ from the context menu
+
+Add the missing web extension's DBus function declaration.
+---
+ e-util/e-html-editor.c                                   |  8 ++++----
+ .../webkit-editor/web-extension/e-editor-web-extension.c | 16 ++++++++++++++++
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/e-util/e-html-editor.c b/e-util/e-html-editor.c
+index bb6af69bbf..a5715ee9ab 100644
+--- a/e-util/e-html-editor.c
++++ b/e-util/e-html-editor.c
+@@ -178,8 +178,8 @@ html_editor_inline_spelling_suggestions (EHTMLEditor *editor)
+ 			g_strdup (suggestion), g_free);
+ 
+ 		g_signal_connect (
+-			action, "activate", G_CALLBACK (
+-			action_context_spell_suggest_cb), editor);
++			action, "activate",
++			G_CALLBACK (action_context_spell_suggest_cb), editor);
+ 
+ 		gtk_action_group_add_action (action_group, action);
+ 
+@@ -269,8 +269,8 @@ html_editor_spell_checkers_foreach (EHTMLEditor *editor,
+ 			g_strdup (suggestion), g_free);
+ 
+ 		g_signal_connect (
+-			action, "activate", G_CALLBACK (
+-			action_context_spell_suggest_cb), editor);
++			action, "activate",
++			G_CALLBACK (action_context_spell_suggest_cb), editor);
+ 
+ 		gtk_action_group_add_action (action_group, action);
+ 
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index f387e26b07..38a2a5b40e 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -552,6 +552,10 @@ static const gchar *introspection_xml =
+ "      <arg type='t' name='page_id' direction='in'/>"
+ "      <arg type='s' name='word' direction='out'/>"
+ "    </method>"
++"    <method name='DOMReplaceCaretWord'>"
++"      <arg type='t' name='page_id' direction='in'/>"
++"      <arg type='s' name='replacement' direction='out'/>"
++"    </method>"
+ "<!-- ********************************************************* -->"
+ "<!--     Functions that are used in EComposerPrivate           -->"
+ "<!-- ********************************************************* -->"
+@@ -2083,6 +2087,18 @@ handle_method_call (GDBusConnection *connection,
+ 				"(@s)",
+ 				g_variant_new_take_string (
+ 					word ? word : g_strdup (""))));
++	} else if (g_strcmp0 (method_name, "DOMReplaceCaretWord") == 0) {
++		const gchar *replacement = NULL;
++
++		g_variant_get (parameters, "(t&s)", &page_id, &replacement);
++
++		editor_page = get_editor_page_or_return_dbus_error (invocation, extension, page_id);
++		if (!editor_page)
++			goto error;
++
++		e_editor_dom_replace_caret_word (editor_page, replacement);
++
++		g_dbus_method_invocation_return_value (invocation, NULL);
+ 	} else if (g_strcmp0 (method_name, "DOMInsertSignature") == 0) {
+ 		gboolean is_html, set_signature_from_message;
+ 		gboolean check_if_signature_is_changed, ignore_next_signature_change;
+-- 
+2.15.0
+

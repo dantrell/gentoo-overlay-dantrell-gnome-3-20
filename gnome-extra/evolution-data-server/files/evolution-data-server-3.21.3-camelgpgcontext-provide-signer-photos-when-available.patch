@@ -1,0 +1,1206 @@
+From 292c7ef22c60cab709974c0da421666deb6239fb Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Thu, 26 May 2016 18:18:21 +0200
+Subject: [CamelGpgContext] Provide signer photos when available
+
+This allows show of signers photo, when the public key has any and
+the gpg/2 provides it. This behavior is enabled by default, but
+it can be disabled by:
+   $ gsettings set org.gnome.evolution-data-server camel-cipher-load-photos false
+
+The size of public struct _CamelCipherCertInfo changed, thus a soname version
+bump should be done, but as it had been changed recently and no release of
+the evolution-data-server had been made meanwhile, then it was not changed.
+---
+ camel/Makefile.am                                  |  24 +-
+ camel/camel-cipher-context.c                       | 288 ++++++++++++++++++++-
+ camel/camel-cipher-context.h                       |  60 ++++-
+ camel/camel-gpg-context.c                          | 250 +++++++++++++++---
+ camel/camel-gpg-photo-saver.c                      | 119 +++++++++
+ camel/camel-string-utils.c                         |  35 +++
+ camel/camel-string-utils.h                         |   1 +
+ .../org.gnome.evolution-data-server.gschema.xml.in |   5 +
+ docs/reference/camel/camel-sections.txt            |   8 +
+ 9 files changed, 736 insertions(+), 54 deletions(-)
+ create mode 100644 camel/camel-gpg-photo-saver.c
+
+diff --git a/camel/Makefile.am b/camel/Makefile.am
+index 995e598..dc7bb1d 100644
+--- a/camel/Makefile.am
++++ b/camel/Makefile.am
+@@ -26,7 +26,7 @@ pkgconfig_DATA = $(pkgconfig_in_files:.pc.in=-$(API_VERSION).pc)
+ libcamelincludedir = $(privincludedir)/camel
+ 
+ camellibexecdir = $(libexecdir)
+-camellibexec_PROGRAMS =	$(LOCK_HELPER) camel-index-control-1.2
++camellibexec_PROGRAMS =	$(LOCK_HELPER) camel-index-control-1.2 camel-gpg-photo-saver
+ 
+ lib_LTLIBRARIES = libcamel-1.2.la
+ 
+@@ -355,6 +355,28 @@ camel_index_control_1_2_LDADD = \
+ 	$(libcamel_1_2_la_LIBADD) \
+ 	$(NULL)
+ 
++camel_gpg_photo_saver_SOURCES = \
++	camel-gpg-photo-saver.c \
++	$(NULL)
++
++camel_gpg_photo_saver_CPPFLAGS = \
++	$(AM_CPPFLAGS) \
++	-I$(top_srcdir) \
++	-I$(top_builddir) \
++	-I$(srcdir) \
++	-DG_LOG_DOMAIN=\"camel-gpg-photo-saver\" \
++	$(GNOME_PLATFORM_CFLAGS) \
++	$(NULL)
++
++camel_gpg_photo_saver_LDADD = \
++	$(GNOME_PLATFORM_LIBS) \
++	$(NULL)
++
++camel_gpg_photo_saver_LDFLAGS = \
++	$(NO_UNDEFINED) \
++	$(CODE_COVERAGE_LDFLAGS) \
++	$(NULL)
++
+ camel-mime-tables.c: $(srcdir)/gentables.pl
+ 	perl $(srcdir)/gentables.pl > $@
+ 
+diff --git a/camel/camel-cipher-context.c b/camel/camel-cipher-context.c
+index 4c0ee25..efd4ba1 100644
+--- a/camel/camel-cipher-context.c
++++ b/camel/camel-cipher-context.c
+@@ -976,6 +976,19 @@ camel_cipher_context_hash_to_id (CamelCipherContext *context,
+ 
+ /* Cipher Validity stuff */
+ static void
++ccv_certinfo_property_free (gpointer ptr)
++{
++	CamelCipherCertInfoProperty *property = ptr;
++
++	if (property) {
++		g_free (property->name);
++		if (property->value_free)
++			property->value_free (property->value);
++		g_free (property);
++	}
++}
++
++static void
+ ccv_certinfo_free (CamelCipherCertInfo *info)
+ {
+ 	g_return_if_fail (info != NULL);
+@@ -986,6 +999,7 @@ ccv_certinfo_free (CamelCipherCertInfo *info)
+ 	if (info->cert_data && info->cert_data_free)
+ 		info->cert_data_free (info->cert_data);
+ 
++	g_slist_free_full (info->properties, ccv_certinfo_property_free);
+ 	g_free (info);
+ }
+ 
+@@ -1073,9 +1087,10 @@ camel_cipher_validity_clone (CamelCipherValidity *vin)
+ 	head = g_queue_peek_head_link (&vin->sign.signers);
+ 	for (link = head; link != NULL; link = g_list_next (link)) {
+ 		CamelCipherCertInfo *info = link->data;
++		gint index;
+ 
+ 		if (info->cert_data && info->cert_data_clone && info->cert_data_free)
+-			camel_cipher_validity_add_certinfo_ex (
++			index = camel_cipher_validity_add_certinfo_ex (
+ 				vo, CAMEL_CIPHER_VALIDITY_SIGN,
+ 				info->name,
+ 				info->email,
+@@ -1083,18 +1098,35 @@ camel_cipher_validity_clone (CamelCipherValidity *vin)
+ 				info->cert_data_free,
+ 				info->cert_data_clone);
+ 		else
+-			camel_cipher_validity_add_certinfo (
++			index = camel_cipher_validity_add_certinfo (
+ 				vo, CAMEL_CIPHER_VALIDITY_SIGN,
+ 				info->name,
+ 				info->email);
++
++		if (index != -1 && info->properties) {
++			GSList *link;
++
++			for (link = info->properties; link; link = g_slist_next (link)) {
++				CamelCipherCertInfoProperty *property = link->data;
++				gpointer value;
++
++				if (!property)
++					continue;
++
++				value = property->value_clone ? property->value_clone (property->value) : property->value;
++				camel_cipher_validity_set_certinfo_property (vo, CAMEL_CIPHER_VALIDITY_SIGN, index,
++					property->name, value, property->value_free, property->value_clone);
++			}
++		}
+ 	}
+ 
+ 	head = g_queue_peek_head_link (&vin->encrypt.encrypters);
+ 	for (link = head; link != NULL; link = g_list_next (link)) {
+ 		CamelCipherCertInfo *info = link->data;
++		gint index;
+ 
+ 		if (info->cert_data && info->cert_data_clone && info->cert_data_free)
+-			camel_cipher_validity_add_certinfo_ex (
++			index = camel_cipher_validity_add_certinfo_ex (
+ 				vo, CAMEL_CIPHER_VALIDITY_SIGN,
+ 				info->name,
+ 				info->email,
+@@ -1102,10 +1134,26 @@ camel_cipher_validity_clone (CamelCipherValidity *vin)
+ 				info->cert_data_free,
+ 				info->cert_data_clone);
+ 		else
+-			camel_cipher_validity_add_certinfo (
++			index = camel_cipher_validity_add_certinfo (
+ 				vo, CAMEL_CIPHER_VALIDITY_ENCRYPT,
+ 				info->name,
+ 				info->email);
++
++		if (index != -1 && info->properties) {
++			GSList *link;
++
++			for (link = info->properties; link; link = g_slist_next (link)) {
++				CamelCipherCertInfoProperty *property = link->data;
++				gpointer value;
++
++				if (!property)
++					continue;
++
++				value = property->value_clone ? property->value_clone (property->value) : property->value;
++				camel_cipher_validity_set_certinfo_property (vo, CAMEL_CIPHER_VALIDITY_ENCRYPT, index,
++					property->name, value, property->value_free, property->value_clone);
++			}
++		}
+ 	}
+ 
+ 	return vo;
+@@ -1119,14 +1167,16 @@ camel_cipher_validity_clone (CamelCipherValidity *vin)
+  * @email:
+  *
+  * Add a cert info to the signer or encrypter info.
++ *
++ * Returns: Index of the added certinfo; -1 on error
+  **/
+-void
++gint
+ camel_cipher_validity_add_certinfo (CamelCipherValidity *vin,
+                                     enum _camel_cipher_validity_mode_t mode,
+                                     const gchar *name,
+                                     const gchar *email)
+ {
+-	camel_cipher_validity_add_certinfo_ex (vin, mode, name, email, NULL, NULL, NULL);
++	return camel_cipher_validity_add_certinfo_ex (vin, mode, name, email, NULL, NULL, NULL);
+ }
+ 
+ /**
+@@ -1134,23 +1184,26 @@ camel_cipher_validity_add_certinfo (CamelCipherValidity *vin,
+  *
+  * Add a cert info to the signer or encrypter info, with extended data set.
+  *
++ * Returns: Index of the added certinfo; -1 on error
++ *
+  * Since: 2.30
+  **/
+-void
++gint
+ camel_cipher_validity_add_certinfo_ex (CamelCipherValidity *vin,
+                                        camel_cipher_validity_mode_t mode,
+                                        const gchar *name,
+                                        const gchar *email,
+                                        gpointer cert_data,
+-                                       void (*cert_data_free)(gpointer cert_data),
+-                                       gpointer (*cert_data_clone)(gpointer cert_data))
++                                       GDestroyNotify cert_data_free,
++                                       CamelCipherCloneFunc cert_data_clone)
+ {
+ 	CamelCipherCertInfo *info;
++	GQueue *queue;
+ 
+-	g_return_if_fail (vin != NULL);
++	g_return_val_if_fail (vin != NULL, -1);
+ 	if (cert_data) {
+-		g_return_if_fail (cert_data_free != NULL);
+-		g_return_if_fail (cert_data_clone != NULL);
++		g_return_val_if_fail (cert_data_free != NULL, -1);
++		g_return_val_if_fail (cert_data_clone != NULL, -1);
+ 	}
+ 
+ 	info = g_malloc0 (sizeof (*info));
+@@ -1163,9 +1216,100 @@ camel_cipher_validity_add_certinfo_ex (CamelCipherValidity *vin,
+ 	}
+ 
+ 	if (mode == CAMEL_CIPHER_VALIDITY_SIGN)
+-		g_queue_push_tail (&vin->sign.signers, info);
++		queue = &vin->sign.signers;
++	else
++		queue = &vin->encrypt.encrypters;
++
++	g_queue_push_tail (queue, info);
++
++	return (gint) (g_queue_get_length (queue) - 1);
++}
++
++/**
++ * camel_cipher_validity_get_certinfo_property:
++ * @vin: a #CamelCipherValidity
++ * @mode: which cipher validity part to use
++ * @info_index: a 0-based index of the requested #CamelCipherCertInfo
++ * @name: a property name
++ *
++ * Gets a named property @name value for the given @info_index of the @mode validity part.
++ *
++ * Returns: Value of a named property of a #CamelCipherCertInfo, or %NULL when no such
++ *    property exists. The returned value is owned by the associated #CamelCipherCertInfo
++ *    and is valid until the cert info is freed.
++ *
++ * Since: 3.22
++ **/
++gpointer
++camel_cipher_validity_get_certinfo_property (CamelCipherValidity *vin,
++					     camel_cipher_validity_mode_t mode,
++					     gint info_index,
++					     const gchar *name)
++{
++	GQueue *queue;
++	CamelCipherCertInfo *cert_info;
++
++	g_return_val_if_fail (vin != NULL, NULL);
++	g_return_val_if_fail (name != NULL, NULL);
++
++	if (mode == CAMEL_CIPHER_VALIDITY_SIGN)
++		queue = &vin->sign.signers;
+ 	else
+-		g_queue_push_tail (&vin->encrypt.encrypters, info);
++		queue = &vin->encrypt.encrypters;
++
++	g_return_val_if_fail (info_index >= 0 && info_index < g_queue_get_length (queue), NULL);
++
++	cert_info = g_queue_peek_nth (queue, info_index);
++
++	g_return_val_if_fail (cert_info != NULL, NULL);
++
++	return camel_cipher_certinfo_get_property (cert_info, name);
++}
++
++/**
++ * camel_cipher_validity_set_certinfo_property:
++ * @vin: a #CamelCipherValidity
++ * @mode: which cipher validity part to use
++ * @info_index: a 0-based index of the requested #CamelCipherCertInfo
++ * @name: a property name
++ * @value: (nullable): a property value, or %NULL
++ * @value_free: (nullable): a free function for the @value
++ * @value_clone: (nullable): a clone function for the @value
++ *
++ * Sets a named property @name value @value for the given @info_index
++ * of the @mode validity part. If the @value is %NULL, then the property
++ * is removed. With a non-%NULL @value also @value_free and @value_clone
++ * functions cannot be %NULL.
++ *
++ * Since: 3.22
++ **/
++void
++camel_cipher_validity_set_certinfo_property (CamelCipherValidity *vin,
++					     camel_cipher_validity_mode_t mode,
++					     gint info_index,
++					     const gchar *name,
++					     gpointer value,
++					     GDestroyNotify value_free,
++					     CamelCipherCloneFunc value_clone)
++{
++	GQueue *queue;
++	CamelCipherCertInfo *cert_info;
++
++	g_return_if_fail (vin != NULL);
++	g_return_if_fail (name != NULL);
++
++	if (mode == CAMEL_CIPHER_VALIDITY_SIGN)
++		queue = &vin->sign.signers;
++	else
++		queue = &vin->encrypt.encrypters;
++
++	g_return_if_fail (info_index >= 0 && info_index < g_queue_get_length (queue));
++
++	cert_info = g_queue_peek_nth (queue, info_index);
++
++	g_return_if_fail (cert_info != NULL);
++
++	camel_cipher_certinfo_set_property (cert_info, name, value, value_free, value_clone);
+ }
+ 
+ /**
+@@ -1251,6 +1395,102 @@ camel_cipher_validity_free (CamelCipherValidity *validity)
+ /* ********************************************************************** */
+ 
+ /**
++ * camel_cipher_certinfo_get_property:
++ * @cert_info: a #CamelCipherCertInfo
++ * @name: a property name
++ *
++ * Gets a named property @name value for the given @cert_info.
++ *
++ * Returns: Value of a named property of the @cert_info, or %NULL when no such
++ *    property exists. The returned value is owned by the @cert_info
++ *    and is valid until the @cert_info is freed.
++ *
++ * Since: 3.22
++ **/
++gpointer
++camel_cipher_certinfo_get_property (CamelCipherCertInfo *cert_info,
++				    const gchar *name)
++{
++	GSList *link;
++
++	g_return_val_if_fail (cert_info != NULL, NULL);
++	g_return_val_if_fail (name != NULL, NULL);
++
++	for (link = cert_info->properties; link; link = g_slist_next (link)) {
++		CamelCipherCertInfoProperty *property = link->data;
++
++		if (property && g_ascii_strcasecmp (property->name, name) == 0)
++			return property->value;
++	}
++
++	return NULL;
++}
++
++/**
++ * camel_cipher_certinfo_set_property:
++ * @cert_info: a #CamelCipherCertInfo
++ * @name: a property name
++ * @value: (nullable): a property value, or %NULL
++ * @value_free: (nullable): a free function for the @value
++ * @value_clone: (nullable): a clone function for the @value
++ *
++ * Sets a named property @name value @value for the given @cert_info.
++ * If the @value is %NULL, then the property is removed. With a non-%NULL
++ * @value also @value_free and @value_clone functions cannot be %NULL.
++ *
++ * Since: 3.22
++ **/
++void
++camel_cipher_certinfo_set_property (CamelCipherCertInfo *cert_info,
++				    const gchar *name,
++				    gpointer value,
++				    GDestroyNotify value_free,
++				    CamelCipherCloneFunc value_clone)
++{
++	CamelCipherCertInfoProperty *property;
++	GSList *link;
++
++	g_return_if_fail (cert_info != NULL);
++	g_return_if_fail (name != NULL);
++
++	if (value) {
++		g_return_if_fail (value_free != NULL);
++		g_return_if_fail (value_clone != NULL);
++	}
++
++	for (link = cert_info->properties; link; link = g_slist_next (link)) {
++		property = link->data;
++
++		if (property && g_ascii_strcasecmp (property->name, name) == 0) {
++			if (value && property->value != value) {
++				/* Replace current value with the new value. */
++				property->value_free (property->value);
++
++				property->value = value;
++				property->value_free = value_free;
++				property->value_clone = value_clone;
++			} else if (!value) {
++				cert_info->properties = g_slist_remove (cert_info->properties, property);
++				ccv_certinfo_property_free (property);
++			}
++			break;
++		}
++	}
++
++	if (value && !link) {
++		property = g_new0 (CamelCipherCertInfoProperty, 1);
++		property->name = g_strdup (name);
++		property->value = value;
++		property->value_free = value_free;
++		property->value_clone = value_clone;
++
++		cert_info->properties = g_slist_prepend (cert_info->properties, property);
++	}
++}
++
++/* ********************************************************************** */
++
++/**
+  * camel_cipher_context_new:
+  * @session: a #CamelSession
+  *
+@@ -1371,3 +1611,23 @@ camel_cipher_canonical_to_stream (CamelMimePart *part,
+ 
+ 	return res;
+ }
++
++/**
++ * camel_cipher_can_load_photos:
++ *
++ * Returns: Whether ciphers can load photos, as being setup by the user.
++ *
++ * Since: 3.22
++ **/
++gboolean
++camel_cipher_can_load_photos (void)
++{
++	GSettings *settings;
++	gboolean load_photos;
++
++	settings = g_settings_new ("org.gnome.evolution-data-server");
++	load_photos = g_settings_get_boolean (settings, "camel-cipher-load-photos");
++	g_clear_object (&settings);
++
++	return load_photos;
++}
+diff --git a/camel/camel-cipher-context.h b/camel/camel-cipher-context.h
+index 966eafa..bebdd93 100644
+--- a/camel/camel-cipher-context.h
++++ b/camel/camel-cipher-context.h
+@@ -46,10 +46,23 @@
+ 	(G_TYPE_INSTANCE_GET_CLASS \
+ 	((obj), CAMEL_TYPE_CIPHER_CONTEXT, CamelCipherContextClass))
+ 
++/**
++ * CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME:
++ *
++ * Name of the photo-filename property which can be stored
++ * on a #CamelCipherCertInfo.
++ *
++ * Since: 3.22
++ **/
++#define CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME "photo-filename"
++
+ G_BEGIN_DECLS
+ 
++typedef gpointer (* CamelCipherCloneFunc) (gpointer value);
++
+ typedef struct _CamelCipherValidity CamelCipherValidity;
+ typedef struct _CamelCipherCertInfo CamelCipherCertInfo;
++typedef struct _CamelCipherCertInfoProperty CamelCipherCertInfoProperty;
+ 
+ typedef struct _CamelCipherContext CamelCipherContext;
+ typedef struct _CamelCipherContextClass CamelCipherContextClass;
+@@ -88,13 +101,23 @@ typedef enum _camel_cipher_validity_mode_t {
+ 	CAMEL_CIPHER_VALIDITY_ENCRYPT
+ } camel_cipher_validity_mode_t;
+ 
++struct _CamelCipherCertInfoProperty {
++	gchar *name;
++	gpointer value;
++
++	GDestroyNotify value_free;
++	CamelCipherCloneFunc value_clone;
++};
++
+ struct _CamelCipherCertInfo {
+ 	gchar *name;		/* common name */
+ 	gchar *email;
+ 
+ 	gpointer cert_data;  /* custom certificate data; can be NULL */
+-	void (*cert_data_free) (gpointer cert_data); /* called to free cert_data; can be NULL only if cert_data is NULL */
+-	gpointer (*cert_data_clone) (gpointer cert_data); /* called to clone cert_data; can be NULL only if cert_data is NULL */
++	GDestroyNotify cert_data_free; /* called to free cert_data; can be NULL only if cert_data is NULL */
++	CamelCipherCloneFunc cert_data_clone; /* called to clone cert_data; can be NULL only if cert_data is NULL */
++
++	GSList *properties; /* CamelCipherCertInfoProperty * */
+ };
+ 
+ struct _CamelCipherValidity {
+@@ -275,23 +298,47 @@ void		camel_cipher_validity_set_description
+ void		camel_cipher_validity_clear	(CamelCipherValidity *validity);
+ CamelCipherValidity *
+ 		camel_cipher_validity_clone	(CamelCipherValidity *vin);
+-void		camel_cipher_validity_add_certinfo
++gint		camel_cipher_validity_add_certinfo
+ 						(CamelCipherValidity *vin,
+ 						 camel_cipher_validity_mode_t mode,
+ 						 const gchar *name,
+ 						 const gchar *email);
+-void		camel_cipher_validity_add_certinfo_ex (
++gint		camel_cipher_validity_add_certinfo_ex (
+ 						CamelCipherValidity *vin,
+ 						camel_cipher_validity_mode_t mode,
+ 						const gchar *name,
+ 						const gchar *email,
+ 						gpointer cert_data,
+-						void (*cert_data_free) (gpointer cert_data),
+-						gpointer (*cert_data_clone) (gpointer cert_data));
++						GDestroyNotify cert_data_free,
++						CamelCipherCloneFunc cert_data_clone);
++gpointer	camel_cipher_validity_get_certinfo_property
++						(CamelCipherValidity *vin,
++						 camel_cipher_validity_mode_t mode,
++						 gint info_index,
++						 const gchar *name);
++void		camel_cipher_validity_set_certinfo_property
++						(CamelCipherValidity *vin,
++						 camel_cipher_validity_mode_t mode,
++						 gint info_index,
++						 const gchar *name,
++						 gpointer value,
++						 GDestroyNotify value_free,
++						 CamelCipherCloneFunc value_clone);
+ void		camel_cipher_validity_envelope	(CamelCipherValidity *parent,
+ 						 CamelCipherValidity *valid);
+ void		camel_cipher_validity_free	(CamelCipherValidity *validity);
+ 
++/* CamelCipherCertInfo utility functions */
++gpointer	camel_cipher_certinfo_get_property
++						(CamelCipherCertInfo *cert_info,
++						 const gchar *name);
++void		camel_cipher_certinfo_set_property
++						(CamelCipherCertInfo *cert_info,
++						 const gchar *name,
++						 gpointer value,
++						 GDestroyNotify value_free,
++						 CamelCipherCloneFunc value_clone);
++
+ /* utility functions */
+ gint		camel_cipher_canonical_to_stream
+ 						(CamelMimePart *part,
+@@ -299,6 +346,7 @@ gint		camel_cipher_canonical_to_stream
+ 						 CamelStream *ostream,
+ 						 GCancellable *cancellable,
+ 						 GError **error);
++gboolean	camel_cipher_can_load_photos	(void);
+ 
+ G_END_DECLS
+ 
+diff --git a/camel/camel-gpg-context.c b/camel/camel-gpg-context.c
+index 4d64ffb..c7097dc 100644
+--- a/camel/camel-gpg-context.c
++++ b/camel/camel-gpg-context.c
+@@ -64,6 +64,7 @@
+ #include "camel-stream-fs.h"
+ #include "camel-stream-mem.h"
+ #include "camel-stream-null.h"
++#include "camel-string-utils.h"
+ 
+ #define d(x)
+ 
+@@ -141,6 +142,9 @@ struct _GpgCtx {
+ 	GByteArray *diagbuf;
+ 	CamelStream *diagnostics;
+ 
++	gchar *photos_filename;
++	gchar *viewer_cmd;
++
+ 	gint exit_status;
+ 
+ 	guint exited : 1;
+@@ -152,6 +156,7 @@ struct _GpgCtx {
+ 	guint armor : 1;
+ 	guint need_passwd : 1;
+ 	guint send_passwd : 1;
++	guint load_photos : 1;
+ 
+ 	guint bad_passwds : 2;
+ 	guint anonymous_recipient : 1;
+@@ -168,6 +173,7 @@ struct _GpgCtx {
+ 	guint bad_decrypt : 1;
+ 	guint noseckey : 1;
+ 	GString *signers;
++	GHashTable *signers_keyid;
+ 
+ 	guint diagflushed : 1;
+ 
+@@ -204,6 +210,9 @@ gpg_ctx_new (CamelCipherContext *context)
+ 	gpg->always_trust = FALSE;
+ 	gpg->prefer_inline = FALSE;
+ 	gpg->armor = FALSE;
++	gpg->load_photos = FALSE;
++	gpg->photos_filename = NULL;
++	gpg->viewer_cmd = NULL;
+ 
+ 	gpg->stdin_fd = -1;
+ 	gpg->stdout_fd = -1;
+@@ -234,6 +243,7 @@ gpg_ctx_new (CamelCipherContext *context)
+ 	gpg->bad_decrypt = FALSE;
+ 	gpg->noseckey = FALSE;
+ 	gpg->signers = NULL;
++	gpg->signers_keyid = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+ 
+ 	gpg->istream = NULL;
+ 	gpg->ostream = NULL;
+@@ -365,6 +375,13 @@ gpg_ctx_set_armor (struct _GpgCtx *gpg,
+ }
+ 
+ static void
++gpg_ctx_set_load_photos (struct _GpgCtx *gpg,
++			 gboolean load_photos)
++{
++	gpg->load_photos = load_photos;
++}
++
++static void
+ gpg_ctx_set_istream (struct _GpgCtx *gpg,
+                      CamelStream *istream)
+ {
+@@ -465,6 +482,13 @@ gpg_ctx_free (struct _GpgCtx *gpg)
+ 	if (gpg->signers)
+ 		g_string_free (gpg->signers, TRUE);
+ 
++	g_hash_table_destroy (gpg->signers_keyid);
++	if (gpg->photos_filename)
++		g_unlink (gpg->photos_filename);
++
++	g_free (gpg->photos_filename);
++	g_free (gpg->viewer_cmd);
++
+ 	g_free (gpg);
+ }
+ 
+@@ -581,6 +605,31 @@ gpg_ctx_get_argv (struct _GpgCtx *gpg,
+ 		g_ptr_array_add (argv, buf);
+ 	}
+ 
++	if (gpg->load_photos) {
++		if (!gpg->viewer_cmd) {
++			gint filefd;
++
++			filefd = g_file_open_tmp ("camel-gpg-photo-state-XXXXXX", &gpg->photos_filename, NULL);
++			if (filefd) {
++				gchar *viewer_filename;
++
++				close (filefd);
++
++				viewer_filename = g_build_filename (CAMEL_LIBEXECDIR, "camel-gpg-photo-saver", NULL);
++				gpg->viewer_cmd = g_strdup_printf ("%s --state \"%s\" --photo \"%%i\" --keyid \"%%K\" --type \"%%t\"", viewer_filename, gpg->photos_filename);
++				g_free (viewer_filename);
++			}
++		}
++
++		if (gpg->viewer_cmd) {
++			g_ptr_array_add (argv, (guint8 *) "--verify-options");
++			g_ptr_array_add (argv, (guint8 *) "show-photos");
++
++			g_ptr_array_add (argv, (guint8 *) "--photo-viewer");
++			g_ptr_array_add (argv, (guint8 *) gpg->viewer_cmd);
++		}
++	}
++
+ 	switch (gpg->mode) {
+ 	case GPG_CTX_MODE_SIGN:
+ 		if (gpg->prefer_inline) {
+@@ -804,6 +853,53 @@ next_token (const gchar *in,
+ 	return inptr;
+ }
+ 
++static void
++gpg_ctx_extract_signer_from_status (struct _GpgCtx *gpg,
++				    const gchar *status)
++{
++	const gchar *tmp;
++
++	g_return_if_fail (gpg != NULL);
++	g_return_if_fail (status != NULL);
++
++	/* there's a key ID, then the email address */
++	tmp = status;
++
++	status = strchr (status, ' ');
++	if (status) {
++		gchar *keyid;
++		const gchar *str = status + 1;
++		const gchar *eml = strchr (str, '<');
++
++		keyid = g_strndup (tmp, status - tmp);
++
++		if (eml && eml > str) {
++			eml--;
++			if (strchr (str, ' ') >= eml)
++				eml = NULL;
++		} else {
++			eml = NULL;
++		}
++
++		if (gpg->signers) {
++			g_string_append (gpg->signers, ", ");
++		} else {
++			gpg->signers = g_string_new ("");
++		}
++
++		if (eml) {
++			g_string_append (gpg->signers, "\"");
++			g_string_append_len (gpg->signers, str, eml - str);
++			g_string_append (gpg->signers, "\"");
++			g_string_append (gpg->signers, eml);
++		} else {
++			g_string_append (gpg->signers, str);
++		}
++
++		g_hash_table_insert (gpg->signers_keyid, g_strdup (str), keyid);
++	}
++}
++
+ static gint
+ gpg_ctx_parse_status (struct _GpgCtx *gpg,
+                       GError **error)
+@@ -1108,41 +1204,17 @@ gpg_ctx_parse_status (struct _GpgCtx *gpg,
+ 			} else if (!strncmp ((gchar *) status, "GOODSIG ", 8)) {
+ 				gpg->goodsig = TRUE;
+ 				gpg->hadsig = TRUE;
+-				status += 8;
+-				/* there's a key ID, then the email address */
+-				status = (const guchar *) strchr ((const gchar *) status, ' ');
+-				if (status) {
+-					const gchar *str = (const gchar *) status + 1;
+-					const gchar *eml = strchr (str, '<');
+-
+-					if (eml && eml > str) {
+-						eml--;
+-						if (strchr (str, ' ') >= eml)
+-							eml = NULL;
+-					} else {
+-						eml = NULL;
+-					}
+-
+-					if (gpg->signers) {
+-						g_string_append (gpg->signers, ", ");
+-					} else {
+-						gpg->signers = g_string_new ("");
+-					}
+ 
+-					if (eml) {
+-						g_string_append (gpg->signers, "\"");
+-						g_string_append_len (gpg->signers, str, eml - str);
+-						g_string_append (gpg->signers, "\"");
+-						g_string_append (gpg->signers, eml);
+-					} else {
+-						g_string_append (gpg->signers, str);
+-					}
+-				}
++				gpg_ctx_extract_signer_from_status (gpg, (const gchar *) status + 8);
++			} else if (!strncmp ((gchar *) status, "EXPKEYSIG ", 10)) {
++				gpg_ctx_extract_signer_from_status (gpg, (const gchar *) status + 10);
+ 			} else if (!strncmp ((gchar *) status, "VALIDSIG ", 9)) {
+ 				gpg->validsig = TRUE;
+ 			} else if (!strncmp ((gchar *) status, "BADSIG ", 7)) {
+ 				gpg->badsig = FALSE;
+ 				gpg->hadsig = TRUE;
++
++				gpg_ctx_extract_signer_from_status (gpg, (const gchar *) status + 7);
+ 			} else if (!strncmp ((gchar *) status, "ERRSIG ", 7)) {
+ 				/* Note: NO_PUBKEY often comes after an ERRSIG */
+ 				gpg->errsig = FALSE;
+@@ -1562,11 +1634,68 @@ swrite (CamelMimePart *sigpart,
+ 	return path;
+ }
+ 
++static const gchar *
++gpg_context_find_photo (GHashTable *photos, /* keyid ~> filename in tmp */
++			GHashTable *signers_keyid, /* signer ~> keyid */
++			const gchar *name,
++			const gchar *email)
++{
++	GHashTableIter iter;
++	gpointer key, value;
++	const gchar *keyid = NULL;
++
++	if (!photos || !signers_keyid || ((!name || !*name) && (!email || !*email)))
++		return NULL;
++
++	g_hash_table_iter_init (&iter, signers_keyid);
++	while (g_hash_table_iter_next (&iter, &key, &value)) {
++		if ((email && *email && strstr (key, email)) ||
++		    (name && *name && strstr (key, name))) {
++			keyid = value;
++			break;
++		}
++	}
++
++	if (keyid) {
++		const gchar *filename;
++
++		filename = g_hash_table_lookup (photos, keyid);
++		if (filename)
++			return camel_pstring_strdup (filename);
++	}
++
++	return NULL;
++}
++
++static void
++camel_gpg_context_free_photo_filename (gpointer ptr)
++{
++	gchar *tmp_filename = g_strdup (ptr);
++
++	camel_pstring_free (ptr);
++
++	if (!camel_pstring_contains (tmp_filename) &&
++	    g_file_test (tmp_filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
++		g_unlink (tmp_filename);
++	}
++
++	g_free (tmp_filename);
++}
++
++static gpointer
++camel_gpg_context_clone_photo_filename (gpointer ptr)
++{
++	return (gpointer) camel_pstring_strdup (ptr);
++}
++
+ static void
+ add_signers (CamelCipherValidity *validity,
+-             const GString *signers)
++	     const GString *signers,
++	     GHashTable *signers_keyid,
++	     const gchar *photos_filename)
+ {
+ 	CamelInternetAddress *address;
++	GHashTable *photos = NULL;
+ 	gint i, count;
+ 
+ 	g_return_if_fail (validity != NULL);
+@@ -1577,16 +1706,69 @@ add_signers (CamelCipherValidity *validity,
+ 	address = camel_internet_address_new ();
+ 	g_return_if_fail (address != NULL);
+ 
++	if (photos_filename) {
++		/* A short file is expected */
++		gchar *content = NULL;
++		GError *error = NULL;
++
++		if (g_file_get_contents (photos_filename, &content, NULL, &error)) {
++			gchar **lines;
++			gint ii;
++
++			/* Each line is encoded as: KeyID\tPhotoFilename */
++			lines = g_strsplit (content, "\n", -1);
++
++			for (ii = 0; lines && lines[ii]; ii++) {
++				gchar *line, *filename;
++
++				line = lines[ii];
++				filename = strchr (line, '\t');
++
++				if (filename) {
++					*filename = '\0';
++					filename++;
++				}
++
++				if (filename && g_file_test (filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
++					if (!photos)
++						photos = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, camel_gpg_context_free_photo_filename);
++
++					g_hash_table_insert (photos, g_strdup (line), (gpointer) camel_pstring_strdup (filename));
++				}
++			}
++
++			g_strfreev (lines);
++		} else {
++			g_warning ("CamelGPGContext: Failed to open photos file '%s': %s", photos_filename, error ? error->message : "Unknown error");
++		}
++
++		g_free (content);
++		g_clear_error (&error);
++	}
++
+ 	count = camel_address_decode (CAMEL_ADDRESS (address), signers->str);
+ 	for (i = 0; i < count; i++) {
+ 		const gchar *name = NULL, *email = NULL;
++		const gchar *photo_filename; /* allocated on the string pool */
++		gint index;
+ 
+ 		if (!camel_internet_address_get (address, i, &name, &email))
+ 			break;
+ 
+-		camel_cipher_validity_add_certinfo (validity, CAMEL_CIPHER_VALIDITY_SIGN, name, email);
++		photo_filename = gpg_context_find_photo (photos, signers_keyid, name, email);
++		index = camel_cipher_validity_add_certinfo (validity, CAMEL_CIPHER_VALIDITY_SIGN, name, email);
++
++		if (index != -1 && photo_filename) {
++			camel_cipher_validity_set_certinfo_property (validity, CAMEL_CIPHER_VALIDITY_SIGN, index,
++				CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME, (gpointer) photo_filename,
++				camel_gpg_context_free_photo_filename, camel_gpg_context_clone_photo_filename);
++		} else if (photo_filename) {
++			camel_gpg_context_free_photo_filename ((gpointer) photo_filename);
++		}
+ 	}
+ 
++	if (photos)
++		g_hash_table_destroy (photos);
+ 	g_object_unref (address);
+ }
+ 
+@@ -2022,6 +2204,7 @@ gpg_verify_sync (CamelCipherContext *context,
+ 
+ 	gpg = gpg_ctx_new (context);
+ 	gpg_ctx_set_mode (gpg, GPG_CTX_MODE_VERIFY);
++	gpg_ctx_set_load_photos (gpg, camel_cipher_can_load_photos ());
+ 	if (sigfile)
+ 		gpg_ctx_set_sigfile (gpg, sigfile);
+ 	gpg_ctx_set_istream (gpg, canon_stream);
+@@ -2064,7 +2247,7 @@ gpg_verify_sync (CamelCipherContext *context,
+ 		validity->sign.status = CAMEL_CIPHER_VALIDITY_SIGN_BAD;
+ 	}
+ 
+-	add_signers (validity, gpg->signers);
++	add_signers (validity, gpg->signers, gpg->signers_keyid, gpg->photos_filename);
+ 
+ 	gpg_ctx_free (gpg);
+ 
+@@ -2309,6 +2492,7 @@ gpg_decrypt_sync (CamelCipherContext *context,
+ 
+ 	gpg = gpg_ctx_new (context);
+ 	gpg_ctx_set_mode (gpg, GPG_CTX_MODE_DECRYPT);
++	gpg_ctx_set_load_photos (gpg, camel_cipher_can_load_photos ());
+ 	gpg_ctx_set_istream (gpg, istream);
+ 	gpg_ctx_set_ostream (gpg, ostream);
+ 
+@@ -2398,7 +2582,7 @@ gpg_decrypt_sync (CamelCipherContext *context,
+ 				valid->sign.status = CAMEL_CIPHER_VALIDITY_SIGN_BAD;
+ 			}
+ 
+-			add_signers (valid, gpg->signers);
++			add_signers (valid, gpg->signers, gpg->signers_keyid, gpg->photos_filename);
+ 		}
+ 	}
+ 
+diff --git a/camel/camel-gpg-photo-saver.c b/camel/camel-gpg-photo-saver.c
+new file mode 100644
+index 0000000..7ee29f8
+--- /dev/null
++++ b/camel/camel-gpg-photo-saver.c
+@@ -0,0 +1,119 @@
++/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
++/*
++ * Copyright (C) 2016 Red Hat, Inc. (www.redhat.com)
++ *
++ * This library is free software: you can redistribute it and/or modify it
++ * under the terms of the GNU Lesser General Public License as published by
++ * the Free Software Foundation.
++ *
++ * This library is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
++ * for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public License
++ * along with this library. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#endif
++
++#include <glib.h>
++#include <glib/gstdio.h>
++#include <gio/gio.h>
++#include <stdio.h>
++
++static gchar *state_filename = NULL;
++static gchar *photo_filename = NULL;
++static gchar *keyid = NULL;
++static gchar *img_type = NULL;
++
++static GOptionEntry entries[] = {
++	{ "state", 's', 0, G_OPTION_ARG_STRING, &state_filename,
++	  "State file, where to write info about the photo.", NULL },
++	{ "photo", 'p', 0, G_OPTION_ARG_STRING, &photo_filename,
++	  "Photo file name.", NULL },
++	{ "keyid", 'k', 0, G_OPTION_ARG_STRING, &keyid,
++	  "Key ID for the photo.", NULL },
++	{ "type", 't', 0, G_OPTION_ARG_STRING, &img_type,
++	  "Extension of the image type (e.g. \"jpg\").", NULL },
++	{ NULL }
++};
++
++gint
++main (gint argc, gchar *argv[])
++{
++	GOptionContext *context;
++	GError *error = NULL;
++	gint res = 0;
++
++	context = g_option_context_new ("Camel GPG Photo Saver");
++	g_option_context_add_main_entries (context, entries, NULL);
++	if (!g_option_context_parse (context, &argc, &argv, &error)) {
++		g_option_context_free (context);
++		g_warning ("Failed to parse options: %s", error ? error->message : "Unknown error");
++		g_clear_error (&error);
++
++		return 1;
++	}
++
++	if (!state_filename || !*state_filename || !photo_filename || !*photo_filename || !keyid || !*keyid || !img_type || !*img_type) {
++		g_warning ("Expects all four parameters");
++		g_option_context_free (context);
++
++		return 2;
++	}
++
++	if (g_file_test (photo_filename, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_REGULAR)) {
++		GFile *source, *destination;
++		gchar *tmp_filename = NULL;
++		gchar *tmp_template;
++		gint tmp_file;
++
++		tmp_template = g_strconcat ("camel-gpg-photo-XXXXXX.", img_type, NULL);
++		tmp_file = g_file_open_tmp (tmp_template, &tmp_filename, &error);
++		g_free (tmp_template);
++
++		if (tmp_file == -1) {
++			g_warning ("Failed to open temporary file: %s", error ? error->message : "Unknown error");
++			g_option_context_free (context);
++			g_clear_error (&error);
++
++			return 3;
++		}
++
++		close (tmp_file);
++
++		source = g_file_new_for_path (photo_filename);
++		destination = g_file_new_for_path (tmp_filename);
++
++		if (!g_file_copy (source, destination, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &error)) {
++			g_warning ("Failed to copy file '%s' to '%s': %s", photo_filename, tmp_filename, error ? error->message : "Unknown error");
++			res = 4;
++		} else {
++			FILE *state = fopen (state_filename, "ab");
++			if (state) {
++				fprintf (state, "%s\t%s\n", keyid, tmp_filename);
++				fclose (state);
++			} else {
++				g_unlink (tmp_filename);
++
++				g_warning ("Failed to open state file '%s' for append", state_filename);
++				res = 5;
++			}
++		}
++
++		g_free (tmp_filename);
++		g_clear_object (&source);
++		g_clear_object (&destination);
++		g_clear_error (&error);
++	} else {
++		g_warning ("Photo file '%s' does not exist", photo_filename);
++		res = 6;
++	}
++
++	g_option_context_free (context);
++
++	return res;
++}
+diff --git a/camel/camel-string-utils.c b/camel/camel-string-utils.c
+index f9f584b..1fcf510 100644
+--- a/camel/camel-string-utils.c
++++ b/camel/camel-string-utils.c
+@@ -244,6 +244,41 @@ camel_pstring_peek (const gchar *string)
+ }
+ 
+ /**
++ * camel_pstring_contains:
++ * @string: string to look up in the string pool
++ *
++ * Returns whether the @string exists in the string pool.
++ *
++ * The %NULL and empty strings are special cased to constant values.
++ *
++ * Returns: Whether the @string exists in the string pool
++ *
++ * Since: 3.22
++ **/
++gboolean
++camel_pstring_contains (const gchar *string)
++{
++	StringPoolNode static_node = { (gchar *) string, };
++	gboolean contains;
++
++	if (string == NULL)
++		return FALSE;
++
++	if (*string == '\0')
++		return FALSE;
++
++	g_mutex_lock (&string_pool_lock);
++
++	string_pool_init ();
++
++	contains = g_hash_table_contains (string_pool, &static_node);
++
++	g_mutex_unlock (&string_pool_lock);
++
++	return contains;
++}
++
++/**
+  * camel_pstring_strdup:
+  * @string: string to copy
+  *
+diff --git a/camel/camel-string-utils.h b/camel/camel-string-utils.h
+index f9cce0a..a66fcdf 100644
+--- a/camel/camel-string-utils.h
++++ b/camel/camel-string-utils.h
+@@ -39,6 +39,7 @@ const gchar *camel_pstring_add (gchar *string, gboolean own);
+ const gchar *camel_pstring_strdup (const gchar *string);
+ void camel_pstring_free (const gchar *string);
+ const gchar * camel_pstring_peek (const gchar *string);
++gboolean camel_pstring_contains (const gchar *string);
+ void camel_pstring_dump_stat (void);
+ 
+ G_END_DECLS
+diff --git a/data/org.gnome.evolution-data-server.gschema.xml.in b/data/org.gnome.evolution-data-server.gschema.xml.in
+index ff670a1..54e55a6 100644
+--- a/data/org.gnome.evolution-data-server.gschema.xml.in
++++ b/data/org.gnome.evolution-data-server.gschema.xml.in
+@@ -9,5 +9,10 @@
+       <_summary>An absolute path where the gpg (or gpg2) binary is</_summary>
+       <_description>An example is '/usr/bin/gpg'; if it is not filled, or doesn't exist, then it is searched for it. Change requires restart of the application.</_description>
+     </key>
++    <key name="camel-cipher-load-photos" type="b">
++      <default>true</default>
++      <_summary>Whether to load photos of signers/encrypters</_summary>
++      <_description>When set to 'true', tries to load also photo of the signers/encrypters, if available in the key/certificate.</_description>
++    </key>
+   </schema>
+ </schemalist>
+diff --git a/docs/reference/camel/camel-sections.txt b/docs/reference/camel/camel-sections.txt
+index 0e663a5..9c614e1 100644
+--- a/docs/reference/camel/camel-sections.txt
++++ b/docs/reference/camel/camel-sections.txt
+@@ -136,9 +136,11 @@ CamelCertDBPrivate
+ <SECTION>
+ <FILE>camel-cipher-context</FILE>
+ <TITLE>CamelCipherContext</TITLE>
++CAMEL_CIPHER_CERT_INFO_PROPERTY_PHOTO_FILENAME
+ CamelCipherContext
+ CamelCipherValidity
+ CamelCipherCertInfo
++CamelCipherCertInfoProperty
+ CamelCipherHash
+ camel_cipher_validity_sign_t
+ camel_cipher_validity_encrypt_t
+@@ -169,9 +171,14 @@ camel_cipher_validity_clear
+ camel_cipher_validity_clone
+ camel_cipher_validity_add_certinfo
+ camel_cipher_validity_add_certinfo_ex
++camel_cipher_validity_get_certinfo_property
++camel_cipher_validity_set_certinfo_property
+ camel_cipher_validity_envelope
+ camel_cipher_validity_free
++camel_cipher_certinfo_get_property
++camel_cipher_certinfo_set_property
+ camel_cipher_canonical_to_stream
++camel_cipher_can_load_photos
+ <SUBSECTION Standard>
+ CAMEL_CIPHER_CONTEXT
+ CAMEL_IS_CIPHER_CONTEXT
+@@ -2894,6 +2901,7 @@ camel_pstring_add
+ camel_pstring_strdup
+ camel_pstring_free
+ camel_pstring_peek
++camel_pstring_contains
+ camel_pstring_dump_stat
+ </SECTION>
+ 
+-- 
+cgit v0.12
+

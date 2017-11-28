@@ -1,0 +1,30 @@
+From efcf92c44ecec0e8719ebd93baa65d8fbd2af3d3 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 6 Oct 2016 16:47:42 +0200
+Subject: [PATCH 430/595] Bug 772513 - Extra empty line at the top of a new
+ mail
+
+Regression after commit 2a9becc. The first element in the BODY could be
+credentials, but paragraph as well. So if it's paragraph, don't create
+a new one.
+---
+ modules/webkit-editor/web-extension/e-composer-dom-functions.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-composer-dom-functions.c b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+index 32e517a758..934e88cd44 100644
+--- a/modules/webkit-editor/web-extension/e-composer-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+@@ -122,7 +122,8 @@ move_caret_after_signature_inserted (EEditorPage *editor_page)
+ 			has_paragraphs_in_body = FALSE;
+ 
+ 		/* Don't take the credentials into account. */
+-		if (!webkit_dom_node_get_previous_sibling (node))
++		if (!webkit_dom_node_get_previous_sibling (node) &&
++		    !element_has_id (WEBKIT_DOM_ELEMENT (node), "-x-evo-input-start"))
+ 			has_paragraphs_in_body = FALSE;
+ 	}
+ 
+-- 
+2.15.0
+

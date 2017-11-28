@@ -1,0 +1,51 @@
+From 25b02b3700b78322a622bcb7bdb0ddfc2ddf69f7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 14:59:41 +0200
+Subject: [PATCH 278/595] Don't try to insert selection marks if they are
+ already presented
+
+---
+ .../web-extension/e-editor-dom-functions.c         | 27 ++++++++++++----------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index fe55796dd4..4d8b75fe0d 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4156,18 +4156,21 @@ e_editor_dom_move_quoted_block_level_up (EEditorPage *editor_page)
+ 		g_free (inner_html);
+ 
+ 		if (paragraph) {
+-			webkit_dom_node_insert_before (
+-				WEBKIT_DOM_NODE (paragraph),
+-				WEBKIT_DOM_NODE (selection_start_marker),
+-				webkit_dom_node_get_first_child (
+-					WEBKIT_DOM_NODE (paragraph)),
+-				NULL);
+-			webkit_dom_node_insert_before (
+-				WEBKIT_DOM_NODE (paragraph),
+-				WEBKIT_DOM_NODE (selection_end_marker),
+-				webkit_dom_node_get_first_child (
+-					WEBKIT_DOM_NODE (paragraph)),
+-				NULL);
++			if (!(webkit_dom_element_query_selector (paragraph, "#-x-evo-selection-start-marker", NULL)))
++				webkit_dom_node_insert_before (
++					WEBKIT_DOM_NODE (paragraph),
++					WEBKIT_DOM_NODE (selection_start_marker),
++					webkit_dom_node_get_first_child (
++						WEBKIT_DOM_NODE (paragraph)),
++					NULL);
++
++			if (!(webkit_dom_element_query_selector (paragraph, "#-x-evo-selection-end-marker", NULL)))
++				webkit_dom_node_insert_before (
++					WEBKIT_DOM_NODE (paragraph),
++					WEBKIT_DOM_NODE (selection_end_marker),
++					webkit_dom_node_get_first_child (
++						WEBKIT_DOM_NODE (paragraph)),
++					NULL);
+ 
+ 			e_editor_dom_remove_quoting_from_element (paragraph);
+ 			e_editor_dom_remove_wrapping_from_element (paragraph);
+-- 
+2.15.0
+

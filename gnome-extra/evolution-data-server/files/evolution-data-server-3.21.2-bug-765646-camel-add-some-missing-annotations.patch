@@ -1,0 +1,128 @@
+From 8a829b614c6d18d9bad74dcb8ed3ba0b2590fb90 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Corentin=20No=C3=ABl?= <corentin@elementary.io>
+Date: Mon, 9 May 2016 10:51:52 +0200
+Subject: Bug 765646 - [Camel] Add some missing annotations
+
+---
+ camel/camel-db.c            |  4 ++++
+ camel/camel-filter-driver.c |  1 +
+ camel/camel-mime-filter.c   | 12 ++++++------
+ camel/camel-service.c       |  4 ++--
+ camel/camel-session.c       |  8 ++++++--
+ 5 files changed, 19 insertions(+), 10 deletions(-)
+
+diff --git a/camel/camel-db.c b/camel/camel-db.c
+index bcdc0f6..89c575e 100644
+--- a/camel/camel-db.c
++++ b/camel/camel-db.c
+@@ -2770,6 +2770,10 @@ static struct _known_column_names {
+ 
+ /**
+  * camel_db_get_column_ident:
++ * @hash: (inout):
++ * @index:
++ * @ncols: number of @col_names
++ * @col_names: (array length=ncols):
+  *
+  * Traverses column name from index @index into an enum
+  * #CamelDBKnownColumnNames value.  The @col_names contains @ncols columns.
+diff --git a/camel/camel-filter-driver.c b/camel/camel-filter-driver.c
+index 3ef7307..d99bfe8 100644
+--- a/camel/camel-filter-driver.c
++++ b/camel/camel-filter-driver.c
+@@ -289,6 +289,7 @@ camel_filter_driver_init (CamelFilterDriver *filter_driver)
+ 
+ /**
+  * camel_filter_driver_new:
++ * @session: (type CamelSession):
+  *
+  * Returns: A new CamelFilterDriver object
+  **/
+diff --git a/camel/camel-mime-filter.c b/camel/camel-mime-filter.c
+index 70e3116..a063f76 100644
+--- a/camel/camel-mime-filter.c
++++ b/camel/camel-mime-filter.c
+@@ -204,9 +204,9 @@ filter_run (CamelMimeFilter *f,
+  * @in: input buffer
+  * @len: length of @in
+  * @prespace: amount of prespace
+- * @out: pointer to the output buffer (to be set)
+- * @outlen: pointer to the length of the output buffer (to be set)
+- * @outprespace: pointer to the output prespace length (to be set)
++ * @out: (out): pointer to the output buffer (to be set)
++ * @outlen: (out): pointer to the length of the output buffer (to be set)
++ * @outprespace: (out): pointer to the output prespace length (to be set)
+  *
+  * Passes the input buffer, @in, through @filter and generates an
+  * output buffer, @out.
+@@ -239,9 +239,9 @@ camel_mime_filter_filter (CamelMimeFilter *filter,
+  * @in: input buffer
+  * @len: length of @in
+  * @prespace: amount of prespace
+- * @out: pointer to the output buffer (to be set)
+- * @outlen: pointer to the length of the output buffer (to be set)
+- * @outprespace: pointer to the output prespace length (to be set)
++ * @out: (out): pointer to the output buffer (to be set)
++ * @outlen: (out): pointer to the length of the output buffer (to be set)
++ * @outprespace: (out): pointer to the output prespace length (to be set)
+  *
+  * Passes the input buffer, @in, through @filter and generates an
+  * output buffer, @out and makes sure that all data is flushed to the
+diff --git a/camel/camel-service.c b/camel/camel-service.c
+index 09ab840..6f21f00 100644
+--- a/camel/camel-service.c
++++ b/camel/camel-service.c
+@@ -2085,7 +2085,7 @@ camel_service_disconnect_finish (CamelService *service,
+ /**
+  * camel_service_authenticate_sync:
+  * @service: a #CamelService
+- * @mechanism: a SASL mechanism name, or %NULL
++ * @mechanism: (nullable): a SASL mechanism name, or %NULL
+  * @cancellable: optional #GCancellable object, or %NULL
+  * @error: return location for a #GError, or %NULL
+  *
+@@ -2165,7 +2165,7 @@ service_authenticate_thread (GTask *task,
+ /**
+  * camel_service_authenticate:
+  * @service: a #CamelService
+- * @mechanism: a SASL mechanism name, or %NULL
++ * @mechanism: (nullable): a SASL mechanism name, or %NULL
+  * @io_priority: the I/O priority of the request
+  * @cancellable: optional #GCancellable object, or %NULL
+  * @callback: a #GAsyncReadyCallback to call when the request is satisfied
+diff --git a/camel/camel-session.c b/camel/camel-session.c
+index fc47260..c740f20 100644
+--- a/camel/camel-session.c
++++ b/camel/camel-session.c
+@@ -1463,6 +1463,10 @@ camel_session_submit_job (CamelSession *session,
+ 
+ /**
+  * camel_session_set_junk_headers:
++ * @session: a #CamelSession
++ * @headers: (array length=len):
++ * @values: (array):
++ * @len: the length of the headers and values arrays
+  *
+  * Since: 2.22
+  **/
+@@ -1506,7 +1510,7 @@ camel_session_get_junk_headers (CamelSession *session)
+  * camel_session_authenticate_sync:
+  * @session: a #CamelSession
+  * @service: a #CamelService
+- * @mechanism: a SASL mechanism name, or %NULL
++ * @mechanism: (nullable): a SASL mechanism name, or %NULL
+  * @cancellable: optional #GCancellable object, or %NULL
+  * @error: return location for a #GError, or %NULL
+  *
+@@ -1576,7 +1580,7 @@ session_authenticate_thread (GTask *task,
+  * camel_session_authenticate:
+  * @session: a #CamelSession
+  * @service: a #CamelService
+- * @mechanism: a SASL mechanism name, or %NULL
++ * @mechanism: (nullable): a SASL mechanism name, or %NULL
+  * @io_priority: the I/O priority for the request
+  * @cancellable: optional #GCancellable object, or %NULL
+  * @callback: a #GAsyncReadyCallback to call when the request is satisfied
+-- 
+cgit v0.12
+

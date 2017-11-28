@@ -1,0 +1,59 @@
+From cea7730819ce2e8fa4491bf731470a9a4f75640f Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 5 Sep 2016 14:23:17 +0200
+Subject: [PATCH 349/595] Undoing a citation split could fail
+
+When the caret is on the end of the citation and the Return key is pressed then
+a new empty block is inserted after the current block in citation. When we later
+try to undo this operation the newly added block will be removed as it should,
+but the next block would be concatenated after the current citation.
+---
+ .../webkit-editor/web-extension/e-editor-undo-redo-manager.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index cd443c5a31..7bde22befa 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -1140,14 +1140,14 @@ undo_redo_page_dialog (EEditorPage *editor_page,
+ 		gboolean replaced = FALSE;
+ 
+ 		attr = webkit_dom_named_node_map_item (attributes, ii);
+-		name = webkit_dom_node_get_local_name (attr);
++		name = webkit_dom_attr_get_name (WEBKIT_DOM_ATTR (attr));
+ 
+ 		for (jj = length_history - 1; jj >= 0; jj--) {
+ 			gchar *name_history;
+ 			WebKitDOMNode *attr_history;
+ 
+ 			attr_history = webkit_dom_named_node_map_item (attributes_history, jj);
+-			name_history = webkit_dom_node_get_local_name (attr_history);
++			name_history = webkit_dom_attr_get_name (WEBKIT_DOM_ATTR (attr_history));
+ 			if (g_strcmp0 (name, name_history) == 0) {
+ 				WebKitDOMNode *attr_clone;
+ 
+@@ -2012,6 +2012,13 @@ undo_redo_citation_split (EEditorPage *editor_page,
+ 
+ 		parent = get_parent_block_element (WEBKIT_DOM_NODE (selection_start));
+ 
++		if (!in_situ && event->data.fragment &&
++		    !webkit_dom_node_get_first_child (WEBKIT_DOM_NODE (event->data.fragment))) {
++			remove_node (WEBKIT_DOM_NODE (parent));
++
++			goto out;
++		}
++
+ 		citation_before = webkit_dom_node_get_previous_sibling (WEBKIT_DOM_NODE (parent));
+ 		if (!e_editor_dom_node_is_citation_node (citation_before)) {
+ 			e_editor_dom_selection_restore (editor_page);
+@@ -2076,6 +2083,7 @@ undo_redo_citation_split (EEditorPage *editor_page,
+ 		if (event->data.fragment != NULL && !in_situ)
+ 			undo_delete (editor_page, event);
+ 
++ out:
+ 		e_editor_dom_merge_siblings_if_necessary (editor_page, NULL);
+ 
+ 		restore_selection_to_history_event_state (editor_page, event->before);
+-- 
+2.15.0
+

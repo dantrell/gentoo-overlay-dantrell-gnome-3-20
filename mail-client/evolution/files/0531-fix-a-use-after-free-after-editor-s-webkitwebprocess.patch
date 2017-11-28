@@ -1,0 +1,34 @@
+From d0eb6bc747211b51c06d33973be07c454f54a304 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Wed, 14 Dec 2016 16:20:45 +0100
+Subject: [PATCH 531/595] Fix a use-after-free after editor's WebKitWebProcess
+ crash
+
+When the HTML editor's WebProcess crashed, the callbacks to listen
+for D-Bus' web extension signals had been still connected, even after
+the webkit editor had been properly freed, which caused the use-after-free.
+The signal handlers are properly unsubscribed in the dispose method of
+the webkit editor, even after the WebProcess crash.
+---
+ modules/webkit-editor/e-webkit-editor.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index cd857d142c..df34265a76 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5763,11 +5763,6 @@ webkit_editor_web_process_crashed_cb (EWebKitEditor *wk_editor)
+ 	g_warning (
+ 		"WebKitWebProcess (page id %ld) for EWebKitEditor crashed",
+ 		webkit_web_view_get_page_id (WEBKIT_WEB_VIEW (wk_editor)));
+-
+-	wk_editor->priv->web_extension_selection_changed_cb_id = 0;
+-	wk_editor->priv->web_extension_content_changed_cb_id = 0;
+-	wk_editor->priv->web_extension_undo_redo_state_changed_cb_id = 0;
+-	wk_editor->priv->web_extension_user_changed_default_colors_cb_id = 0;
+ }
+ 
+ static void
+-- 
+2.15.0
+

@@ -1,0 +1,64 @@
+From acd9995415b25f92c73736d683c4417ee2ea3d79 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Fri, 27 Jan 2017 12:18:04 +0100
+Subject: [PATCH 567/595] Fix few memory leaks
+
+---
+ e-util/e-name-selector-entry.c | 1 -
+ e-util/e-web-view.c            | 3 +++
+ plugins/bbdb/bbdb.c            | 5 ++++-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/e-util/e-name-selector-entry.c b/e-util/e-name-selector-entry.c
+index fa6561ecea..3457abeb93 100644
+--- a/e-util/e-name-selector-entry.c
++++ b/e-util/e-name-selector-entry.c
+@@ -412,7 +412,6 @@ describe_contact (EContact *contact)
+ 	g_string_append (description, str ? str : "");
+ 	g_string_append (description, "\n");
+ 
+-	emails = e_contact_get (contact, E_CONTACT_EMAIL);
+ 	emails = g_list_sort (emails, (GCompareFunc) g_ascii_strcasecmp);
+ 	for (link = emails; link; link = g_list_next (link)) {
+ 		str = link->data;
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index 37a584d763..0febea5edb 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -1059,6 +1059,7 @@ web_view_uri_request_done_cb (GObject *source_object,
+ 	if (!e_content_request_process_finish (E_CONTENT_REQUEST (source_object),
+ 		result, &stream, &stream_length, &mime_type, &error)) {
+ 		webkit_uri_scheme_request_finish_error (request, error);
++		g_clear_error (&error);
+ 	} else {
+ 		webkit_uri_scheme_request_finish (request, stream, stream_length, mime_type);
+ 
+@@ -1102,6 +1103,8 @@ web_view_process_uri_request_cb (WebKitURISchemeRequest *request,
+ 			error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_CANCELLED, "Cancelled");
+ 
+ 			webkit_uri_scheme_request_finish_error (request, error);
++			g_clear_error (&error);
++
+ 			return;
+ 		}
+ 	}
+diff --git a/plugins/bbdb/bbdb.c b/plugins/bbdb/bbdb.c
+index 6e7582c47f..5c912bed4a 100644
+--- a/plugins/bbdb/bbdb.c
++++ b/plugins/bbdb/bbdb.c
+@@ -534,8 +534,11 @@ add_email_to_contact (EContact *contact,
+ 	GList *emails;
+ 
+ 	emails = e_contact_get (contact, E_CONTACT_EMAIL);
+-	emails = g_list_append (emails, (gpointer) email);
++	emails = g_list_append (emails, g_strdup (email));
++
+ 	e_contact_set (contact, E_CONTACT_EMAIL, (gpointer) emails);
++
++	g_list_free_full (emails, g_free);
+ }
+ 
+ /* Code to implement the configuration user interface follows */
+-- 
+2.15.0
+

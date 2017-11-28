@@ -1,0 +1,36 @@
+From 4a23edc3f5df91ae867aff0f2195ff8bca5badee Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 20 Sep 2016 11:03:16 +0200
+Subject: [PATCH 395/595] Bug 771651 - Cannot write certain letters into
+ meeting invitation text area
+
+Call the "Set" method on the right interface.
+---
+ web-extensions/e-dom-utils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/web-extensions/e-dom-utils.c b/web-extensions/e-dom-utils.c
+index 170b975add..5782c74616 100644
+--- a/web-extensions/e-dom-utils.c
++++ b/web-extensions/e-dom-utils.c
+@@ -767,7 +767,7 @@ element_focus_cb (WebKitDOMElement *element,
+ 		connection,
+ 		E_WEB_EXTENSION_SERVICE_NAME,
+ 		E_WEB_EXTENSION_OBJECT_PATH,
+-		E_WEB_EXTENSION_INTERFACE,
++		"org.freedesktop.DBus.Properties",
+ 		"Set",
+ 		g_variant_new (
+ 			"(ssv)",
+@@ -792,7 +792,7 @@ element_blur_cb (WebKitDOMElement *element,
+ 		connection,
+ 		E_WEB_EXTENSION_SERVICE_NAME,
+ 		E_WEB_EXTENSION_OBJECT_PATH,
+-		E_WEB_EXTENSION_INTERFACE,
++		"org.freedesktop.DBus.Properties",
+ 		"Set",
+ 		g_variant_new (
+ 			"(ssv)",
+-- 
+2.15.0
+

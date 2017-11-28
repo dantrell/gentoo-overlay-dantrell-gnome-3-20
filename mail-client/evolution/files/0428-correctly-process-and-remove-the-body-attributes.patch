@@ -1,0 +1,58 @@
+From 10aceaab4607c6fb0c436c34953fcaf772e3c471 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 5 Oct 2016 11:27:03 +0200
+Subject: [PATCH 428/595] Correctly process and remove the BODY attributes
+
+Also remove an unneeded variable.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 41d813c12f..a3425d5b8e 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7171,13 +7171,12 @@ process_node_to_plain_text_changing_composer_mode (EEditorPage *editor_page,
+ {
+ 	WebKitDOMElement *element;
+ 	WebKitDOMNamedNodeMap *attributes = NULL;
+-	gint length, ii;
++	gint ii;
+ 
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+ 	attributes = webkit_dom_element_get_attributes (WEBKIT_DOM_ELEMENT (source));
+-	length = webkit_dom_named_node_map_get_length (attributes);
+-	for (ii = 0; ii < length; ii++) {
++	for (ii = webkit_dom_named_node_map_get_length (attributes); ii--;) {
+ 		gchar *name = NULL;
+ 		WebKitDOMAttr *attribute;
+ 
+@@ -7192,7 +7191,6 @@ process_node_to_plain_text_changing_composer_mode (EEditorPage *editor_page,
+ 
+ 			webkit_dom_element_remove_attribute_node (
+ 				WEBKIT_DOM_ELEMENT (source), attribute, NULL);
+-			length--;
+ 		}
+ 		g_free (name);
+ 	}
+@@ -7428,7 +7426,7 @@ process_node_to_html_for_exporting (EEditorPage *editor_page,
+ 	WebKitDOMHTMLCollection *collection = NULL;
+ 	WebKitDOMElement *element;
+ 	WebKitDOMDocument *document;
+-	gint ii, length;
++	gint ii;
+ 
+ 	document = webkit_dom_node_get_owner_document (source);
+ 
+@@ -7498,7 +7496,6 @@ process_node_to_html_for_exporting (EEditorPage *editor_page,
+ 			NULL);
+ 
+ 		remove_node (node);
+-		length--;
+ 	}
+ 	g_clear_object (&collection);
+ 
+-- 
+2.15.0
+

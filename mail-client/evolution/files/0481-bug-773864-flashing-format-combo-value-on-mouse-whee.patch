@@ -1,0 +1,56 @@
+From c38801a053b6f9e89693a4d0ba6299276394e107 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 4 Nov 2016 09:00:28 +0100
+Subject: [PATCH 481/595] Bug 773864 - Flashing format combo value on
+ mouse-wheel scroll
+
+Restore the selection position on the end of the spell-check refresh
+before unblocking the SelectionChanged callbacks as otherwise the last
+selection from doing the refresh will be used as well.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 8fa04a8716..8b8972a8cb 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -736,10 +736,9 @@ e_editor_dom_force_spell_check_for_current_paragraph (EEditorPage *editor_page)
+ 	/* Remove the text that we inserted on the end of the paragraph */
+ 	remove_node (WEBKIT_DOM_NODE (text));
+ 
++	e_editor_dom_selection_restore (editor_page);
+ 	/* Unblock the callbacks */
+ 	e_editor_page_unblock_selection_changed (editor_page);
+-
+-	e_editor_dom_selection_restore (editor_page);
+ }
+ 
+ static void
+@@ -826,10 +825,9 @@ refresh_spell_check (EEditorPage *editor_page,
+ 	/* Remove the text that we inserted on the end of the body */
+ 	remove_node (WEBKIT_DOM_NODE (text));
+ 
++	e_editor_dom_selection_restore (editor_page);
+ 	/* Unblock the callbacks */
+ 	e_editor_page_unblock_selection_changed (editor_page);
+-
+-	e_editor_dom_selection_restore (editor_page);
+ }
+ 
+ void
+@@ -914,10 +912,9 @@ e_editor_dom_force_spell_check_in_viewport (EEditorPage *editor_page)
+ 	remove_node (WEBKIT_DOM_NODE (text));
+ 
+  out:
++	e_editor_dom_selection_restore (editor_page);
+ 	/* Unblock the callbacks */
+ 	e_editor_page_unblock_selection_changed (editor_page);
+-
+-	e_editor_dom_selection_restore (editor_page);
+ }
+ 
+ void
+-- 
+2.15.0
+

@@ -1,0 +1,31 @@
+From db4625ffe9a4683c7bdaa17499ae55fa0930017d Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 17 Aug 2016 17:08:24 +0200
+Subject: [PATCH 257/595] Remove some code that is not needed
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 30f9f9d207..83b8573cb7 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4609,14 +4609,6 @@ quote_plain_text_recursive (WebKitDOMDocument *document,
+ 		}
+ 
+  not_br:
+-		text_content = webkit_dom_node_get_text_content (node);
+-		if (text_content && !*text_content) {
+-			g_free (text_content);
+-			move_next = TRUE;
+-			goto next_node;
+-		}
+-		g_free (text_content);
+-
+ 		quote_node (document, node, quote_level);
+ 
+ 		move_next = TRUE;
+-- 
+2.15.0
+

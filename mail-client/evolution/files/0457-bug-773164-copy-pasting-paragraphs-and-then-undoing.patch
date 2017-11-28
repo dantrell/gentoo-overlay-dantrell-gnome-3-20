@@ -1,0 +1,70 @@
+From 9cac4bbb2e6fd9ebf879b4aa0241c5a8f3887df7 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 19 Oct 2016 12:40:19 +0200
+Subject: [PATCH 457/595] Bug 773164 - copy pasting paragraphs and then undoing
+ - redoing is broken
+
+The code for saving the undo/redo history for cut was not called for the
+Ctrl-x shortcut. Also remove a WebKit's BR element if presented
+(otherwise an extra new line would be presented).
+---
+ modules/webkit-editor/e-webkit-editor.c            |  6 ++--
+ .../web-extension/e-editor-dom-functions.c         | 18 +++++++++++
+ 2 files changed, 22 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 01081c12a8..633b4b6a80 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5821,8 +5821,10 @@ webkit_editor_key_press_event (GtkWidget *widget,
+ 		return TRUE;
+ 	}
+ 
+-	if (((event)->state & GDK_SHIFT_MASK) &&
+-	    ((event)->keyval == GDK_KEY_Delete)) {
++	if ((((event)->state & GDK_SHIFT_MASK) &&
++	    ((event)->keyval == GDK_KEY_Delete)) ||
++	    (((event)->state & GDK_CONTROL_MASK) &&
++	    ((event)->keyval == GDK_KEY_x))) {
+ 		webkit_editor_cut (E_CONTENT_EDITOR (wk_editor));
+ 		return TRUE;
+ 	}
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 0154025197..ee7d839e2c 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -8657,6 +8657,22 @@ pasting_quoted_content (const gchar *content)
+ 		strstr (content, "\"-x-evo-");
+ }
+ 
++static void
++remove_apple_interchange_newline_elements (WebKitDOMDocument *document)
++{
++	gint ii;
++	WebKitDOMHTMLCollection *collection = NULL;
++
++	collection = webkit_dom_document_get_elements_by_class_name_as_html_collection (
++		document, "Apple-interchange-newline");
++	for (ii = webkit_dom_html_collection_get_length (collection); ii--;) {
++		WebKitDOMNode *node = webkit_dom_html_collection_item (collection, ii);
++
++		remove_node (node);
++	}
++	g_clear_object (&collection);
++}
++
+ /*
+  * e_editor_dom_insert_html:
+  * @selection: an #EEditorSelection
+@@ -8808,6 +8824,8 @@ e_editor_dom_insert_html (EEditorPage *editor_page,
+ 	} else
+ 		e_editor_dom_convert_and_insert_html_into_selection (editor_page, html_text, TRUE);
+ 
++	remove_apple_interchange_newline_elements (document);
++
+ 	if (ev) {
+ 		e_editor_dom_selection_get_coordinates (editor_page,
+ 			&ev->after.start.x,
+-- 
+2.15.0
+

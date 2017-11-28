@@ -1,0 +1,40 @@
+From a3fc0d87de087cb87ccb956ac433de3841fe29ef Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 4 Nov 2016 12:57:47 +0100
+Subject: [PATCH 483/595] Editor is not marked as changed after some operations
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index cc74c1e4e0..22061a4006 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -12248,6 +12248,7 @@ e_editor_dom_selection_indent (EEditorPage *editor_page)
+ 
+ 	e_editor_dom_selection_restore (editor_page);
+ 	e_editor_dom_force_spell_check_for_current_paragraph (editor_page);
++	e_editor_page_emit_content_changed (editor_page);
+ }
+ 
+ static void
+@@ -12554,6 +12555,7 @@ e_editor_dom_selection_unindent (EEditorPage *editor_page)
+ 	e_editor_dom_selection_restore (editor_page);
+ 
+ 	e_editor_dom_force_spell_check_for_current_paragraph (editor_page);
++	e_editor_page_emit_content_changed (editor_page);
+ }
+ 
+ static void
+@@ -16928,6 +16930,7 @@ e_editor_dom_selection_set_alignment (EEditorPage *editor_page,
+ 	e_editor_dom_selection_restore (editor_page);
+ 
+ 	e_editor_dom_force_spell_check_for_current_paragraph (editor_page);
++	e_editor_page_emit_content_changed (editor_page);
+ }
+ 
+ /*
+-- 
+2.15.0
+

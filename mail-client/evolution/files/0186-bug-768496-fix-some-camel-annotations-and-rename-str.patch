@@ -1,0 +1,102 @@
+From 35c0d7c275e05de1cf2314258a1c0f0aece24b66 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Corentin=20No=C3=ABl?= <corentin@elementary.io>
+Date: Mon, 11 Jul 2016 15:11:17 +0200
+Subject: [PATCH 186/595] Bug 768496 - Fix some Camel annotations and rename
+ structures
+
+---
+ e-util/e-attachment.c                      | 12 ++++++------
+ e-util/e-attachment.h                      |  8 ++++----
+ em-format/e-mail-parser-application-mbox.c |  2 +-
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/e-util/e-attachment.c b/e-util/e-attachment.c
+index df39795733..f9f8e9b016 100644
+--- a/e-util/e-attachment.c
++++ b/e-util/e-attachment.c
+@@ -83,8 +83,8 @@ struct _EAttachmentPrivate {
+ 	guint save_self      : 1;
+ 	guint save_extracted : 1;
+ 
+-	camel_cipher_validity_encrypt_t encrypted;
+-	camel_cipher_validity_sign_t signed_;
++	CamelCipherValidityEncrypt encrypted;
++	CamelCipherValiditySign signed_;
+ 
+ 	/* This is a reference to our row in an EAttachmentStore,
+ 	 * serving as a means of broadcasting "row-changed" signals.
+@@ -1722,7 +1722,7 @@ e_attachment_set_save_extracted (EAttachment *attachment,
+ 	attachment->priv->save_extracted = save_extracted;
+ }
+ 
+-camel_cipher_validity_encrypt_t
++CamelCipherValidityEncrypt
+ e_attachment_get_encrypted (EAttachment *attachment)
+ {
+ 	g_return_val_if_fail (
+@@ -1734,7 +1734,7 @@ e_attachment_get_encrypted (EAttachment *attachment)
+ 
+ void
+ e_attachment_set_encrypted (EAttachment *attachment,
+-                            camel_cipher_validity_encrypt_t encrypted)
++                            CamelCipherValidityEncrypt encrypted)
+ {
+ 	g_return_if_fail (E_IS_ATTACHMENT (attachment));
+ 
+@@ -1743,7 +1743,7 @@ e_attachment_set_encrypted (EAttachment *attachment,
+ 	g_object_notify (G_OBJECT (attachment), "encrypted");
+ }
+ 
+-camel_cipher_validity_sign_t
++CamelCipherValiditySign
+ e_attachment_get_signed (EAttachment *attachment)
+ {
+ 	g_return_val_if_fail (
+@@ -1755,7 +1755,7 @@ e_attachment_get_signed (EAttachment *attachment)
+ 
+ void
+ e_attachment_set_signed (EAttachment *attachment,
+-                         camel_cipher_validity_sign_t signed_)
++                         CamelCipherValiditySign signed_)
+ {
+ 	g_return_if_fail (E_IS_ATTACHMENT (attachment));
+ 
+diff --git a/e-util/e-attachment.h b/e-util/e-attachment.h
+index b7505c95c6..d3710087c3 100644
+--- a/e-util/e-attachment.h
++++ b/e-util/e-attachment.h
+@@ -109,14 +109,14 @@ void		e_attachment_set_save_self	(EAttachment *attachment,
+ gboolean	e_attachment_get_save_extracted	(EAttachment *attachment);
+ void		e_attachment_set_save_extracted	(EAttachment *attachment,
+ 						 gboolean save_extracted);
+-camel_cipher_validity_encrypt_t
++CamelCipherValidityEncrypt
+ 		e_attachment_get_encrypted	(EAttachment *attachment);
+ void		e_attachment_set_encrypted	(EAttachment *attachment,
+-						 camel_cipher_validity_encrypt_t encrypted);
+-camel_cipher_validity_sign_t
++						 CamelCipherValidityEncrypt encrypted);
++CamelCipherValiditySign
+ 		e_attachment_get_signed		(EAttachment *attachment);
+ void		e_attachment_set_signed		(EAttachment *attachment,
+-						 camel_cipher_validity_sign_t signed_);
++						 CamelCipherValiditySign signed_);
+ gchar *		e_attachment_dup_description	(EAttachment *attachment);
+ gchar *		e_attachment_dup_thumbnail_path	(EAttachment *attachment);
+ gboolean	e_attachment_is_rfc822		(EAttachment *attachment);
+diff --git a/em-format/e-mail-parser-application-mbox.c b/em-format/e-mail-parser-application-mbox.c
+index 0e472fc36b..21c2426d6d 100644
+--- a/em-format/e-mail-parser-application-mbox.c
++++ b/em-format/e-mail-parser-application-mbox.c
+@@ -52,7 +52,7 @@ empe_app_mbox_parse (EMailParserExtension *extension,
+ {
+ 	CamelMimeParser *mime_parser;
+ 	CamelStream *mem_stream;
+-	camel_mime_parser_state_t state;
++	CamelMimeParserState state;
+ 	gint old_len;
+ 	gint messages;
+ 	GError *error = NULL;
+-- 
+2.15.0
+

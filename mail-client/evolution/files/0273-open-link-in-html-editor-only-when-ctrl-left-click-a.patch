@@ -1,0 +1,166 @@
+From 38664ea5cb2e27c4ca096858e89ea4d4030008a9 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Fri, 19 Aug 2016 14:30:00 +0200
+Subject: [PATCH 273/595] Open link in HTML editor only when Ctrl+left-click
+ above it
+
+It was enough to just hold down the Ctrl key and move the cursor above
+the link to have it opened, multiple times.
+---
+ e-util/e-html-editor-image-dialog.c     | 13 +++++------
+ e-util/e-html-editor-link-dialog.c      | 13 +++++------
+ modules/webkit-editor/e-webkit-editor.c | 40 +++++++++++++++++++++++----------
+ 3 files changed, 40 insertions(+), 26 deletions(-)
+
+diff --git a/e-util/e-html-editor-image-dialog.c b/e-util/e-html-editor-image-dialog.c
+index 50db162c39..71d477996c 100644
+--- a/e-util/e-html-editor-image-dialog.c
++++ b/e-util/e-html-editor-image-dialog.c
+@@ -22,12 +22,13 @@
+ #include <config.h>
+ #endif
+ 
+-#include "e-html-editor-image-dialog.h"
+-
+ #include <stdlib.h>
+ #include <glib/gi18n-lib.h>
+ 
+ #include "e-image-chooser-dialog.h"
++#include "e-misc-utils.h"
++
++#include "e-html-editor-image-dialog.h"
+ 
+ #define E_HTML_EDITOR_IMAGE_DIALOG_GET_PRIVATE(obj) \
+ 	(G_TYPE_INSTANCE_GET_PRIVATE \
+@@ -343,11 +344,9 @@ html_editor_image_dialog_set_url (EHTMLEditorImageDialog *dialog)
+ static void
+ html_editor_image_dialog_test_url (EHTMLEditorImageDialog *dialog)
+ {
+-	gtk_show_uri (
+-		gtk_window_get_screen (GTK_WINDOW (dialog)),
+-		gtk_entry_get_text (GTK_ENTRY (dialog->priv->url_edit)),
+-		GDK_CURRENT_TIME,
+-		NULL);
++	e_show_uri (
++		GTK_WINDOW (dialog),
++		gtk_entry_get_text (GTK_ENTRY (dialog->priv->url_edit)));
+ }
+ 
+ static void
+diff --git a/e-util/e-html-editor-link-dialog.c b/e-util/e-html-editor-link-dialog.c
+index 5db93ed320..84f4590afe 100644
+--- a/e-util/e-html-editor-link-dialog.c
++++ b/e-util/e-html-editor-link-dialog.c
+@@ -22,10 +22,12 @@
+ #include <config.h>
+ #endif
+ 
+-#include "e-html-editor-link-dialog.h"
+-
+ #include <glib/gi18n-lib.h>
+ 
++#include "e-misc-utils.h"
++
++#include "e-html-editor-link-dialog.h"
++
+ #define E_HTML_EDITOR_LINK_DIALOG_GET_PRIVATE(obj) \
+ 	(G_TYPE_INSTANCE_GET_PRIVATE \
+ 	((obj), E_TYPE_HTML_EDITOR_LINK_DIALOG, EHTMLEditorLinkDialogPrivate))
+@@ -49,11 +51,8 @@ struct _EHTMLEditorLinkDialogPrivate {
+ static void
+ html_editor_link_dialog_test_link (EHTMLEditorLinkDialog *dialog)
+ {
+-	gtk_show_uri (
+-		gtk_window_get_screen (GTK_WINDOW (dialog)),
+-		gtk_entry_get_text (GTK_ENTRY (dialog->priv->url_edit)),
+-		GDK_CURRENT_TIME,
+-		NULL);
++	e_show_uri (GTK_WINDOW (dialog),
++		gtk_entry_get_text (GTK_ENTRY (dialog->priv->url_edit)));
+ }
+ 
+ static void
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index e6abcf4590..8d7404cb21 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -127,6 +127,8 @@ struct _EWebKitEditorPrivate {
+ 	gchar *replace_with;
+ 	gulong found_text_handler_id;
+ 	gulong failed_to_find_text_handler_id;
++
++	gchar *last_hover_uri;
+ };
+ 
+ static const GdkRGBA black = { 0, 0, 0, 1 };
+@@ -5266,6 +5268,9 @@ webkit_editor_finalize (GObject *object)
+ 		priv->font_color = NULL;
+ 	}
+ 
++	g_free (priv->last_hover_uri);
++	priv->last_hover_uri = NULL;
++
+ 	g_clear_object (&priv->spell_checker);
+ 
+ 	g_free (priv->font_name);
+@@ -5853,20 +5858,13 @@ webkit_editor_mouse_target_changed_cb (EWebKitEditor *wk_editor,
+                                        guint modifiers,
+                                        gpointer user_data)
+ {
+-	/* Ctrl + Left Click on link opens it. */
+-	if (webkit_hit_test_result_context_is_link (hit_test_result) &&
+-	    (modifiers & GDK_CONTROL_MASK)) {
+-		GdkScreen *screen;
+-		const gchar *uri;
+-		GtkWidget *toplevel;
++	g_return_if_fail (E_IS_WEBKIT_EDITOR (wk_editor));
+ 
+-		toplevel = gtk_widget_get_toplevel (GTK_WIDGET (wk_editor));
+-		screen = gtk_window_get_screen (GTK_WINDOW (toplevel));
++	g_free (wk_editor->priv->last_hover_uri);
++	wk_editor->priv->last_hover_uri = NULL;
+ 
+-		uri = webkit_hit_test_result_get_link_uri (hit_test_result);
+-
+-		gtk_show_uri (screen, uri, GDK_CURRENT_TIME, NULL);
+-	}
++	if (webkit_hit_test_result_context_is_link (hit_test_result))
++		wk_editor->priv->last_hover_uri = g_strdup (webkit_hit_test_result_get_link_uri (hit_test_result));
+ }
+ 
+ static gboolean
+@@ -5912,6 +5910,12 @@ static gboolean
+ webkit_editor_button_press_event (GtkWidget *widget,
+                                   GdkEventButton *event)
+ {
++	EWebKitEditor *wk_editor;
++
++	g_return_val_if_fail (E_IS_WEBKIT_EDITOR (widget), FALSE);
++
++	wk_editor = E_WEBKIT_EDITOR (widget);
++
+ 	if (event->button == 2) {
+ 		if (!e_content_editor_emit_paste_primary_clipboard (E_CONTENT_EDITOR (widget)))
+ 			webkit_editor_paste_primary (E_CONTENT_EDITOR( (widget)));
+@@ -5919,6 +5923,18 @@ webkit_editor_button_press_event (GtkWidget *widget,
+ 		return TRUE;
+ 	}
+ 
++	/* Ctrl + Left Click on link opens it. */
++	if (event->button == 1 && wk_editor->priv->last_hover_uri &&
++	    (event->state & GDK_CONTROL_MASK) != 0 &&
++	    (event->state & GDK_SHIFT_MASK) == 0 &&
++	    (event->state & GDK_MOD1_MASK) == 0) {
++		GtkWidget *toplevel;
++
++		toplevel = gtk_widget_get_toplevel (GTK_WIDGET (wk_editor));
++
++		e_show_uri (GTK_WINDOW (toplevel), wk_editor->priv->last_hover_uri);
++	}
++
+ 	/* Chain up to parent's button_press_event() method. */
+ 	return GTK_WIDGET_CLASS (e_webkit_editor_parent_class)->button_press_event (widget, event);
+ }
+-- 
+2.15.0
+

@@ -1,0 +1,61 @@
+From 44e0129064ed257f32e27fb24c4623ab1fdf0768 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 5 Sep 2016 14:55:42 +0200
+Subject: [PATCH 354/595] Correctly handle the undo operation the Backspace was
+ pressed in the beginning of LI element
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c     | 3 +++
+ modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c | 8 +++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index eb2f7bbd27..b527288b7e 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -8994,6 +8994,9 @@ save_history_for_delete_or_backspace (EEditorPage *editor_page,
+ 							dom_selection, "move", delete_key ? "left" : "right", "character");
+ 
+ 						if (tmp_block) {
++							if (WEBKIT_DOM_IS_HTML_LI_ELEMENT (actual_block))
++								actual_block = webkit_dom_node_get_parent_node (actual_block);
++
+ 							fragment = webkit_dom_document_create_document_fragment (document);
+ 							if (delete_key) {
+ 								webkit_dom_node_append_child (
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 7bde22befa..28f80bed8f 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -382,7 +382,7 @@ static void
+ undo_delete (EEditorPage *editor_page,
+              EEditorHistoryEvent *event)
+ {
+-	gboolean empty, single_block;
++	gboolean empty, single_block, delete_key;
+ 	gchar *content;
+ 	WebKitDOMDocument *document;
+ 	WebKitDOMDOMWindow *dom_window = NULL;
+@@ -396,6 +396,8 @@ undo_delete (EEditorPage *editor_page,
+ 	dom_selection = webkit_dom_dom_window_get_selection (dom_window);
+ 	g_clear_object (&dom_window);
+ 
++	delete_key = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (event->data.fragment), "history-delete-key"));
++
+ 	fragment = webkit_dom_node_clone_node_with_error (WEBKIT_DOM_NODE (event->data.fragment), TRUE, NULL);
+ 	first_child = webkit_dom_node_get_first_child (fragment);
+ 
+@@ -485,6 +487,10 @@ undo_delete (EEditorPage *editor_page,
+ 			}
+ 		}
+ 
++		if (!delete_key && (node = webkit_dom_node_get_last_child (WEBKIT_DOM_NODE (event->data.fragment))) &&
++		    node_is_list_or_item (node))
++			remove_node (webkit_dom_node_get_next_sibling (block));
++
+ 		remove_node (block);
+ 
+ 		g_clear_object (&range);
+-- 
+2.15.0
+

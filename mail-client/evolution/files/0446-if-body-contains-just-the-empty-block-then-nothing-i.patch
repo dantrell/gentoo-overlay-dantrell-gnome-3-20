@@ -1,0 +1,27 @@
+From 39ecab8c2db5da0d6289c486f9a2004dba751388 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 14 Oct 2016 09:06:33 +0200
+Subject: [PATCH 446/595] If body contains just the empty block, then nothing
+ is sent
+
+This is wrong, we have to sent the new line character.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 6c90e21c17..4413d91767 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7405,7 +7405,7 @@ process_node_to_plain_text_for_exporting (EEditorPage *editor_page,
+ 	      WEBKIT_DOM_IS_HTML_QUOTE_ELEMENT (source)))
+ 		g_string_append (buffer, "\n");
+ 
+-	if (g_str_has_suffix (buffer->str, "\n") &&
++	if (g_str_has_suffix (buffer->str, "\n") && buffer->len > 1 &&
+ 	    WEBKIT_DOM_IS_HTML_BODY_ELEMENT (source))
+ 		g_string_truncate (buffer, buffer->len - 1);
+ }
+-- 
+2.15.0
+

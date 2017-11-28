@@ -1,0 +1,197 @@
+From 7c8ee5067ce58911e68586a0887b2e57abc5c9c2 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 1 Sep 2016 17:53:46 +0200
+Subject: [PATCH 332/595] Adapt to WebKit Unstable DOM API changes in
+ WebKitGTK+ 2.13.90
+
+Also increase the minimal required WebKitGTK+ version.
+---
+ configure.ac                                       |  2 +-
+ .../web-extension/e-composer-dom-functions.c       |  6 +--
+ .../web-extension/e-dialogs-dom-functions.c        |  2 +-
+ .../web-extension/e-editor-dom-functions.c         | 45 +++++++++++-----------
+ 4 files changed, 28 insertions(+), 27 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 7eccb7df9e..a1ba2c0595 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -50,7 +50,7 @@ m4_define([gcr_minimum_version], [3.4])
+ m4_define([enchant_minimum_version], [1.1.7])
+ m4_define([gnome_desktop_minimum_version], [2.91.3])
+ m4_define([gsettings_desktop_schemas_minimum_version], [2.91.92])
+-m4_define([webkit2gtk_minimum_version], [2.13.0])
++m4_define([webkit2gtk_minimum_version], [2.13.90])
+ m4_define([libxml_minimum_version], [2.7.3])
+ m4_define([shared_mime_info_minimum_version], [0.22])
+ m4_define([libpst_minimum_version], [0.6.54])
+diff --git a/modules/webkit-editor/web-extension/e-composer-dom-functions.c b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+index a54b180d9c..221c0af145 100644
+--- a/modules/webkit-editor/web-extension/e-composer-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+@@ -25,7 +25,7 @@
+ #define WEBKIT_DOM_USE_UNSTABLE_API
+ #include <webkitdom/WebKitDOMDOMSelection.h>
+ #include <webkitdom/WebKitDOMDOMWindowUnstable.h>
+-#include <webkitdom/WebKitDOMHTMLElementUnstable.h>
++#include <webkitdom/WebKitDOMElementUnstable.h>
+ #undef WEBKIT_DOM_USE_UNSTABLE_API
+ 
+ #include <camel/camel.h>
+@@ -370,8 +370,8 @@ e_composer_dom_insert_signature (EEditorPage *editor_page,
+ 				WEBKIT_DOM_NODE (insert_signature_in), node, NULL);
+ 		remove_node (WEBKIT_DOM_NODE (converted_signature));
+ 	} else
+-		webkit_dom_html_element_insert_adjacent_html (
+-			WEBKIT_DOM_HTML_ELEMENT (insert_signature_in),
++		webkit_dom_element_insert_adjacent_html (
++			insert_signature_in,
+ 			"beforeend",
+ 			signature_text,
+ 			NULL);
+diff --git a/modules/webkit-editor/web-extension/e-dialogs-dom-functions.c b/modules/webkit-editor/web-extension/e-dialogs-dom-functions.c
+index b3ac1bf799..d3699a2c8e 100644
+--- a/modules/webkit-editor/web-extension/e-dialogs-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-dialogs-dom-functions.c
+@@ -1087,7 +1087,7 @@ e_dialogs_dom_spell_check_run (EEditorPage *editor_page,
+ 	 * reached only when we reach the beginning/end of the document */
+ 	if (start && end)
+ 		webkit_dom_dom_selection_set_base_and_extent (
+-			dom_selection, start, start_offset, end, end_offset, NULL);
++			dom_selection, start, start_offset, end, end_offset);
+ 
+ 	g_clear_object (&dom_selection);
+ 
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index e778849c99..7d894951b2 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -26,6 +26,7 @@
+ #include <webkitdom/WebKitDOMDOMSelection.h>
+ #include <webkitdom/WebKitDOMDOMWindowUnstable.h>
+ #include <webkitdom/WebKitDOMHTMLElementUnstable.h>
++#include <webkitdom/WebKitDOMElementUnstable.h>
+ #include <webkitdom/WebKitDOMRangeUnstable.h>
+ #undef WEBKIT_DOM_USE_UNSTABLE_API
+ 
+@@ -1677,8 +1678,8 @@ e_editor_dom_check_magic_links (EEditorPage *editor_page,
+ 					new_href);
+ 
+ 				if (appending_to_link) {
+-					webkit_dom_html_element_insert_adjacent_html (
+-						WEBKIT_DOM_HTML_ELEMENT (parent),
++					webkit_dom_element_insert_adjacent_html (
++						WEBKIT_DOM_ELEMENT (parent),
+ 						"beforeend",
+ 						text_to_append,
+ 						NULL);
+@@ -1710,8 +1711,8 @@ e_editor_dom_check_magic_links (EEditorPage *editor_page,
+ 					new_href);
+ 
+ 				if (appending_to_link) {
+-					webkit_dom_html_element_insert_adjacent_html (
+-						WEBKIT_DOM_HTML_ELEMENT (parent),
++					webkit_dom_element_insert_adjacent_html (
++						WEBKIT_DOM_ELEMENT (parent),
+ 						"beforeend",
+ 						text_to_append,
+ 						NULL);
+@@ -2087,8 +2088,8 @@ emoticon_insert_span (EEmoticon *emoticon,
+ 
+ 	if (!e_editor_page_get_unicode_smileys_enabled (editor_page)) {
+ 		/* &#8203 == UNICODE_ZERO_WIDTH_SPACE */
+-		webkit_dom_html_element_insert_adjacent_html (
+-			WEBKIT_DOM_HTML_ELEMENT (span), "afterend", "&#8203;", NULL);
++		webkit_dom_element_insert_adjacent_html (
++			WEBKIT_DOM_ELEMENT (span), "afterend", "&#8203;", NULL);
+ 	}
+ 
+ 	if (ev) {
+@@ -2112,8 +2113,8 @@ emoticon_insert_span (EEmoticon *emoticon,
+ 					dom_create_selection_marker (document, FALSE)),
+ 				NULL);
+ 		} else
+-			webkit_dom_html_element_insert_adjacent_html (
+-				WEBKIT_DOM_HTML_ELEMENT (node), "afterend", "&#8203;", NULL);
++			webkit_dom_element_insert_adjacent_html (
++				WEBKIT_DOM_ELEMENT (node), "afterend", "&#8203;", NULL);
+ 		ev->data.fragment = g_object_ref (fragment);
+ 	}
+ 
+@@ -3910,8 +3911,8 @@ e_editor_dom_body_key_up_event_process_return_key (EEditorPage *editor_page)
+ 	if (!webkit_dom_node_get_previous_sibling (WEBKIT_DOM_NODE (selection_start_marker)) &&
+ 	    (!webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (selection_end_marker)) ||
+ 	     WEBKIT_DOM_IS_HTML_BR_ELEMENT (webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (selection_end_marker)))))
+-		webkit_dom_html_element_insert_adjacent_text (
+-			WEBKIT_DOM_HTML_ELEMENT (parent),
++		webkit_dom_element_insert_adjacent_text (
++			WEBKIT_DOM_ELEMENT (parent),
+ 			"afterbegin",
+ 			UNICODE_ZERO_WIDTH_SPACE,
+ 			NULL);
+@@ -5494,14 +5495,14 @@ e_editor_dom_quote_and_insert_text_into_selection (EEditorPage *editor_page,
+ static void
+ mark_citation (WebKitDOMElement *citation)
+ {
+-	webkit_dom_html_element_insert_adjacent_text (
+-		WEBKIT_DOM_HTML_ELEMENT (citation),
++	webkit_dom_element_insert_adjacent_text (
++		citation,
+ 		"beforebegin",
+ 		"##CITATION_START##",
+ 		NULL);
+ 
+-	webkit_dom_html_element_insert_adjacent_text (
+-		WEBKIT_DOM_HTML_ELEMENT (citation),
++	webkit_dom_element_insert_adjacent_text (
++		citation,
+ 		"afterend",
+ 		"##CITATION_END##",
+ 		NULL);
+@@ -5537,8 +5538,8 @@ create_text_markers_for_selection_in_element (WebKitDOMElement *element)
+ 	selection_marker = webkit_dom_element_query_selector (
+ 		element, "#-x-evo-selection-start-marker", NULL);
+ 	if (selection_marker)
+-		webkit_dom_html_element_insert_adjacent_text (
+-			WEBKIT_DOM_HTML_ELEMENT (selection_marker),
++		webkit_dom_element_insert_adjacent_text (
++			selection_marker,
+ 			"afterend",
+ 			"##SELECTION_START##",
+ 			NULL);
+@@ -5546,8 +5547,8 @@ create_text_markers_for_selection_in_element (WebKitDOMElement *element)
+ 	selection_marker = webkit_dom_element_query_selector (
+ 		element, "#-x-evo-selection-end-marker", NULL);
+ 	if (selection_marker)
+-		webkit_dom_html_element_insert_adjacent_text (
+-			WEBKIT_DOM_HTML_ELEMENT (selection_marker),
++		webkit_dom_element_insert_adjacent_text (
++			selection_marker,
+ 			"afterend",
+ 			"##SELECTION_END##",
+ 			NULL);
+@@ -11090,8 +11091,8 @@ e_editor_dom_insert_base64_image (EEditorPage *editor_page,
+ 			webkit_dom_node_clone_node_with_error (WEBKIT_DOM_NODE (resizable_wrapper), TRUE, NULL),
+ 			NULL);
+ 
+-		webkit_dom_html_element_insert_adjacent_html (
+-			WEBKIT_DOM_HTML_ELEMENT (node), "afterend", "&#8203;", NULL);
++		webkit_dom_element_insert_adjacent_html (
++			WEBKIT_DOM_ELEMENT (node), "afterend", "&#8203;", NULL);
+ 		ev->data.fragment = g_object_ref (fragment);
+ 
+ 		e_editor_dom_selection_get_coordinates (editor_page,
+@@ -14617,8 +14618,8 @@ set_font_style (WebKitDOMDocument *document,
+ 				text_content = webkit_dom_node_get_text_content (first_child);
+ 
+ 				if (g_strcmp0 (text_content, UNICODE_ZERO_WIDTH_SPACE) != 0)
+-					webkit_dom_html_element_insert_adjacent_text (
+-						WEBKIT_DOM_HTML_ELEMENT (parent),
++					webkit_dom_element_insert_adjacent_text (
++						WEBKIT_DOM_ELEMENT (parent),
+ 						"afterend",
+ 						UNICODE_ZERO_WIDTH_SPACE,
+ 						NULL);
+-- 
+2.15.0
+

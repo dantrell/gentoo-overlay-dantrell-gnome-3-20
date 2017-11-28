@@ -1,0 +1,45 @@
+From e8005a373f4f22e24bdc28bcda8029d5ad3743cf Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Wed, 19 Oct 2016 17:34:27 +0200
+Subject: [PATCH 460/595] Bug 769733 - Meeting invitation cannot change
+ calendar
+
+---
+ modules/itip-formatter/itip-view.c                                 | 2 +-
+ .../itip-formatter/web-extension/module-itip-formatter-dom-utils.c | 7 +++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/modules/itip-formatter/itip-view.c b/modules/itip-formatter/itip-view.c
+index 4ffde23754..888d2ef642 100644
+--- a/modules/itip-formatter/itip-view.c
++++ b/modules/itip-formatter/itip-view.c
+@@ -2664,7 +2664,7 @@ itip_view_ref_source (ItipView *view)
+ 		g_variant_unref (result);
+ 	}
+ 
+-	if (enabled) {
++	if (!enabled) {
+ 		e_util_invoke_g_dbus_proxy_call_with_error_check (
+ 			view->priv->web_extension,
+ 			"EnableSelect",
+diff --git a/modules/itip-formatter/web-extension/module-itip-formatter-dom-utils.c b/modules/itip-formatter/web-extension/module-itip-formatter-dom-utils.c
+index 72809ee71c..390577adf9 100644
+--- a/modules/itip-formatter/web-extension/module-itip-formatter-dom-utils.c
++++ b/modules/itip-formatter/web-extension/module-itip-formatter-dom-utils.c
+@@ -614,10 +614,9 @@ module_itip_formatter_dom_utils_rebuild_source_list (WebKitDOMDocument *document
+ 		optgroup = WEBKIT_DOM_HTML_OPT_GROUP_ELEMENT (
+ 				webkit_dom_document_create_element (
+ 					document, "OPTGROUP", NULL));
+-		webkit_dom_html_opt_group_element_set_label (
+-			optgroup, optgroup_label);
+-		webkit_dom_node_append_child (
+-			WEBKIT_DOM_NODE (select), WEBKIT_DOM_NODE (optgroup), NULL);
++		webkit_dom_element_set_id (WEBKIT_DOM_ELEMENT (optgroup), optgroup_id);
++		webkit_dom_html_opt_group_element_set_label (optgroup, optgroup_label);
++		webkit_dom_node_append_child (WEBKIT_DOM_NODE (select), WEBKIT_DOM_NODE (optgroup), NULL);
+ 	}
+ 
+ 	option = webkit_dom_document_create_element (document, "OPTION", NULL);
+-- 
+2.15.0
+

@@ -1,0 +1,30 @@
+From ae19395d8ba7b77df2daa0bb5041dbdad55e0bd1 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 1 Nov 2016 14:36:55 +0100
+Subject: [PATCH 480/595] Extra quoted character on the end of the quoted PRE
+ element if it ends with BR element
+
+Don't quoted the BR element if it does not have a next sibling.
+---
+ .../web-extension/e-editor-dom-functions.c         |  5 ++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index ee7d839e2c..8fa04a8716 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -1014,8 +1014,9 @@ e_editor_dom_quote_plain_text_element_after_wrapping (EEditorPage *editor_page,
+ 		WebKitDOMNode *br = webkit_dom_node_list_item (list, ii);
+ 		WebKitDOMNode *prev_sibling = webkit_dom_node_get_previous_sibling (br);
+ 
+-		if (!WEBKIT_DOM_IS_ELEMENT (prev_sibling) ||
+-		     !element_has_class (WEBKIT_DOM_ELEMENT (prev_sibling), "-x-evo-quoted")) {
++		if ((!WEBKIT_DOM_IS_ELEMENT (prev_sibling) ||
++		     !element_has_class (WEBKIT_DOM_ELEMENT (prev_sibling), "-x-evo-quoted")) &&
++		     webkit_dom_node_get_next_sibling (br)) {
+ 
+ 			webkit_dom_node_insert_before (
+ 				webkit_dom_node_get_parent_node (br),
+-- 
+2.15.0
+

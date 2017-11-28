@@ -1,0 +1,27 @@
+From a147a1331e9c3ecfcb3a05d80022e1c96b2a2778 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 14 Sep 2016 06:46:38 +0200
+Subject: [PATCH 392/595] Missing declaration for DOMGetActiveSignatureUid
+
+---
+ modules/webkit-editor/web-extension/e-editor-web-extension.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index 912ebdd275..c09734cec8 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -584,6 +584,10 @@ static const gchar *introspection_xml =
+ "    <method name='DOMCleanAfterDragAndDrop'>"
+ "      <arg type='t' name='page_id' direction='in'/>"
+ "    </method>"
++"    <method name='DOMGetActiveSignatureUid'>"
++"      <arg type='t' name='page_id' direction='in'/>"
++"      <arg type='s' name='uid' direction='out'/>"
++"    </method>"
+ "<!-- ********************************************************* -->"
+ "<!--     Functions that are used in External Editor plugin     -->"
+ "<!-- ********************************************************* -->"
+-- 
+2.15.0
+

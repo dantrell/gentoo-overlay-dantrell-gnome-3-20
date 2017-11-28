@@ -1,0 +1,41 @@
+From 4ac0ca465f73a634737ec51156a854fae454f1de Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 19 Dec 2016 17:22:12 +0100
+Subject: [PATCH 534/595] Fix a use-after-free after editor's WebKitWebProcess
+ crash ]I[
+
+Correct a regression, which could mean that the first attempt to open
+a composer window could result in an infinite wait, while the other
+attempts worked just fine. There was also an error printed on
+the evolution exit, about the shell not being finalized.
+---
+ modules/webkit-editor/e-webkit-editor.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 69a0d6fbc0..08b4dd522d 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -615,11 +615,15 @@ web_extension_vanished_cb (GDBusConnection *connection,
+ {
+ 	g_return_if_fail (E_IS_WEBKIT_EDITOR (wk_editor));
+ 
+-	g_clear_object (&wk_editor->priv->web_extension);
++	/* The vanished callback can be sometimes called before the appeared
++	   callback, in which case it doesn't make sense to unwatch the name. */
++	if (wk_editor->priv->web_extension) {
++		g_clear_object (&wk_editor->priv->web_extension);
+ 
+-	if (wk_editor->priv->web_extension_watch_name_id > 0) {
+-		g_bus_unwatch_name (wk_editor->priv->web_extension_watch_name_id);
+-		wk_editor->priv->web_extension_watch_name_id = 0;
++		if (wk_editor->priv->web_extension_watch_name_id > 0) {
++			g_bus_unwatch_name (wk_editor->priv->web_extension_watch_name_id);
++			wk_editor->priv->web_extension_watch_name_id = 0;
++		}
+ 	}
+ }
+ 
+-- 
+2.15.0
+

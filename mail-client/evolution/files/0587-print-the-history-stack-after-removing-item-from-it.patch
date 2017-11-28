@@ -1,0 +1,33 @@
+From b3f83b0aa681444112447a79b37a250e5a0180cb Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 9 Mar 2017 11:10:11 +0100
+Subject: [PATCH 587/595] Print the history stack after removing item from it
+
+If CAMEL_DEBUG=webkit is activated.
+---
+ modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 64a3d08091..5853f0b361 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -2373,7 +2373,15 @@ e_editor_undo_redo_manager_remove_current_history_event (EEditorUndoRedoManager
+ 	if (!manager->priv->history)
+ 		return;
+ 
++	if (camel_debug ("webkit:undo")) {
++		printf ("\nREMOVING EVENT:\n");
++		print_history_event (manager->priv->history->data);
++	}
++
+ 	remove_history_event (manager, manager->priv->history);
++
++	if (camel_debug ("webkit:undo"))
++		print_history (manager);
+ }
+ 
+ void
+-- 
+2.15.0
+

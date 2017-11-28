@@ -1,0 +1,26 @@
+From b91410757001378dd3c0bf80aa34d447fc073558 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 16:43:31 +0200
+Subject: [PATCH 286/595] Cast warning printed when trying to cast non-element
+ node to element in the get_parent_block_element()
+
+---
+ web-extensions/e-dom-utils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/web-extensions/e-dom-utils.c b/web-extensions/e-dom-utils.c
+index 7d24826ee6..b7c531a307 100644
+--- a/web-extensions/e-dom-utils.c
++++ b/web-extensions/e-dom-utils.c
+@@ -1883,7 +1883,7 @@ get_parent_block_element (WebKitDOMNode *node)
+ 	WebKitDOMElement *parent = webkit_dom_node_get_parent_element (node);
+ 
+ 	if (WEBKIT_DOM_IS_HTML_BODY_ELEMENT (parent))
+-		return WEBKIT_DOM_ELEMENT (node);
++		return WEBKIT_DOM_IS_ELEMENT (node) ? WEBKIT_DOM_ELEMENT (node) : NULL;
+ 
+ 	while (parent &&
+ 	       !WEBKIT_DOM_IS_HTML_PARAGRAPH_ELEMENT (parent) &&
+-- 
+2.15.0
+

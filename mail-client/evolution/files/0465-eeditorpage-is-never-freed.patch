@@ -1,0 +1,30 @@
+From ad5f150776d7cadae8da8055713da5f8fbfc6726 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 20 Oct 2016 16:54:57 +0200
+Subject: [PATCH 465/595] EEditorPage is never freed
+
+We were comparing the address of a WebKitWebPage object with an
+EEditorPage one.
+---
+ modules/webkit-editor/web-extension/e-editor-web-extension.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index 5970617dfa..85893a9f92 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -2255,7 +2255,10 @@ web_page_gone_cb (gpointer user_data,
+ 
+ 	g_hash_table_iter_init (&iter, extension->priv->editor_pages);
+ 	while (g_hash_table_iter_next (&iter, &key, &value)) {
+-		if (value == gone_web_page) {
++		EEditorPage *editor_page = E_EDITOR_PAGE (value);
++		WebKitWebPage *web_page = e_editor_page_get_web_page (editor_page);
++
++		if ((gpointer) web_page == gone_web_page) {
+ 			g_hash_table_remove (extension->priv->editor_pages, key);
+ 			break;
+ 		}
+-- 
+2.15.0
+

@@ -1,0 +1,26 @@
+From e7de96dc370e4954991a9f80c25ab8d6f944d144 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 31 Aug 2016 15:40:25 +0200
+Subject: [PATCH 330/595] Remove CSS sheet from the DOM only when it exists
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index a8d34bbff2..e778849c99 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -1774,7 +1774,8 @@ e_editor_dom_remove_embedded_style_sheet (EEditorPage *editor_page)
+ 	sheet = webkit_dom_document_get_element_by_id (
+ 		document, "-x-evo-composer-sheet");
+ 
+-	remove_node (WEBKIT_DOM_NODE (sheet));
++	if (sheet)
++		remove_node (WEBKIT_DOM_NODE (sheet));
+ }
+ 
+ static void
+-- 
+2.15.0
+

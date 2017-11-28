@@ -1,0 +1,846 @@
+From 0a907ddc4846d6915eca7f25a8915e856368b6c5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Corentin=20No=C3=ABl?= <corentin@elementary.io>
+Date: Wed, 22 Jun 2016 12:13:15 +0200
+Subject: [PATCH 153/595] Bug 764065 - [Camel] Use get methods for
+ CamelMessageInfo fields
+
+---
+ libemail-engine/e-mail-folder-utils.c  |   6 +-
+ libemail-engine/e-mail-session-utils.c |   2 +-
+ libemail-engine/mail-folder-cache.c    |  24 +++----
+ libemail-engine/mail-ops.c             |   4 +-
+ mail/e-mail-browser.c                  |   4 +-
+ mail/e-mail-display.c                  |   2 +-
+ mail/e-mail-reader-utils.c             |  14 ++--
+ mail/e-mail-reader.c                   |  22 +++---
+ mail/em-utils.c                        |  12 ++--
+ mail/message-list.c                    | 124 ++++++++++++++++-----------------
+ modules/mdn/evolution-mdn.c            |   4 +-
+ plugins/templates/e-templates-store.c  |  18 ++---
+ 12 files changed, 118 insertions(+), 118 deletions(-)
+
+diff --git a/libemail-engine/e-mail-folder-utils.c b/libemail-engine/e-mail-folder-utils.c
+index 50eed64ffb..ff3d2f7bc9 100644
+--- a/libemail-engine/e-mail-folder-utils.c
++++ b/libemail-engine/e-mail-folder-utils.c
+@@ -250,7 +250,7 @@ mail_folder_expunge_pop3_stores (CamelFolder *folder,
+ 			folder, uids->pdata[ii]);
+ 
+ 		if (info != NULL) {
+-			flags = camel_message_info_flags (info);
++			flags = camel_message_info_get_flags (info);
+ 			camel_message_info_unref (info);
+ 		}
+ 
+@@ -796,8 +796,8 @@ e_mail_folder_find_duplicate_messages_sync (CamelFolder *folder,
+ 		if (!info)
+ 			continue;
+ 
+-		message_id = camel_message_info_message_id (info);
+-		flags = camel_message_info_flags (info);
++		message_id = camel_message_info_get_message_id (info);
++		flags = camel_message_info_get_flags (info);
+ 
+ 		/* Skip messages marked for deletion. */
+ 		if (flags & CAMEL_MESSAGE_DELETED) {
+diff --git a/libemail-engine/e-mail-session-utils.c b/libemail-engine/e-mail-session-utils.c
+index 63b49f6b6f..eb9f426de1 100644
+--- a/libemail-engine/e-mail-session-utils.c
++++ b/libemail-engine/e-mail-session-utils.c
+@@ -669,7 +669,7 @@ skip_send:
+ 			g_clear_error (&error);
+ 		}
+ 
+-		message_flags = camel_message_info_flags (context->info);
++		message_flags = camel_message_info_get_flags (context->info);
+ 
+ 		if (message_flags & CAMEL_MESSAGE_DELETED)
+ 			copy_to_sent = FALSE;
+diff --git a/libemail-engine/mail-folder-cache.c b/libemail-engine/mail-folder-cache.c
+index e6406ee218..96093b202e 100644
+--- a/libemail-engine/mail-folder-cache.c
++++ b/libemail-engine/mail-folder-cache.c
+@@ -870,7 +870,7 @@ folder_cache_check_ignore_thread (CamelFolder *folder,
+ 	g_return_val_if_fail (CAMEL_IS_FOLDER (folder), FALSE);
+ 	g_return_val_if_fail (info != NULL, FALSE);
+ 
+-	references = camel_message_info_references (info);
++	references = camel_message_info_get_references (info);
+ 	if (!references || references->size <= 0)
+ 		return FALSE;
+ 
+@@ -903,17 +903,17 @@ folder_cache_check_ignore_thread (CamelFolder *folder,
+ 				if (!refrinfo)
+ 					continue;
+ 
+-				if (first_msgid && camel_message_info_message_id (refrinfo) &&
+-				    camel_message_info_message_id (refrinfo)->id.id == first_msgid) {
++				if (first_msgid && camel_message_info_get_message_id (refrinfo) &&
++				    camel_message_info_get_message_id (refrinfo)->id.id == first_msgid) {
+ 					/* The first msgid in the references is In-ReplyTo, which is the master;
+ 					   the rest is just a guess. */
+ 					found_first_msgid = TRUE;
+-					first_ignore_thread = camel_message_info_user_flag (refrinfo, "ignore-thread");
++					first_ignore_thread = camel_message_info_get_user_flag (refrinfo, "ignore-thread");
+ 					camel_message_info_unref (refrinfo);
+ 					break;
+ 				}
+ 
+-				has_ignore_thread = has_ignore_thread || camel_message_info_user_flag (refrinfo, "ignore-thread");
++				has_ignore_thread = has_ignore_thread || camel_message_info_get_user_flag (refrinfo, "ignore-thread");
+ 
+ 				camel_message_info_unref (refrinfo);
+ 			}
+@@ -990,7 +990,7 @@ folder_cache_process_folder_changes_thread (CamelFolder *folder,
+ 			if (info) {
+ 				GError *local_error = NULL;
+ 
+-				flags = camel_message_info_flags (info);
++				flags = camel_message_info_get_flags (info);
+ 				if (((flags & CAMEL_MESSAGE_SEEN) == 0) &&
+ 				    ((flags & CAMEL_MESSAGE_DELETED) == 0) &&
+ 				    folder_cache_check_ignore_thread (folder, info, cancellable, &local_error)) {
+@@ -1002,14 +1002,14 @@ folder_cache_process_folder_changes_thread (CamelFolder *folder,
+ 				if (((flags & CAMEL_MESSAGE_SEEN) == 0) &&
+ 				    ((flags & CAMEL_MESSAGE_JUNK) == 0) &&
+ 				    ((flags & CAMEL_MESSAGE_DELETED) == 0) &&
+-				    (camel_message_info_date_received (info) > latest_received)) {
+-					if (camel_message_info_date_received (info) > new_latest_received)
+-						new_latest_received = camel_message_info_date_received (info);
++				    (camel_message_info_get_date_received (info) > latest_received)) {
++					if (camel_message_info_get_date_received (info) > new_latest_received)
++						new_latest_received = camel_message_info_get_date_received (info);
+ 					new++;
+ 					if (new == 1) {
+-						uid = g_strdup (camel_message_info_uid (info));
+-						sender = g_strdup (camel_message_info_from (info));
+-						subject = g_strdup (camel_message_info_subject (info));
++						uid = g_strdup (camel_message_info_get_uid (info));
++						sender = g_strdup (camel_message_info_get_from (info));
++						subject = g_strdup (camel_message_info_get_subject (info));
+ 					} else {
+ 						g_free (uid);
+ 						g_free (sender);
+diff --git a/libemail-engine/mail-ops.c b/libemail-engine/mail-ops.c
+index b930434d2a..56614151c0 100644
+--- a/libemail-engine/mail-ops.c
++++ b/libemail-engine/mail-ops.c
+@@ -977,8 +977,8 @@ send_queue_exec (struct _send_queue_msg *m,
+ 
+ 		info = camel_folder_get_message_info (m->queue, uids->pdata[i]);
+ 		if (info) {
+-			if ((camel_message_info_flags (info) & CAMEL_MESSAGE_DELETED) == 0 &&
+-			    (!delay_send || camel_message_info_date_sent (info) <= delay_send))
++			if ((camel_message_info_get_flags (info) & CAMEL_MESSAGE_DELETED) == 0 &&
++			    (!delay_send || camel_message_info_get_date_sent (info) <= delay_send))
+ 				send_uids->pdata[j++] = uids->pdata[i];
+ 			camel_message_info_unref (info);
+ 		}
+diff --git a/mail/e-mail-browser.c b/mail/e-mail-browser.c
+index 16e52ad775..e8115d9e3a 100644
+--- a/mail/e-mail-browser.c
++++ b/mail/e-mail-browser.c
+@@ -283,7 +283,7 @@ mail_browser_message_selected_cb (EMailBrowser *browser,
+ 
+ 		display = e_mail_reader_get_mail_display (reader);
+ 
+-		title = camel_message_info_subject (info);
++		title = camel_message_info_get_subject (info);
+ 		if (title == NULL || *title == '\0')
+ 			title = _("(No Subject)");
+ 
+@@ -930,7 +930,7 @@ mail_browser_set_message (EMailReader *reader,
+ 	if (info != NULL) {
+ 		gtk_window_set_title (
+ 			GTK_WINDOW (reader),
+-			camel_message_info_subject (info));
++			camel_message_info_get_subject (info));
+ 		camel_message_info_unref (info);
+ 	}
+ 
+diff --git a/mail/e-mail-display.c b/mail/e-mail-display.c
+index 03b7885152..1e475caee2 100644
+--- a/mail/e-mail-display.c
++++ b/mail/e-mail-display.c
+@@ -841,7 +841,7 @@ mail_display_plugin_widget_requested (WebKitWebView *web_view,
+ 
+ 				info = camel_folder_get_message_info (folder, message_uid);
+ 				if (info) {
+-					if (!camel_message_info_user_flag (info, E_MAIL_NOTES_USER_FLAG))
++					if (!camel_message_info_get_user_flag (info, E_MAIL_NOTES_USER_FLAG))
+ 						camel_message_info_set_user_flag (info, E_MAIL_NOTES_USER_FLAG, TRUE);
+ 					camel_message_info_unref (info);
+ 				}
+diff --git a/mail/e-mail-reader-utils.c b/mail/e-mail-reader-utils.c
+index ad07912783..fed2e85f82 100644
+--- a/mail/e-mail-reader-utils.c
++++ b/mail/e-mail-reader-utils.c
+@@ -991,7 +991,7 @@ mark_ignore_thread_traverse_uids (CamelFolder *folder,
+ 		g_hash_table_insert (checked_uids, (gpointer) camel_pstring_strdup (uid), GINT_TO_POINTER (1));
+ 
+ 		mi = camel_folder_get_message_info (folder, uid);
+-		if (!mi || !camel_message_info_message_id (mi)) {
++		if (!mi || !camel_message_info_get_message_id (mi)) {
+ 			if (mi)
+ 				camel_message_info_unref (mi);
+ 			camel_pstring_free (uid);
+@@ -1000,12 +1000,12 @@ mark_ignore_thread_traverse_uids (CamelFolder *folder,
+ 
+ 		camel_message_info_set_user_flag (mi, "ignore-thread", ignore_thread);
+ 
+-		msgid = camel_message_info_message_id (mi);
++		msgid = camel_message_info_get_message_id (mi);
+ 		insert_to_checked_msgids (checked_msgids, msgid);
+ 
+ 		if (whole_thread) {
+ 			/* Search for parents */
+-			references = camel_message_info_references (mi);
++			references = camel_message_info_get_references (mi);
+ 			if (references) {
+ 				GString *expr = NULL;
+ 
+@@ -1062,10 +1062,10 @@ mark_ignore_thread_traverse_uids (CamelFolder *folder,
+ 				if (refruid && !g_hash_table_contains (checked_uids, refruid)) {
+ 					CamelMessageInfo *refrmi = camel_folder_get_message_info (folder, refruid);
+ 
+-					if (refrmi && camel_message_info_message_id (refrmi) &&
+-					    !g_hash_table_contains (checked_msgids, camel_message_info_message_id (refrmi))) {
++					if (refrmi && camel_message_info_get_message_id (refrmi) &&
++					    !g_hash_table_contains (checked_msgids, camel_message_info_get_message_id (refrmi))) {
+ 						/* The 'references' filter search can return false positives */
+-						references = camel_message_info_references (refrmi);
++						references = camel_message_info_get_references (refrmi);
+ 						if (references) {
+ 							gint jj;
+ 
+@@ -2491,7 +2491,7 @@ e_mail_reader_save_messages (EMailReader *reader)
+ 	if (info != NULL) {
+ 		const gchar *subject;
+ 
+-		subject = camel_message_info_subject (info);
++		subject = camel_message_info_get_subject (info);
+ 		if (subject != NULL)
+ 			suggestion = g_strconcat (subject, ".mbox", NULL);
+ 		camel_message_info_unref (info);
+diff --git a/mail/e-mail-reader.c b/mail/e-mail-reader.c
+index b41ddabdf8..1f86cc1bd4 100644
+--- a/mail/e-mail-reader.c
++++ b/mail/e-mail-reader.c
+@@ -184,7 +184,7 @@ action_mail_add_sender_cb (GtkAction *action,
+ 	if (info == NULL)
+ 		goto exit;
+ 
+-	address = camel_message_info_from (info);
++	address = camel_message_info_get_from (info);
+ 	if (address == NULL || *address == '\0')
+ 		goto exit;
+ 
+@@ -2983,14 +2983,14 @@ mail_reader_manage_followup_flag (EMailReader *reader,
+ 	if (!info)
+ 		return;
+ 
+-	followup = camel_message_info_user_tag (info, "follow-up");
++	followup = camel_message_info_get_user_tag (info, "follow-up");
+ 	if (followup && *followup) {
+ 		EPreviewPane *preview_pane;
+ 		const gchar *alert_tag;
+ 		EAlert *alert;
+ 
+-		completed_on = camel_message_info_user_tag (info, "completed-on");
+-		due_by = camel_message_info_user_tag (info, "due-by");
++		completed_on = camel_message_info_get_user_tag (info, "completed-on");
++		due_by = camel_message_info_get_user_tag (info, "due-by");
+ 
+ 		if (completed_on && *completed_on) {
+ 			alert_tag = "mail:follow-up-completed-info";
+@@ -4551,10 +4551,10 @@ e_mail_reader_check_state (EMailReader *reader)
+ 		if (info == NULL)
+ 			continue;
+ 
+-		if (camel_message_info_user_flag (info, E_MAIL_NOTES_USER_FLAG))
++		if (camel_message_info_get_user_flag (info, E_MAIL_NOTES_USER_FLAG))
+ 			has_mail_note = TRUE;
+ 
+-		flags = camel_message_info_flags (info);
++		flags = camel_message_info_get_flags (info);
+ 
+ 		if (flags & CAMEL_MESSAGE_SEEN)
+ 			has_read = TRUE;
+@@ -4606,23 +4606,23 @@ e_mail_reader_check_state (EMailReader *reader)
+ 		else
+ 			has_unimportant = TRUE;
+ 
+-		tag = camel_message_info_user_tag (info, "follow-up");
++		tag = camel_message_info_get_user_tag (info, "follow-up");
+ 		if (tag != NULL && *tag != '\0') {
+ 			can_clear_flags = TRUE;
+-			tag = camel_message_info_user_tag (
++			tag = camel_message_info_get_user_tag (
+ 				info, "completed-on");
+ 			if (tag == NULL || *tag == '\0')
+ 				can_flag_completed = TRUE;
+ 		} else
+ 			can_flag_for_followup = TRUE;
+ 
+-		string = camel_message_info_mlist (info);
++		string = camel_message_info_get_mlist (info);
+ 		is_mailing_list &= (string != NULL && *string != '\0');
+ 
+ 		has_ignore_thread = has_ignore_thread ||
+-			camel_message_info_user_flag (info, "ignore-thread");
++			camel_message_info_get_user_flag (info, "ignore-thread");
+ 		has_notignore_thread = has_notignore_thread ||
+-			!camel_message_info_user_flag (info, "ignore-thread");
++			!camel_message_info_get_user_flag (info, "ignore-thread");
+ 
+ 		camel_message_info_unref (info);
+ 	}
+diff --git a/mail/em-utils.c b/mail/em-utils.c
+index 70230d3246..721d44f085 100644
+--- a/mail/em-utils.c
++++ b/mail/em-utils.c
+@@ -260,8 +260,8 @@ em_utils_flag_for_followup (EMailReader *reader,
+ 
+ 		e_mail_tag_editor_add_message (
+ 			E_MAIL_TAG_EDITOR (editor),
+-			camel_message_info_from (info),
+-			camel_message_info_subject (info));
++			camel_message_info_get_from (info),
++			camel_message_info_get_subject (info));
+ 
+ 		camel_message_info_unref (info);
+ 	}
+@@ -274,7 +274,7 @@ em_utils_flag_for_followup (EMailReader *reader,
+ 		message_uid = g_ptr_array_index (uids, 0);
+ 		info = camel_folder_get_message_info (folder, message_uid);
+ 		if (info) {
+-			tags = (CamelTag *) camel_message_info_user_tags (info);
++			tags = (CamelTag *) camel_message_info_get_user_tags (info);
+ 
+ 			if (tags)
+ 				e_mail_tag_editor_set_tag_list (
+@@ -382,7 +382,7 @@ em_utils_flag_for_followup_completed (GtkWindow *parent,
+ 		CamelMessageInfo *mi = camel_folder_get_message_info (folder, uids->pdata[i]);
+ 
+ 		if (mi) {
+-			tag = camel_message_info_user_tag (mi, "follow-up");
++			tag = camel_message_info_get_user_tag (mi, "follow-up");
+ 			if (tag && tag[0])
+ 				camel_message_info_set_user_tag (mi, "completed-on", now);
+ 			camel_message_info_unref (mi);
+@@ -850,8 +850,8 @@ em_utils_build_export_basename (CamelFolder *folder,
+ 	/* Try to get the drop filename from the message or folder. */
+ 	info = camel_folder_get_message_info (folder, uid);
+ 	if (info != NULL) {
+-		subject = camel_message_info_subject (info);
+-		reftime = camel_message_info_date_sent (info);
++		subject = camel_message_info_get_subject (info);
++		reftime = camel_message_info_get_date_sent (info);
+ 	}
+ 
+ 	ts = localtime (&reftime);
+diff --git a/mail/message-list.c b/mail/message-list.c
+index 19f40e5173..227bc8f566 100644
+--- a/mail/message-list.c
++++ b/mail/message-list.c
+@@ -722,7 +722,7 @@ get_message_uid (MessageList *message_list,
+ 	g_return_val_if_fail (node != NULL, NULL);
+ 	g_return_val_if_fail (node->data != NULL, NULL);
+ 
+-	return camel_message_info_uid (node->data);
++	return camel_message_info_get_uid (node->data);
+ }
+ 
+ /* Gets the CamelMessageInfo for the message displayed at the given
+@@ -750,15 +750,15 @@ get_normalised_string (MessageList *message_list,
+ 
+ 	switch (col) {
+ 	case COL_SUBJECT_NORM:
+-		string = camel_message_info_subject (info);
++		string = camel_message_info_get_subject (info);
+ 		index = NORMALISED_SUBJECT;
+ 		break;
+ 	case COL_FROM_NORM:
+-		string = camel_message_info_from (info);
++		string = camel_message_info_get_from (info);
+ 		index = NORMALISED_FROM;
+ 		break;
+ 	case COL_TO_NORM:
+-		string = camel_message_info_to (info);
++		string = camel_message_info_get_to (info);
+ 		index = NORMALISED_TO;
+ 		break;
+ 	default:
+@@ -771,10 +771,10 @@ get_normalised_string (MessageList *message_list,
+ 	if (string == NULL || string[0] == '\0')
+ 		return "";
+ 
+-	poolv = g_hash_table_lookup (message_list->normalised_hash, camel_message_info_uid (info));
++	poolv = g_hash_table_lookup (message_list->normalised_hash, camel_message_info_get_uid (info));
+ 	if (poolv == NULL) {
+ 		poolv = e_poolv_new (NORMALISED_LAST);
+-		g_hash_table_insert (message_list->normalised_hash, (gchar *) camel_message_info_uid (info), poolv);
++		g_hash_table_insert (message_list->normalised_hash, (gchar *) camel_message_info_get_uid (info), poolv);
+ 	} else {
+ 		str = e_poolv_get (poolv, index);
+ 		if (*str)
+@@ -946,7 +946,7 @@ ml_search_forward (MessageList *message_list,
+ 		node = e_tree_table_adapter_node_at_row (etta, row);
+ 		if (node != NULL && !skip_first
+ 		    && (info = get_message_info (message_list, node))
+-		    && (camel_message_info_flags (info) & mask) == flags)
++		    && (camel_message_info_get_flags (info) & mask) == flags)
+ 			return node;
+ 
+ 		skip_first = FALSE;
+@@ -956,7 +956,7 @@ ml_search_forward (MessageList *message_list,
+ 
+ 			while (subnode = ml_get_next_node (subnode, node), subnode && subnode != node) {
+ 				if ((info = get_message_info (message_list, subnode)) &&
+-				    (camel_message_info_flags (info) & mask) == flags)
++				    (camel_message_info_get_flags (info) & mask) == flags)
+ 					return subnode;
+ 			}
+ 		}
+@@ -985,13 +985,13 @@ ml_search_backward (MessageList *message_list,
+ 		node = e_tree_table_adapter_node_at_row (etta, row);
+ 		if (node != NULL && !skip_first
+ 		    && (info = get_message_info (message_list, node))
+-		    && (camel_message_info_flags (info) & mask) == flags) {
++		    && (camel_message_info_get_flags (info) & mask) == flags) {
+ 			if (include_collapsed && !e_tree_table_adapter_node_is_expanded (etta, node) && g_node_first_child (node)) {
+ 				GNode *subnode = ml_get_last_tree_node (g_node_first_child (node), node);
+ 
+ 				while (subnode && subnode != node) {
+ 					if ((info = get_message_info (message_list, subnode)) &&
+-					    (camel_message_info_flags (info) & mask) == flags)
++					    (camel_message_info_get_flags (info) & mask) == flags)
+ 						return subnode;
+ 
+ 					subnode = ml_get_prev_node (subnode, node);
+@@ -1006,7 +1006,7 @@ ml_search_backward (MessageList *message_list,
+ 
+ 			while (subnode && subnode != node) {
+ 				if ((info = get_message_info (message_list, subnode)) &&
+-				    (camel_message_info_flags (info) & mask) == flags)
++				    (camel_message_info_get_flags (info) & mask) == flags)
+ 					return subnode;
+ 
+ 				subnode = ml_get_prev_node (subnode, node);
+@@ -1556,7 +1556,7 @@ unread_foreach (ETreeModel *etm,
+ 		info = ((GNode *) path)->data;
+ 	g_return_val_if_fail (info != NULL, FALSE);
+ 
+-	if (!(camel_message_info_flags (info) & CAMEL_MESSAGE_SEEN))
++	if (!(camel_message_info_get_flags (info) & CAMEL_MESSAGE_SEEN))
+ 		*saw_unread = TRUE;
+ 
+ 	return FALSE;
+@@ -1582,8 +1582,8 @@ latest_foreach (ETreeModel *etm,
+ 		info = ((GNode *) path)->data;
+ 	g_return_val_if_fail (info != NULL, FALSE);
+ 
+-	date = ld->sent ? camel_message_info_date_sent (info)
+-			: camel_message_info_date_received (info);
++	date = ld->sent ? camel_message_info_get_date_sent (info)
++			: camel_message_info_get_date_received (info);
+ 
+ 	if (ld->latest == 0 || date > ld->latest)
+ 		ld->latest = date;
+@@ -1671,10 +1671,10 @@ add_all_labels_foreach (ETreeModel *etm,
+ 		msg_info = ((GNode *) path)->data;
+ 	g_return_val_if_fail (msg_info != NULL, FALSE);
+ 
+-	for (flag = camel_message_info_user_flags (msg_info); flag; flag = flag->next)
++	for (flag = camel_message_info_get_user_flags (msg_info); flag; flag = flag->next)
+ 		add_label_if_known (ld, flag->name);
+ 
+-	old_label = camel_message_info_user_tag (msg_info, "label");
++	old_label = camel_message_info_get_user_tag (msg_info, "label");
+ 	if (old_label != NULL) {
+ 		/* Convert old-style labels ("<name>") to "$Label<name>". */
+ 		new_label = g_alloca (strlen (old_label) + 10);
+@@ -1695,11 +1695,11 @@ get_trimmed_subject (CamelMessageInfo *info,
+ 	gint mlist_len = 0;
+ 	gboolean found_mlist;
+ 
+-	subject = camel_message_info_subject (info);
++	subject = camel_message_info_get_subject (info);
+ 	if (!subject || !*subject)
+ 		return subject;
+ 
+-	mlist = camel_message_info_mlist (info);
++	mlist = camel_message_info_get_mlist (info);
+ 
+ 	if (mlist && *mlist) {
+ 		const gchar *mlist_end;
+@@ -1769,7 +1769,7 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 
+ 	switch (col) {
+ 	case COL_MESSAGE_STATUS:
+-		flags = camel_message_info_flags (msg_info);
++		flags = camel_message_info_get_flags (msg_info);
+ 		if (flags & CAMEL_MESSAGE_ANSWERED)
+ 			return GINT_TO_POINTER (2);
+ 		else if (flags & CAMEL_MESSAGE_FORWARDED)
+@@ -1779,12 +1779,12 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		else
+ 			return GINT_TO_POINTER (0);
+ 	case COL_FLAGGED:
+-		return GINT_TO_POINTER ((camel_message_info_flags (msg_info) & CAMEL_MESSAGE_FLAGGED) != 0);
++		return GINT_TO_POINTER ((camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_FLAGGED) != 0);
+ 	case COL_SCORE: {
+ 		const gchar *tag;
+ 		gint score = 0;
+ 
+-		tag = camel_message_info_user_tag (msg_info, "score");
++		tag = camel_message_info_get_user_tag (msg_info, "score");
+ 		if (tag)
+ 			score = atoi (tag);
+ 
+@@ -1795,8 +1795,8 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 
+ 		/* FIXME: this all should be methods off of message-tag-followup class,
+ 		 * FIXME: the tag names should be namespaced :( */
+-		tag = camel_message_info_user_tag (msg_info, "follow-up");
+-		cmp = camel_message_info_user_tag (msg_info, "completed-on");
++		tag = camel_message_info_get_user_tag (msg_info, "follow-up");
++		cmp = camel_message_info_get_user_tag (msg_info, "completed-on");
+ 		if (tag && tag[0]) {
+ 			if (cmp && cmp[0])
+ 				return GINT_TO_POINTER (2);
+@@ -1809,7 +1809,7 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		const gchar *tag;
+ 		time_t due_by;
+ 
+-		tag = camel_message_info_user_tag (msg_info, "due-by");
++		tag = camel_message_info_get_user_tag (msg_info, "due-by");
+ 		if (tag && *tag) {
+ 			gint64 *res;
+ 
+@@ -1823,23 +1823,23 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		}
+ 	}
+ 	case COL_FOLLOWUP_FLAG:
+-		str = camel_message_info_user_tag (msg_info, "follow-up");
++		str = camel_message_info_get_user_tag (msg_info, "follow-up");
+ 		return (gpointer)(str ? str : "");
+ 	case COL_ATTACHMENT:
+-		if (camel_message_info_flags (msg_info) & CAMEL_MESSAGE_JUNK)
++		if (camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_JUNK)
+ 			return GINT_TO_POINTER (4);
+-		if (camel_message_info_user_flag (msg_info, E_MAIL_NOTES_USER_FLAG))
++		if (camel_message_info_get_user_flag (msg_info, E_MAIL_NOTES_USER_FLAG))
+ 			return GINT_TO_POINTER (3);
+-		if (camel_message_info_user_flag (msg_info, "$has_cal"))
++		if (camel_message_info_get_user_flag (msg_info, "$has_cal"))
+ 			return GINT_TO_POINTER (2);
+-		return GINT_TO_POINTER ((camel_message_info_flags (msg_info) & CAMEL_MESSAGE_ATTACHMENTS) != 0);
++		return GINT_TO_POINTER ((camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_ATTACHMENTS) != 0);
+ 	case COL_FROM:
+-		str = camel_message_info_from (msg_info);
++		str = camel_message_info_get_from (msg_info);
+ 		return (gpointer)(str ? str : "");
+ 	case COL_FROM_NORM:
+ 		return (gpointer) get_normalised_string (message_list, msg_info, col);
+ 	case COL_SUBJECT:
+-		str = camel_message_info_subject (msg_info);
++		str = camel_message_info_get_subject (msg_info);
+ 		return (gpointer)(str ? str : "");
+ 	case COL_SUBJECT_TRIMMED:
+ 		str = get_trimmed_subject (msg_info, message_list);
+@@ -1875,20 +1875,20 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		return res;
+ 	}
+ 	case COL_TO:
+-		str = camel_message_info_to (msg_info);
++		str = camel_message_info_get_to (msg_info);
+ 		return (gpointer)(str ? str : "");
+ 	case COL_TO_NORM:
+ 		return (gpointer) get_normalised_string (message_list, msg_info, col);
+ 	case COL_SIZE:
+-		return GINT_TO_POINTER (camel_message_info_size (msg_info));
++		return GINT_TO_POINTER (camel_message_info_get_size (msg_info));
+ 	case COL_DELETED:
+-		return GINT_TO_POINTER ((camel_message_info_flags (msg_info) & CAMEL_MESSAGE_DELETED) != 0);
++		return GINT_TO_POINTER ((camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_DELETED) != 0);
+ 	case COL_DELETED_OR_JUNK:
+-		return GINT_TO_POINTER ((camel_message_info_flags (msg_info) & (CAMEL_MESSAGE_DELETED | CAMEL_MESSAGE_JUNK)) != 0);
++		return GINT_TO_POINTER ((camel_message_info_get_flags (msg_info) & (CAMEL_MESSAGE_DELETED | CAMEL_MESSAGE_JUNK)) != 0);
+ 	case COL_JUNK:
+-		return GINT_TO_POINTER ((camel_message_info_flags (msg_info) & CAMEL_MESSAGE_JUNK) != 0);
++		return GINT_TO_POINTER ((camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_JUNK) != 0);
+ 	case COL_JUNK_STRIKEOUT_COLOR:
+-		return GUINT_TO_POINTER (((camel_message_info_flags (msg_info) & CAMEL_MESSAGE_JUNK) != 0) ? 0xFF0000 : 0x0);
++		return GUINT_TO_POINTER (((camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_JUNK) != 0) ? 0xFF0000 : 0x0);
+ 	case COL_UNREAD: {
+ 		gboolean saw_unread = FALSE;
+ 
+@@ -1907,9 +1907,9 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		Don't say that I need to have the new labels[with subject] column visible always */
+ 
+ 		colour = NULL;
+-		due_by = camel_message_info_user_tag (msg_info, "due-by");
+-		completed = camel_message_info_user_tag (msg_info, "completed-on");
+-		followup = camel_message_info_user_tag (msg_info, "follow-up");
++		due_by = camel_message_info_get_user_tag (msg_info, "due-by");
++		completed = camel_message_info_get_user_tag (msg_info, "completed-on");
++		followup = camel_message_info_get_user_tag (msg_info, "follow-up");
+ 		if (colour == NULL) {
+ 			/* Get all applicable labels. */
+ 			struct LabelsData ld;
+@@ -1935,7 +1935,7 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 					colour = g_intern_string (colour_alloced);
+ 					g_free (colour_alloced);
+ 				}
+-			} else if (camel_message_info_flags (msg_info) & CAMEL_MESSAGE_FLAGGED) {
++			} else if (camel_message_info_get_flags (msg_info) & CAMEL_MESSAGE_FLAGGED) {
+ 				/* FIXME: extract from the important.xpm somehow. */
+ 				colour = "#A7453E";
+ 			} else if (((followup && *followup) || (due_by && *due_by)) && !(completed && *completed)) {
+@@ -1949,12 +1949,12 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		}
+ 
+ 		if (!colour)
+-			colour = camel_message_info_user_tag (msg_info, "color");
++			colour = camel_message_info_get_user_tag (msg_info, "color");
+ 
+ 		return (gpointer) colour;
+ 	}
+ 	case COL_ITALIC: {
+-		return GINT_TO_POINTER (camel_message_info_user_flag (msg_info, "ignore-thread") ? 1 : 0);
++		return GINT_TO_POINTER (camel_message_info_get_user_flag (msg_info, "ignore-thread") ? 1 : 0);
+ 	}
+ 	case COL_LOCATION: {
+ 		/* Fixme : freeing memory stuff (mem leaks) */
+@@ -1981,14 +1981,14 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 	}
+ 	case COL_MIXED_RECIPIENTS:
+ 	case COL_RECIPIENTS:{
+-		str = camel_message_info_to (msg_info);
++		str = camel_message_info_get_to (msg_info);
+ 
+ 		return sanitize_recipients (str);
+ 	}
+ 	case COL_MIXED_SENDER:
+ 	case COL_SENDER:{
+ 		gchar **sender_name = NULL;
+-		str = camel_message_info_from (msg_info);
++		str = camel_message_info_get_from (msg_info);
+ 		if (str && str[0] != '\0') {
+ 			gchar *res;
+ 			sender_name = g_strsplit (str,"<",2);
+@@ -2033,7 +2033,7 @@ ml_tree_value_at_ex (ETreeModel *etm,
+ 		return (gpointer) g_string_free (result, FALSE);
+ 	}
+ 	case COL_UID: {
+-		return (gpointer) camel_pstring_strdup (camel_message_info_uid (msg_info));
++		return (gpointer) camel_pstring_strdup (camel_message_info_get_uid (msg_info));
+ 	}
+ 	default:
+ 		g_warning ("%s: This shouldn't be reached (col:%d)", G_STRFUNC, col);
+@@ -3110,7 +3110,7 @@ message_list_get_save_id (ETreeModel *tree_model,
+ 	if (info == NULL)
+ 		return NULL;
+ 
+-	return g_strdup (camel_message_info_uid (info));
++	return g_strdup (camel_message_info_get_uid (info));
+ }
+ 
+ static ETreePath
+@@ -3996,7 +3996,7 @@ is_node_selectable (MessageList *message_list,
+ 	g_object_unref (folder);
+ 
+ 	/* check flags set on current message */
+-	flags = camel_message_info_flags (info);
++	flags = camel_message_info_get_flags (info);
+ 	flag_junk = store_has_vjunk && (flags & CAMEL_MESSAGE_JUNK) != 0;
+ 	flag_deleted = flags & CAMEL_MESSAGE_DELETED;
+ 
+@@ -4060,7 +4060,7 @@ find_next_selectable (MessageList *message_list)
+ 		node = e_tree_table_adapter_node_at_row (adapter, vrow);
+ 		info = get_message_info (message_list, node);
+ 		if (info && is_node_selectable (message_list, info))
+-			return g_strdup (camel_message_info_uid (info));
++			return g_strdup (camel_message_info_get_uid (info));
+ 		vrow++;
+ 	}
+ 
+@@ -4072,7 +4072,7 @@ find_next_selectable (MessageList *message_list)
+ 		node = e_tree_table_adapter_node_at_row (adapter, vrow);
+ 		info = get_message_info (message_list, node);
+ 		if (info && is_node_selectable (message_list, info))
+-			return g_strdup (camel_message_info_uid (info));
++			return g_strdup (camel_message_info_get_uid (info));
+ 		vrow--;
+ 	}
+ 
+@@ -4100,9 +4100,9 @@ ml_uid_nodemap_insert (MessageList *message_list,
+ 	node = message_list_tree_model_insert (
+ 		message_list, parent, row, info);
+ 
+-	uid = camel_message_info_uid (info);
+-	flags = camel_message_info_flags (info);
+-	date = camel_message_info_date_received (info);
++	uid = camel_message_info_get_uid (info);
++	flags = camel_message_info_get_flags (info);
++	date = camel_message_info_get_date_received (info);
+ 
+ 	camel_message_info_ref (info);
+ 	g_hash_table_insert (message_list->uid_nodemap, (gpointer) uid, node);
+@@ -4139,7 +4139,7 @@ ml_uid_nodemap_remove (MessageList *message_list,
+ 	folder = message_list_ref_folder (message_list);
+ 	g_return_if_fail (folder != NULL);
+ 
+-	uid = camel_message_info_uid (info);
++	uid = camel_message_info_get_uid (info);
+ 
+ 	if (uid == message_list->priv->newest_read_uid) {
+ 		message_list->priv->newest_read_date = 0;
+@@ -4266,7 +4266,7 @@ node_equal (ETreeModel *etm,
+             GNode *ap,
+             CamelFolderThreadNode *bp)
+ {
+-	if (bp->message && strcmp (camel_message_info_uid (ap->data), camel_message_info_uid (bp->message)) == 0)
++	if (bp->message && strcmp (camel_message_info_get_uid (ap->data), camel_message_info_get_uid (bp->message)) == 0)
+ 		return 1;
+ 
+ 	return 0;
+@@ -4539,7 +4539,7 @@ mail_folder_hide_by_flag (CamelFolder *folder,
+ 		info = camel_folder_get_message_info (
+ 			folder, changes->uid_changed->pdata[i]);
+ 		if (info)
+-			flags = camel_message_info_flags (info);
++			flags = camel_message_info_get_flags (info);
+ 
+ 		if (node != NULL && info != NULL && (flags & flag) != 0)
+ 			camel_folder_change_info_remove_uid (
+@@ -5041,7 +5041,7 @@ on_selection_changed_cmd (ETree *tree,
+ 		else
+ 			newuid = NULL;
+ 	} else if ((cursor = e_tree_get_cursor (tree)))
+-		newuid = (gchar *) camel_message_info_uid (cursor->data);
++		newuid = (gchar *) camel_message_info_get_uid (cursor->data);
+ 	else
+ 		newuid = NULL;
+ 
+@@ -5098,8 +5098,8 @@ on_click (ETree *tree,
+ 	if (col == COL_FOLLOWUP_FLAG_STATUS) {
+ 		const gchar *tag, *cmp;
+ 
+-		tag = camel_message_info_user_tag (info, "follow-up");
+-		cmp = camel_message_info_user_tag (info, "completed-on");
++		tag = camel_message_info_get_user_tag (info, "follow-up");
++		cmp = camel_message_info_get_user_tag (info, "completed-on");
+ 		if (tag && tag[0]) {
+ 			if (cmp && cmp[0]) {
+ 				camel_message_info_set_user_tag (info, "follow-up", NULL);
+@@ -5121,7 +5121,7 @@ on_click (ETree *tree,
+ 		return TRUE;
+ 	}
+ 
+-	flags = camel_message_info_flags (info);
++	flags = camel_message_info_get_flags (info);
+ 
+ 	folder_is_trash =
+ 		((folder->folder_flags & CAMEL_FOLDER_IS_TRASH) != 0);
+@@ -5140,7 +5140,7 @@ on_click (ETree *tree,
+ 			flag |= CAMEL_MESSAGE_DELETED;
+ 	}
+ 
+-	uid = camel_message_info_uid (info);
++	uid = camel_message_info_get_uid (info);
+ 	camel_folder_set_message_flags (folder, uid, flag, ~flags);
+ 
+ 	/* Notify the folder tree model that the user has marked a message
+@@ -5700,7 +5700,7 @@ message_list_regen_tweak_search_results (MessageList *message_list,
+ 	if (info == NULL)
+ 		return;
+ 
+-	flags = camel_message_info_flags (info);
++	flags = camel_message_info_get_flags (info);
+ 	uid_is_deleted = ((flags & CAMEL_MESSAGE_DELETED) != 0);
+ 	uid_is_junk = ((flags & CAMEL_MESSAGE_JUNK) != 0);
+ 
+diff --git a/modules/mdn/evolution-mdn.c b/modules/mdn/evolution-mdn.c
+index 27b97113c8..96744d50b4 100644
+--- a/modules/mdn/evolution-mdn.c
++++ b/modules/mdn/evolution-mdn.c
+@@ -484,7 +484,7 @@ mdn_message_loaded_cb (EMailReader *reader,
+ 	if (info == NULL)
+ 		goto exit;
+ 
+-	if (camel_message_info_user_flag (info, MDN_USER_FLAG))
++	if (camel_message_info_get_user_flag (info, MDN_USER_FLAG))
+ 		goto exit;
+ 
+ 	notify_to = mdn_get_notify_to (message);
+@@ -591,7 +591,7 @@ mdn_message_seen_cb (EMailReader *reader,
+ 	if (info == NULL)
+ 		goto exit;
+ 
+-	if (camel_message_info_user_flag (info, MDN_USER_FLAG))
++	if (camel_message_info_get_user_flag (info, MDN_USER_FLAG))
+ 		goto exit;
+ 
+ 	notify_to = mdn_get_notify_to (message);
+diff --git a/plugins/templates/e-templates-store.c b/plugins/templates/e-templates-store.c
+index 15a815d121..dbae0ff627 100644
+--- a/plugins/templates/e-templates-store.c
++++ b/plugins/templates/e-templates-store.c
+@@ -127,8 +127,8 @@ tmpl_message_data_new (CamelMessageInfo *info)
+ 	g_return_val_if_fail (info != NULL, NULL);
+ 
+ 	tmd = g_new0 (TmplMessageData, 1);
+-	tmd->subject = camel_pstring_strdup (tmpl_sanitized_subject (camel_message_info_subject (info)));
+-	tmd->uid = camel_pstring_strdup (camel_message_info_uid (info));
++	tmd->subject = camel_pstring_strdup (tmpl_sanitized_subject (camel_message_info_get_subject (info)));
++	tmd->uid = camel_pstring_strdup (camel_message_info_get_uid (info));
+ 
+ 	return tmd;
+ }
+@@ -333,9 +333,9 @@ tmpl_folder_data_change_message (TmplFolderData *tfd,
+ 	g_return_val_if_fail (tfd != NULL, FALSE);
+ 	g_return_val_if_fail (info != NULL, FALSE);
+ 
+-	tmd = tmpl_folder_data_find_message (tfd, camel_message_info_uid (info));
++	tmd = tmpl_folder_data_find_message (tfd, camel_message_info_get_uid (info));
+ 	if (!tmd) {
+-		if (!(camel_message_info_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED))) {
++		if (!(camel_message_info_get_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED))) {
+ 			tmpl_folder_data_add_message (tfd, info);
+ 			return TRUE;
+ 		}
+@@ -343,11 +343,11 @@ tmpl_folder_data_change_message (TmplFolderData *tfd,
+ 		return FALSE;
+ 	}
+ 
+-	if ((camel_message_info_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED)) != 0) {
+-		return tmpl_folder_data_remove_message (tfd, camel_message_info_uid (info));
++	if ((camel_message_info_get_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED)) != 0) {
++		return tmpl_folder_data_remove_message (tfd, camel_message_info_get_uid (info));
+ 	}
+ 
+-	subject = tmpl_sanitized_subject (camel_message_info_subject (info));
++	subject = tmpl_sanitized_subject (camel_message_info_get_subject (info));
+ 
+ 	if (g_strcmp0 (subject, tmd->subject) != 0) {
+ 		tmpl_message_data_change_subject (tmd, subject);
+@@ -461,12 +461,12 @@ tmpl_folder_data_update_sync (TmplFolderData *tfd,
+ 
+ 		info = camel_folder_summary_get (tfd->folder->summary, uid);
+ 		if (info) {
+-			if (!(camel_message_info_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED))) {
++			if (!(camel_message_info_get_flags (info) & (CAMEL_MESSAGE_JUNK | CAMEL_MESSAGE_DELETED))) {
+ 				/* Sometimes the 'add' notification can come after the 'change',
+ 				   thus use the change_message() which covers both cases. */
+ 				changed = tmpl_folder_data_change_message (tfd, info) || changed;
+ 			} else {
+-				changed = tmpl_folder_data_remove_message (tfd, camel_message_info_uid (info)) || changed;
++				changed = tmpl_folder_data_remove_message (tfd, camel_message_info_get_uid (info)) || changed;
+ 			}
+ 
+ 			camel_message_info_unref (info);
+-- 
+2.15.0
+

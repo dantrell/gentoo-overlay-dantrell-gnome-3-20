@@ -1,0 +1,43 @@
+From 81babbc22004c2297714142c6c4c1d1d11d91ccd Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 6 Oct 2016 16:45:00 +0200
+Subject: [PATCH 429/595] Bug 772233 - White flash on mail area of email reader
+
+Set the WebKitWebView background color with
+webkit_web_view_set_background_color() as this color will be used before
+the actual content will be rendered (and before we will have a chance to
+inject the right background color through CSS) and it will avoid white
+flash when using a black theme.
+---
+ e-util/e-web-view.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index 5294320e8f..42ccad8c65 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -662,11 +662,20 @@ style_updated_cb (EWebView *web_view)
+ 
+ 	if (gtk_style_context_lookup_color (style_context, "theme_base_color", &color))
+ 		color_value = g_strdup_printf ("#%06x", e_rgba_to_value (&color));
+-	else
++	else {
+ 		color_value = g_strdup (E_UTILS_DEFAULT_THEME_BASE_COLOR);
++		if (!gdk_rgba_parse (&color, color_value)) {
++			color.red = 1.0;
++			color.green = 1.0;
++			color.blue = 1.0;
++			color.alpha = 1.0;
++		}
++	}
+ 
+ 	style = g_strconcat ("background-color: ", color_value, ";", NULL);
+ 
++	webkit_web_view_set_background_color (WEBKIT_WEB_VIEW (web_view), &color);
++
+ 	e_web_view_add_css_rule_into_style_sheet (
+ 		web_view,
+ 		"-e-web-view-style-sheet",
+-- 
+2.15.0
+

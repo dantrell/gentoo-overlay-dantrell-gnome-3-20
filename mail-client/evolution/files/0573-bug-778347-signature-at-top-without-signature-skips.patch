@@ -1,0 +1,26 @@
+From 98de4da9cda7bd35b80152a9715f5701dd204bef Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Thu, 9 Feb 2017 12:58:09 +0100
+Subject: [PATCH 573/595] Bug 778347 - Signature at top without signature skips
+ first paragraph
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 94120c7190..b89672d4e4 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7315,6 +7315,8 @@ process_node_to_plain_text_for_exporting (EEditorPage *editor_page,
+ 
+ 				remove_node (child);
+ 				skip_node = TRUE;
++				length--;
++				ii--;
+ 				goto next;
+ 			}
+ 			g_free (id);
+-- 
+2.15.0
+

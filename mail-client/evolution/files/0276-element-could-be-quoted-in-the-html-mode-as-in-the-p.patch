@@ -1,0 +1,27 @@
+From 545a3577006853cc674fe52f89f4e12c6201413d Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 14:56:16 +0200
+Subject: [PATCH 276/595] Element could be quoted in the HTML mode as in the
+ plain text mode
+
+Fix a typo.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index b5474ecb8f..cbc90e5266 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -3465,7 +3465,7 @@ e_editor_dom_body_input_event_process (EEditorPage *editor_page,
+ 	remove_zero_width_spaces_on_body_input (editor_page, node);
+ 
+ 	/* Writing into quoted content */
+-	if (html_mode) {
++	if (!html_mode) {
+ 		gint citation_level;
+ 		WebKitDOMElement *selection_start_marker, *selection_end_marker;
+ 		WebKitDOMNode *node, *parent;
+-- 
+2.15.0
+

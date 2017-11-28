@@ -1,0 +1,42 @@
+From 02e857cd12a4f8f0fbb9d349b9d07150209347d9 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 13 Sep 2016 10:54:43 +0200
+Subject: [PATCH 391/595] Bug 771347 - Evolution's mail composer underlines my
+ message even when spell checking is disabled
+
+When doing reply don't forgot to turn off spell checking if it is disabled.
+Also remove a code that was accidentally committed that was preventing the spell
+check to perform.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 2fd63bf9f5..faa0648ae4 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -768,9 +768,6 @@ refresh_spell_check (EEditorPage *editor_page,
+ 		"spellcheck",
+ 		enable_spell_check ? "true" : "false",
+ 		NULL);
+-	webkit_dom_html_element_set_spellcheck (body, FALSE);
+-	webkit_dom_html_element_set_spellcheck (body, enable_spell_check);
+-	return;
+ 
+ 	e_editor_dom_selection_save (editor_page);
+ 
+@@ -8504,6 +8501,11 @@ e_editor_dom_process_content_after_load (EEditorPage *editor_page)
+ 		e_editor_dom_register_input_event_listener_on_body (editor_page);
+ 		register_html_events_handlers (editor_page, body);
+ 
++		if (e_editor_page_get_inline_spelling_enabled (editor_page))
++			e_editor_dom_force_spell_check (editor_page);
++		else
++			e_editor_dom_turn_spell_check_off (editor_page);
++
+ 		return;
+ 	}
+ 
+-- 
+2.15.0
+

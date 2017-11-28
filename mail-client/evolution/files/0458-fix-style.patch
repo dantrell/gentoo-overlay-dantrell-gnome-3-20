@@ -1,0 +1,25 @@
+From c508d68606b2db4a420de25a11f99d2c368f8df2 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 19 Oct 2016 12:41:07 +0200
+Subject: [PATCH 458/595] Fix style
+
+---
+ modules/webkit-editor/web-extension/e-editor-web-extension.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index 03b519457c..5970617dfa 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -2322,7 +2322,7 @@ e_editor_web_extension_init (EEditorWebExtension *extension)
+ }
+ 
+ static gpointer
+-e_editor_web_extension_create_instance(gpointer data)
++e_editor_web_extension_create_instance (gpointer data)
+ {
+ 	return g_object_new (E_TYPE_EDITOR_WEB_EXTENSION, NULL);
+ }
+-- 
+2.15.0
+

@@ -1,0 +1,58 @@
+From ac9942103be288f8f86f75629211dfccf24164a1 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 7 Oct 2016 12:22:21 +0200
+Subject: [PATCH 431/595] Deleting a quoted content could leave paragraph that
+ cannot be focused
+
+Insert a BR element to the right node.
+---
+ .../web-extension/e-editor-dom-functions.c         | 18 ++++++------
+ 1 files changed, 8 insertions(+), 10 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index a3425d5b8e..9d2effc289 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -3818,19 +3818,16 @@ e_editor_dom_body_key_up_event_process_backspace_or_delete (EEditorPage *editor_
+ 	/* If we deleted a selection the caret will be inside the quote marks, fix it. */
+ 	parent = webkit_dom_node_get_parent_node (WEBKIT_DOM_NODE (selection_start_marker));
+ 	if (element_has_class (WEBKIT_DOM_ELEMENT (parent), "-x-evo-quote-character")) {
++		parent = webkit_dom_node_get_parent_node (parent);
+ 		webkit_dom_node_insert_before (
+-			webkit_dom_node_get_parent_node (
+-				webkit_dom_node_get_parent_node (parent)),
++			webkit_dom_node_get_parent_node (parent),
+ 			WEBKIT_DOM_NODE (selection_end_marker),
+-			webkit_dom_node_get_next_sibling (
+-				webkit_dom_node_get_parent_node (parent)),
++			webkit_dom_node_get_next_sibling (parent),
+ 			NULL);
+ 		webkit_dom_node_insert_before (
+-			webkit_dom_node_get_parent_node (
+-				webkit_dom_node_get_parent_node (parent)),
++			webkit_dom_node_get_parent_node (parent),
+ 			WEBKIT_DOM_NODE (selection_start_marker),
+-			webkit_dom_node_get_next_sibling (
+-				webkit_dom_node_get_parent_node (parent)),
++			webkit_dom_node_get_next_sibling (parent),
+ 			NULL);
+ 	}
+ 
+@@ -3861,11 +3858,12 @@ e_editor_dom_body_key_up_event_process_backspace_or_delete (EEditorPage *editor_
+ 			WEBKIT_DOM_NODE (selection_start_marker));
+ 		if (WEBKIT_DOM_IS_ELEMENT (prev_sibling) &&
+ 		    element_has_class (WEBKIT_DOM_ELEMENT (prev_sibling), "-x-evo-quoted") &&
+-		    !webkit_dom_node_get_previous_sibling (prev_sibling))
++		    !webkit_dom_node_get_previous_sibling (prev_sibling)) {
+ 			webkit_dom_node_append_child (
+-				parent,
++				webkit_dom_node_get_parent_node (parent),
+ 				WEBKIT_DOM_NODE (webkit_dom_document_create_element (document, "br", NULL)),
+ 				NULL);
++		}
+ 	}
+ 
+ 	e_editor_dom_merge_siblings_if_necessary (editor_page, NULL);
+-- 
+2.15.0
+

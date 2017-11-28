@@ -1,0 +1,25 @@
+From 708947b69394d3a45fb2ad8e07af10bbb6ea248c Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 15:02:22 +0200
+Subject: [PATCH 280/595] No need to recognize links in the element where it
+ was already done (by parse_html_into_blocks())
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 0b929e9b03..464c0fbae0 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -6449,7 +6449,6 @@ e_editor_dom_convert_and_insert_html_into_selection (EEditorPage *editor_page,
+ 
+ 	e_editor_dom_selection_restore (editor_page);
+  out:
+-	e_editor_dom_check_magic_links (editor_page, FALSE);
+ 	e_editor_dom_force_spell_check_in_viewport (editor_page);
+ 	e_editor_dom_scroll_to_caret (editor_page);
+ 
+-- 
+2.15.0
+

@@ -1,0 +1,35 @@
+From 7134e8c16733cfd9eb0c211d7cbb2f19d2ca5cf2 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 23 Aug 2016 10:00:03 +0200
+Subject: [PATCH 297/595] Redoing the input event should remove the BR if it
+ was the only node there
+
+WebKit is doing the same when we are writing.
+---
+ .../webkit-editor/web-extension/e-editor-undo-redo-manager.c   | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+index 46e50bf6e6..66b8d801cf 100644
+--- a/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
++++ b/modules/webkit-editor/web-extension/e-editor-undo-redo-manager.c
+@@ -853,6 +853,16 @@ undo_delete (EEditorPage *editor_page,
+ 			}
+ 		}
+ 
++		if (event->type == HISTORY_INPUT) {
++			WebKitDOMNode *sibling;
++
++			sibling = webkit_dom_node_get_next_sibling (WEBKIT_DOM_NODE (element));
++			if (sibling && WEBKIT_DOM_IS_HTML_BR_ELEMENT (sibling) &&
++			    !webkit_dom_node_get_next_sibling (sibling)) {
++				remove_node (sibling);
++			}
++		}
++
+ 		remove_node (WEBKIT_DOM_NODE (element));
+ 
+ 		if (event->type == HISTORY_DELETE && !e_editor_page_get_html_mode (editor_page)) {
+-- 
+2.15.0
+

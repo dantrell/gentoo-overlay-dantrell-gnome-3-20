@@ -1,0 +1,179 @@
+From 68ef3f99ed070055c4ee55711953926f5af22567 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 16 Aug 2016 20:23:22 +0200
+Subject: [PATCH 250/595] Context menu above EWebView hides on button release
+
+The problem was that the gtk_menu_popup() didn't use the GdkEvent
+values, as it should, thus when the WebKit2 erased its own menu
+this custom one had been closed as well.
+
+Note this also changed a prototype of the EWebView::popup_event signal.
+---
+ e-util/e-web-view.c                      | 20 +++++++++++++-------
+ e-util/e-web-view.h                      |  6 ++++--
+ mail/e-mail-browser.c                    |  9 +++++++--
+ modules/mail/e-mail-shell-view-private.c |  9 +++++++--
+ 4 files changed, 31 insertions(+), 13 deletions(-)
+
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index 011ac270f3..9c5873953a 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -539,7 +539,7 @@ web_view_context_menu_cb (WebKitWebView *webkit_web_view,
+ 	g_signal_emit (
+ 		web_view,
+ 		signals[POPUP_EVENT], 0,
+-		link_uri, &event_handled);
++		link_uri, event, &event_handled);
+ 
+ 	g_free (link_uri);
+ 
+@@ -1401,10 +1401,11 @@ web_view_suggest_filename (EWebView *web_view,
+ 
+ static gboolean
+ web_view_popup_event (EWebView *web_view,
+-                      const gchar *uri)
++                      const gchar *uri,
++		      GdkEvent *event)
+ {
+ 	e_web_view_set_selected_uri (web_view, uri);
+-	e_web_view_show_popup_menu (web_view);
++	e_web_view_show_popup_menu (web_view, event);
+ 
+ 	return TRUE;
+ }
+@@ -2080,8 +2081,8 @@ e_web_view_class_init (EWebViewClass *class)
+ 		G_SIGNAL_RUN_LAST,
+ 		G_STRUCT_OFFSET (EWebViewClass, popup_event),
+ 		g_signal_accumulator_true_handled, NULL,
+-		e_marshal_BOOLEAN__STRING,
+-		G_TYPE_BOOLEAN, 1, G_TYPE_STRING);
++		NULL,
++		G_TYPE_BOOLEAN, 2, G_TYPE_STRING, GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+ 
+ 	signals[STATUS_MESSAGE] = g_signal_new (
+ 		"status-message",
+@@ -3025,9 +3026,11 @@ e_web_view_get_popup_menu (EWebView *web_view)
+ }
+ 
+ void
+-e_web_view_show_popup_menu (EWebView *web_view)
++e_web_view_show_popup_menu (EWebView *web_view,
++			    GdkEvent *event)
+ {
+ 	GtkWidget *menu;
++	guint button;
+ 
+ 	g_return_if_fail (E_IS_WEB_VIEW (web_view));
+ 
+@@ -3035,9 +3038,12 @@ e_web_view_show_popup_menu (EWebView *web_view)
+ 
+ 	menu = e_web_view_get_popup_menu (web_view);
+ 
++	if (!event || !gdk_event_get_button (event, &button))
++		button = 0;
++
+ 	gtk_menu_popup (
+ 		GTK_MENU (menu), NULL, NULL, NULL, NULL,
+-		0, gtk_get_current_event_time ());
++		button, event ? gdk_event_get_time (event) : gtk_get_current_event_time ());
+ }
+ 
+ /**
+diff --git a/e-util/e-web-view.h b/e-util/e-web-view.h
+index 62203d249c..246c289ca6 100644
+--- a/e-util/e-web-view.h
++++ b/e-util/e-web-view.h
+@@ -104,7 +104,8 @@ struct _EWebViewClass {
+ 	void		(*new_activity)		(EWebView *web_view,
+ 						 EActivity *activity);
+ 	gboolean	(*popup_event)		(EWebView *web_view,
+-						 const gchar *uri);
++						 const gchar *uri,
++						 GdkEvent *event);
+ 	void		(*status_message)	(EWebView *web_view,
+ 						 const gchar *status_message);
+ 	void		(*stop_loading)		(EWebView *web_view);
+@@ -215,7 +216,8 @@ void		e_web_view_zoom_in		(EWebView *web_view);
+ void		e_web_view_zoom_out		(EWebView *web_view);
+ GtkUIManager *	e_web_view_get_ui_manager	(EWebView *web_view);
+ GtkWidget *	e_web_view_get_popup_menu	(EWebView *web_view);
+-void		e_web_view_show_popup_menu	(EWebView *web_view);
++void		e_web_view_show_popup_menu	(EWebView *web_view,
++						 GdkEvent *event);
+ EActivity *	e_web_view_new_activity		(EWebView *web_view);
+ void		e_web_view_status_message	(EWebView *web_view,
+ 						 const gchar *status_message);
+diff --git a/mail/e-mail-browser.c b/mail/e-mail-browser.c
+index 9293803380..2186a725b3 100644
+--- a/mail/e-mail-browser.c
++++ b/mail/e-mail-browser.c
+@@ -325,12 +325,14 @@ mail_browser_message_list_built_cb (EMailBrowser *browser,
+ 
+ static gboolean
+ mail_browser_popup_event_cb (EMailBrowser *browser,
+-                             const gchar *uri)
++                             const gchar *uri,
++			     GdkEvent *event)
+ {
+ 	EMailReader *reader;
+ 	EWebView *web_view;
+ 	GtkMenu *menu;
+ 	guint32 state;
++	guint button;
+ 
+ 	if (uri != NULL)
+ 		return FALSE;
+@@ -346,9 +348,12 @@ mail_browser_popup_event_cb (EMailBrowser *browser,
+ 	state = e_mail_reader_check_state (reader);
+ 	e_mail_reader_update_actions (reader, state);
+ 
++	if (!event || !gdk_event_get_button (event, &button))
++		button = 0;
++
+ 	gtk_menu_popup (
+ 		menu, NULL, NULL, NULL, NULL,
+-		0, gtk_get_current_event_time ());
++		button, event ? gdk_event_get_time (event) : gtk_get_current_event_time ());
+ 
+ 	return TRUE;
+ }
+diff --git a/modules/mail/e-mail-shell-view-private.c b/modules/mail/e-mail-shell-view-private.c
+index e3c5ec12c0..c7ff3619b3 100644
+--- a/modules/mail/e-mail-shell-view-private.c
++++ b/modules/mail/e-mail-shell-view-private.c
+@@ -359,7 +359,8 @@ mail_shell_view_message_list_right_click_cb (EShellView *shell_view,
+ 
+ static gboolean
+ mail_shell_view_popup_event_cb (EMailShellView *mail_shell_view,
+-                                const gchar *uri)
++                                const gchar *uri,
++				GdkEvent *event)
+ {
+ 	EMailShellContent *mail_shell_content;
+ 	EMailDisplay *display;
+@@ -367,6 +368,7 @@ mail_shell_view_popup_event_cb (EMailShellView *mail_shell_view,
+ 	EMailReader *reader;
+ 	EMailView *mail_view;
+ 	GtkMenu *menu;
++	guint button;
+ 
+ 	if (uri != NULL)
+ 		return FALSE;
+@@ -384,9 +386,12 @@ mail_shell_view_popup_event_cb (EMailShellView *mail_shell_view,
+ 	shell_view = E_SHELL_VIEW (mail_shell_view);
+ 	e_shell_view_update_actions (shell_view);
+ 
++	if (!event || !gdk_event_get_button (event, &button))
++		button = 0;
++
+ 	gtk_menu_popup (
+ 		menu, NULL, NULL, NULL, NULL,
+-		0, gtk_get_current_event_time ());
++		button, event ? gdk_event_get_time (event) : gtk_get_current_event_time ());
+ 
+ 	return TRUE;
+ }
+-- 
+2.15.0
+

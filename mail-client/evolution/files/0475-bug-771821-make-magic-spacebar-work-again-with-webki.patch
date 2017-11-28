@@ -1,0 +1,245 @@
+From b50fa2813ca531000444b13136e44edd5665b584 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 25 Oct 2016 22:10:40 +0200
+Subject: [PATCH 475/595] Bug 771821 - Make magic-spacebar work again with
+ WebKit2
+
+---
+ mail/e-mail-display.c                    | 38 ++++++++++++++++++++++
+ mail/e-mail-display.h                    |  3 ++
+ modules/mail/e-mail-shell-view-actions.c | 55 ++------------------------------
+ web-extensions/e-web-extension.c         | 34 ++++++++++++++++++++
+ 4 files changed, 77 insertions(+), 53 deletions(-)
+
+diff --git a/mail/e-mail-display.c b/mail/e-mail-display.c
+index 7791fb6fde..8b404068cb 100644
+--- a/mail/e-mail-display.c
++++ b/mail/e-mail-display.c
+@@ -2651,3 +2651,41 @@ e_mail_display_set_remote_content (EMailDisplay *display,
+ 
+ 	g_mutex_unlock (&display->priv->remote_content_lock);
+ }
++
++gboolean
++e_mail_display_process_magic_spacebar (EMailDisplay *display,
++				       gboolean towards_bottom)
++{
++	GDBusProxy *web_extension;
++	GVariant *result;
++	GError *local_error = NULL;
++	gboolean processed = FALSE;
++
++	g_return_val_if_fail (E_IS_MAIL_DISPLAY (display), FALSE);
++
++	web_extension = e_web_view_get_web_extension_proxy (E_WEB_VIEW (display));
++	if (!web_extension)
++		return FALSE;
++
++	result = e_util_invoke_g_dbus_proxy_call_sync_wrapper_full (
++		web_extension,
++		"ProcessMagicSpacebar",
++		g_variant_new ("(tb)", webkit_web_view_get_page_id (WEBKIT_WEB_VIEW (display)), towards_bottom),
++		G_DBUS_CALL_FLAGS_NONE,
++		-1,
++		NULL,
++		&local_error);
++
++	if (local_error)
++		g_dbus_error_strip_remote_error (local_error);
++
++	e_util_claim_dbus_proxy_call_error (web_extension, "ProcessMagicSpacebar", local_error);
++	g_clear_error (&local_error);
++
++	if (result) {
++		g_variant_get (result, "(b)", &processed);
++		g_variant_unref (result);
++	}
++
++	return processed;
++}
+diff --git a/mail/e-mail-display.h b/mail/e-mail-display.h
+index e1d6fd9ae2..ed02f189e5 100644
+--- a/mail/e-mail-display.h
++++ b/mail/e-mail-display.h
+@@ -117,6 +117,9 @@ EMailRemoteContent *
+ void		e_mail_display_set_remote_content
+ 						(EMailDisplay *display,
+ 						 EMailRemoteContent *remote_content);
++gboolean	e_mail_display_process_magic_spacebar
++						(EMailDisplay *display,
++						 gboolean towards_bottom);
+ 
+ G_END_DECLS
+ 
+diff --git a/modules/mail/e-mail-shell-view-actions.c b/modules/mail/e-mail-shell-view-actions.c
+index e9aea63c8b..0eb135dce9 100644
+--- a/modules/mail/e-mail-shell-view-actions.c
++++ b/modules/mail/e-mail-shell-view-actions.c
+@@ -1360,25 +1360,6 @@ action_mail_send_receive_send_all_cb (GtkAction *action,
+ 	mail_send_immediately (session);
+ }
+ 
+-static GtkAdjustment *
+-get_mail_display_scrolling_vadjustment (EMailDisplay *display)
+-{
+-	GtkWidget *window;
+-
+-	g_return_val_if_fail (E_IS_MAIL_DISPLAY (display), NULL);
+-
+-	if (GTK_IS_SCROLLABLE (display))
+-		return gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (display));
+-
+-	window = gtk_widget_get_parent (GTK_WIDGET (display));
+-	if (GTK_IS_VIEWPORT (window))
+-		window = gtk_widget_get_parent (window);
+-	if (!GTK_IS_SCROLLED_WINDOW (window))
+-		return NULL;
+-
+-	return gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (window));
+-}
+-
+ static void
+ action_mail_smart_backward_cb (GtkAction *action,
+                                EMailShellView *mail_shell_view)
+@@ -1392,12 +1373,10 @@ action_mail_smart_backward_cb (GtkAction *action,
+ 	EMailView *mail_view;
+ 	GtkWidget *message_list;
+ 	GtkToggleAction *toggle_action;
+-	GtkAdjustment *adj;
+ 	EMailDisplay *display;
+ 	GSettings *settings;
+ 	gboolean caret_mode;
+ 	gboolean magic_spacebar;
+-	gdouble value;
+ 
+ 	/* This implements the so-called "Magic Backspace". */
+ 
+@@ -1421,12 +1400,7 @@ action_mail_smart_backward_cb (GtkAction *action,
+ 	toggle_action = GTK_TOGGLE_ACTION (ACTION (MAIL_CARET_MODE));
+ 	caret_mode = gtk_toggle_action_get_active (toggle_action);
+ 
+-	adj = get_mail_display_scrolling_vadjustment (display);
+-	if (!adj)
+-		return;
+-
+-	value = gtk_adjustment_get_value (adj);
+-	if (value == 0) {
++	if (!e_mail_display_process_magic_spacebar (display, FALSE)) {
+ 
+ 		if (caret_mode || !magic_spacebar)
+ 			return;
+@@ -1451,14 +1425,6 @@ action_mail_smart_backward_cb (GtkAction *action,
+ 		em_folder_tree_select_next_path (folder_tree, TRUE);
+ 
+ 		gtk_widget_grab_focus (message_list);
+-
+-	} else {
+-
+-		gtk_adjustment_set_value (
+-			adj,
+-			value - gtk_adjustment_get_page_increment (adj));
+-
+-		return;
+ 	}
+ }
+ 
+@@ -1474,14 +1440,11 @@ action_mail_smart_forward_cb (GtkAction *action,
+ 	EMailReader *reader;
+ 	EMailView *mail_view;
+ 	GtkWidget *message_list;
+-	GtkAdjustment *adj;
+ 	GtkToggleAction *toggle_action;
+ 	EMailDisplay *display;
+ 	GSettings *settings;
+ 	gboolean caret_mode;
+ 	gboolean magic_spacebar;
+-	gdouble value;
+-	gdouble upper;
+ 
+ 	/* This implements the so-called "Magic Spacebar". */
+ 
+@@ -1505,13 +1468,7 @@ action_mail_smart_forward_cb (GtkAction *action,
+ 	toggle_action = GTK_TOGGLE_ACTION (ACTION (MAIL_CARET_MODE));
+ 	caret_mode = gtk_toggle_action_get_active (toggle_action);
+ 
+-	adj = get_mail_display_scrolling_vadjustment (display);
+-	if (!adj)
+-		return;
+-
+-	value = gtk_adjustment_get_value (adj);
+-	upper = gtk_adjustment_get_upper (adj);
+-	if (value + gtk_adjustment_get_page_size (adj) >= upper) {
++	if (!e_mail_display_process_magic_spacebar (display, TRUE)) {
+ 
+ 		if (caret_mode || !magic_spacebar)
+ 			return;
+@@ -1536,14 +1493,6 @@ action_mail_smart_forward_cb (GtkAction *action,
+ 		em_folder_tree_select_next_path (folder_tree, TRUE);
+ 
+ 		gtk_widget_grab_focus (message_list);
+-
+-	} else {
+-
+-		gtk_adjustment_set_value (
+-			adj,
+-			value + gtk_adjustment_get_page_increment (adj));
+-
+-		return;
+ 	}
+ }
+ 
+diff --git a/web-extensions/e-web-extension.c b/web-extensions/e-web-extension.c
+index 7f4232aa42..52177203c6 100644
+--- a/web-extensions/e-web-extension.c
++++ b/web-extensions/e-web-extension.c
+@@ -174,6 +174,11 @@ static const char introspection_xml[] =
+ "      <arg type='s' name='document_uri' direction='in'/>"
+ "      <arg type='s' name='new_iframe_src' direction='in'/>"
+ "    </method>"
++"    <method name='ProcessMagicSpacebar'>"
++"      <arg type='t' name='page_id' direction='in'/>"
++"      <arg type='b' name='towards_bottom' direction='in'/>"
++"      <arg type='b' name='processed' direction='out'/>"
++"    </method>"
+ "    <property type='b' name='NeedInput' access='readwrite'/>"
+ "  </interface>"
+ "</node>";
+@@ -771,6 +776,35 @@ handle_method_call (GDBusConnection *connection,
+ 		}
+ 
+ 		g_dbus_method_invocation_return_value (invocation, NULL);
++	} else if (g_strcmp0 (method_name, "ProcessMagicSpacebar") == 0) {
++		gboolean towards_bottom = FALSE, processed = FALSE;
++		WebKitDOMDOMWindow *dom_window;
++		glong inner_height = -1, scroll_y_before = -1, scroll_y_after = -1;
++
++		g_variant_get (parameters, "(tb)", &page_id, &towards_bottom);
++		web_page = get_webkit_web_page_or_return_dbus_error (invocation, web_extension, page_id);
++		if (!web_page)
++			return;
++
++		document = webkit_web_page_get_dom_document (web_page);
++		dom_window = webkit_dom_document_get_default_view (document);
++
++		g_object_get (G_OBJECT (dom_window),
++			"inner-height", &inner_height,
++			"scroll-y", &scroll_y_before,
++			NULL);
++
++		if (inner_height) {
++			webkit_dom_dom_window_scroll_by (dom_window, 0, towards_bottom ? inner_height : -inner_height);
++
++			g_object_get (G_OBJECT (dom_window),
++				"scroll-y", &scroll_y_after,
++				NULL);
++
++			processed = scroll_y_before != scroll_y_after;
++		}
++
++		g_dbus_method_invocation_return_value (invocation, g_variant_new ("(b)", processed));
+ 	}
+ }
+ 
+-- 
+2.15.0
+

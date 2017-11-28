@@ -1,0 +1,27 @@
+From 1ac98f111f3fce6d92e7a399e681fb39a81c4c39 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 5 Sep 2016 14:28:39 +0200
+Subject: [PATCH 350/595] When removing empty blocks from citations, don't
+ remove BR elements
+
+We want to preserve line breaks, don't we?
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 98682c843d..ffe2439a28 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -3628,7 +3628,7 @@ remove_empty_blocks (WebKitDOMDocument *document)
+ 	WebKitDOMNodeList *list = NULL;
+ 
+ 	list = webkit_dom_document_query_selector_all (
+-	document, "blockquote[type=cite] > :empty", NULL);
++	document, "blockquote[type=cite] > :empty:not(br)", NULL);
+ 
+ 	length = webkit_dom_node_list_get_length (list);
+ 	for (ii = 0; ii < length; ii++)
+-- 
+2.15.0
+

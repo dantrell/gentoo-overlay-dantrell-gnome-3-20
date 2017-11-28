@@ -1,0 +1,115 @@
+From a870b0a48ef9b2fa199265ff2541fdb23913a01e Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Wed, 18 Jan 2017 11:48:45 +0100
+Subject: [PATCH 556/595] Bug 776391 - Disable WebKit developer mode by default
+
+---
+ data/org.gnome.evolution.shell.gschema.xml.in      |  5 +++++
+ e-util/e-misc-utils.c                              | 25 ++++++++++++++++++++++
+ e-util/e-misc-utils.h                              |  2 ++
+ modules/webkit-editor/e-webkit-editor.c            |  5 +++--
+ .../webkit-inspector/evolution-webkit-inspector.c  |  3 ++-
+ 5 files changed, 37 insertions(+), 3 deletions(-)
+
+diff --git a/data/org.gnome.evolution.shell.gschema.xml.in b/data/org.gnome.evolution.shell.gschema.xml.in
+index 02a5a1800d..7a0b28dd42 100644
+--- a/data/org.gnome.evolution.shell.gschema.xml.in
++++ b/data/org.gnome.evolution.shell.gschema.xml.in
+@@ -105,6 +105,11 @@
+       <_summary>Default sidebar width</_summary>
+       <_description>The default width for the sidebar, in pixels.</_description>
+     </key>
++    <key name="webkit-developer-mode" type="b">
++      <default>false</default>
++      <_summary>Enable special WebKit developer features</_summary>
++      <_description>Any change of this option requires restart of Evolution.</_description>
++    </key>
+     <child name="window" schema="org.gnome.evolution.window"/>
+   </schema>
+ </schemalist>
+diff --git a/e-util/e-misc-utils.c b/e-util/e-misc-utils.c
+index dc3884adb9..1a0549c550 100644
+--- a/e-util/e-misc-utils.c
++++ b/e-util/e-misc-utils.c
+@@ -3883,3 +3883,28 @@ e_util_load_file_chooser_folder (GtkFileChooser *file_chooser)
+ 
+ 	g_free (uri);
+ }
++
++/**
++ * e_util_get_webkit_developer_mode_enabled:
++ *
++ * Returns: Whether WebKit developer mode is enabled. This is read only
++ *    once, thus any changes in the GSettings property require restart
++ *    of the Evolution.
++ *
++ * Since: 3.22.5
++ **/
++gboolean
++e_util_get_webkit_developer_mode_enabled (void)
++{
++	static gchar enabled = -1;
++
++	if (enabled == -1) {
++		GSettings *settings;
++
++		settings = e_util_ref_settings ("org.gnome.evolution.shell");
++		enabled = g_settings_get_boolean (settings, "webkit-developer-mode") ? 1 : 0;
++		g_clear_object (&settings);
++	}
++
++	return enabled != 0;
++}
+diff --git a/e-util/e-misc-utils.h b/e-util/e-misc-utils.h
+index abe7678f35..4a08351922 100644
+--- a/e-util/e-misc-utils.h
++++ b/e-util/e-misc-utils.h
+@@ -330,6 +330,8 @@ GVariant *	e_util_invoke_g_dbus_proxy_call_sync_wrapper_full
+ 						 GError **error);
+ void		e_util_save_file_chooser_folder	(GtkFileChooser *file_chooser);
+ void		e_util_load_file_chooser_folder	(GtkFileChooser *file_chooser);
++gboolean	e_util_get_webkit_developer_mode_enabled
++						(void);
+ 
+ G_END_DECLS
+ 
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index e1f522461e..9fb306003b 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -4977,7 +4977,7 @@ webkit_editor_constructed (GObject *object)
+ 
+ 	web_settings = webkit_web_view_get_settings (web_view);
+ 	webkit_settings_set_allow_file_access_from_file_urls (web_settings, TRUE);
+-	webkit_settings_set_enable_developer_extras (web_settings, TRUE);
++	webkit_settings_set_enable_developer_extras (web_settings, e_util_get_webkit_developer_mode_enabled ());
+ 
+ 	/* Make WebKit think we are displaying a local file, so that it
+ 	 * does not block loading resources from file:// protocol */
+@@ -5934,7 +5934,8 @@ webkit_editor_key_press_event (GtkWidget *widget,
+ 
+ 	if (((event)->state & GDK_CONTROL_MASK) &&
+ 	    ((event)->state & GDK_SHIFT_MASK) &&
+-	    ((event)->keyval == GDK_KEY_I)) {
++	    ((event)->keyval == GDK_KEY_I) &&
++	    e_util_get_webkit_developer_mode_enabled ()) {
+ 		webkit_editor_show_inspector (wk_editor);
+ 		return TRUE;
+ 	}
+diff --git a/modules/webkit-inspector/evolution-webkit-inspector.c b/modules/webkit-inspector/evolution-webkit-inspector.c
+index 4c9a141523..31c7dcf88a 100644
+--- a/modules/webkit-inspector/evolution-webkit-inspector.c
++++ b/modules/webkit-inspector/evolution-webkit-inspector.c
+@@ -131,7 +131,8 @@ e_webkit_inspector_init (EWebKitInspector *extension)
+ G_MODULE_EXPORT void
+ e_module_load (GTypeModule *type_module)
+ {
+-	e_webkit_inspector_register_type (type_module);
++	if (e_util_get_webkit_developer_mode_enabled ())
++		e_webkit_inspector_register_type (type_module);
+ }
+ 
+ G_MODULE_EXPORT void
+-- 
+2.15.0
+

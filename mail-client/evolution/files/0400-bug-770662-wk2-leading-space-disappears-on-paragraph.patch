@@ -1,0 +1,32 @@
+From a75dc1a507c35a042df1fcd73dfbacb352271d73 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 22 Sep 2016 12:47:06 +0200
+Subject: [PATCH 400/595] Bug 770662 - [WK2] Leading space disappears on
+ paragraph format change
+
+Make the paragraph use the "white-space: pre-wrap" style to preserve whitespaces.
+---
+ modules/webkit-editor/e-webkit-editor.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 0603ed96f4..ace34d289e 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -948,6 +948,13 @@ webkit_editor_update_styles (EContentEditor *editor)
+ 		"  display: none \n"
+ 		"}\n");
+ 
++	g_string_append (
++		stylesheet,
++		"[data-evo-paragraph] "
++		"{\n"
++		"  white-space: pre-wrap; \n"
++		"}\n");
++
+ 	g_string_append (
+ 		stylesheet,
+ 		"body[data-evo-plain-text] [data-evo-paragraph] "
+-- 
+2.15.0
+

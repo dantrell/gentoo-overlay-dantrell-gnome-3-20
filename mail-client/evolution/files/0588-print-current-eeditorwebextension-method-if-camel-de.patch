@@ -1,0 +1,27 @@
+From 7462157a36f2ceddf4a7f36dd21c7200304635f9 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Thu, 9 Mar 2017 11:12:06 +0100
+Subject: [PATCH 588/595] Print current EEditorWebExtension method if
+ CAMEL_DEBUG is active
+
+---
+ modules/webkit-editor/web-extension/e-editor-web-extension.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-web-extension.c b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+index c41c154382..e87e73c6dc 100644
+--- a/modules/webkit-editor/web-extension/e-editor-web-extension.c
++++ b/modules/webkit-editor/web-extension/e-editor-web-extension.c
+@@ -666,6 +666,9 @@ handle_method_call (GDBusConnection *connection,
+ 	if (g_strcmp0 (interface_name, E_WEBKIT_EDITOR_WEB_EXTENSION_INTERFACE) != 0)
+ 		return;
+ 
++	if (camel_debug ("webkit:editor"))
++		printf ("EEditorWebExtension - %s - %s\n", G_STRFUNC, method_name);
++
+ 	if (g_strcmp0 (method_name, "TestHTMLEqual") == 0) {
+ 		gboolean equal = FALSE;
+ 		const gchar *html1 = NULL, *html2 = NULL;
+-- 
+2.15.0
+

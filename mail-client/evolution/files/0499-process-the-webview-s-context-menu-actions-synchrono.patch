@@ -1,0 +1,298 @@
+From 4eeb3116f30a1129a9017499c62811f1f7455e43 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 28 Nov 2016 11:35:29 +0100
+Subject: [PATCH 499/595] Process the WebView's context menu actions
+ synchronously
+
+This will prevent the WebView's context menu to be sized properly on
+Wayland (on X11 the code is working fine, but it is not correct). There
+is still one case where have to do an async call (inside the
+EFocusTracker to get the clipboard's content) that will leave us with an
+empty item in the context menu is some cases. This one will be fixed by
+upstream gtk+ bug [0].
+
+This was originally reported downstream [1].
+
+[0] - https://bugzilla.gnome.org/show_bug.cgi?id=772505
+[1] - https://bugzilla.redhat.com/show_bug.cgi?id=1394993
+---
+ e-util/e-util-enums.h            | 14 +++++++
+ e-util/e-web-view.c              | 81 +++++++++++++++++++---------------------
+ web-extensions/e-web-extension.c | 58 +++++++++++++++++++++++++++-
+ 3 files changed, 109 insertions(+), 44 deletions(-)
+
+diff --git a/e-util/e-util-enums.h b/e-util/e-util-enums.h
+index 8e24935135..44e7c8fd6c 100644
+--- a/e-util/e-util-enums.h
++++ b/e-util/e-util-enums.h
+@@ -534,6 +534,20 @@ typedef enum {
+ 	E_CONTENT_EDITOR_FIND_WRAP_AROUND	= 1 << 4
+ } EContentEditorFindFlags;
+ 
++/**
++ * EClipboardFlags:
++ * @E_CLIPBOARD_CAN_COPY: It's possible to copy the currently selected content.
++ *
++ * Specifies clipboard's current state.
++ *
++ * Since: 3.22.3
++ **/
++typedef enum {
++	E_CLIPBOARD_CAN_COPY	= 1 << 0
++	/* E_CLIPBOARD_CAN_CUT	= 1 << 1,
++	E_CLIPBOARD_CAN_PASTE	= 1 << 2 */
++} EClipboardFlags;
++
+ G_END_DECLS
+ 
+ #endif /* E_UTIL_ENUMS_H */
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index 42ccad8c65..ad27cba0c1 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -1599,13 +1599,10 @@ e_web_view_get_web_extension_proxy (EWebView *web_view)
+ }
+ 
+ static void
+-web_view_update_actions_cb (WebKitWebView *webkit_web_view,
+-                            GAsyncResult *result,
+-                            gpointer user_data)
++web_view_update_actions (EWebView *web_view)
+ {
+-	EWebView *web_view;
+ 	GtkActionGroup *action_group;
+-	gboolean can_copy;
++	gboolean can_copy = FALSE;
+ 	gboolean scheme_is_http = FALSE;
+ 	gboolean scheme_is_mailto = FALSE;
+ 	gboolean uri_is_valid = FALSE;
+@@ -1613,12 +1610,21 @@ web_view_update_actions_cb (WebKitWebView *webkit_web_view,
+ 	const gchar *cursor_image_src;
+ 	const gchar *group_name;
+ 	const gchar *uri;
+-
+-	web_view = E_WEB_VIEW (webkit_web_view);
++	GDBusProxy *web_extension;
+ 
+ 	uri = e_web_view_get_selected_uri (web_view);
+-	can_copy = webkit_web_view_can_execute_editing_command_finish (
+-		webkit_web_view, result, NULL);
++	web_extension = e_web_view_get_web_extension_proxy (web_view);
++	if (web_extension) {
++		GVariant *result;
++
++		result = g_dbus_proxy_get_cached_property (web_view->priv->web_extension, "ClipboardFlags");
++		if (result) {
++			EClipboardFlags clipboard_flags = g_variant_get_uint32 (result);
++			g_variant_unref (result);
++
++			can_copy = (clipboard_flags & E_CLIPBOARD_CAN_COPY);
++		}
++	}
+ 	cursor_image_src = e_web_view_get_cursor_image_src (web_view);
+ 
+ 	/* Parse the URI early so we know if the actions will work. */
+@@ -1701,17 +1707,6 @@ web_view_update_actions_cb (WebKitWebView *webkit_web_view,
+ 	gtk_action_group_set_visible (action_group, visible);
+ }
+ 
+-static void
+-web_view_update_actions (EWebView *web_view)
+-{
+-	webkit_web_view_can_execute_editing_command (
+-		WEBKIT_WEB_VIEW (web_view),
+-		WEBKIT_EDITING_COMMAND_COPY,
+-		NULL, /* cancellable */
+-		(GAsyncReadyCallback) web_view_update_actions_cb,
+-		NULL);
+-}
+-
+ static void
+ web_view_submit_alert (EAlertSink *alert_sink,
+                        EAlert *alert)
+@@ -1827,12 +1822,28 @@ web_view_selectable_update_actions (ESelectable *selectable,
+                                     GdkAtom *clipboard_targets,
+                                     gint n_clipboard_targets)
+ {
+-	WebKitWebView *web_view;
++	EWebView *web_view;
++	GDBusProxy *web_extension;
+ 	GtkAction *action;
+-	gboolean sensitive;
+-	const gchar *tooltip;
++	gboolean can_copy = FALSE;
+ 
+-	web_view = WEBKIT_WEB_VIEW (selectable);
++	web_view = E_WEB_VIEW (selectable);
++
++	web_extension = e_web_view_get_web_extension_proxy (web_view);
++	if (web_extension) {
++		GVariant *result;
++
++		result = g_dbus_proxy_get_cached_property (web_view->priv->web_extension, "ClipboardActions");
++		if (result) {
++			EClipboardFlags clipboard_actions = g_variant_get_uint32 (result);
++			g_variant_unref (result);
++
++			can_copy = (clipboard_actions & E_CLIPBOARD_CAN_COPY);
++		}
++	}
++	action = e_focus_tracker_get_copy_clipboard_action (focus_tracker);
++	gtk_action_set_sensitive (action, can_copy);
++	gtk_action_set_tooltip (action, _("Copy the selection"));
+ 
+ 	action = e_focus_tracker_get_cut_clipboard_action (focus_tracker);
+ 	webkit_web_view_can_execute_editing_command (
+@@ -1841,18 +1852,7 @@ web_view_selectable_update_actions (ESelectable *selectable,
+ 		NULL, /* cancellable */
+ 		(GAsyncReadyCallback) web_view_can_execute_editing_command_cb,
+ 		action);
+-	tooltip = _("Cut the selection");
+-	gtk_action_set_tooltip (action, tooltip);
+-
+-	action = e_focus_tracker_get_copy_clipboard_action (focus_tracker);
+-	webkit_web_view_can_execute_editing_command (
+-		WEBKIT_WEB_VIEW (web_view),
+-		WEBKIT_EDITING_COMMAND_COPY,
+-		NULL, /* cancellable */
+-		(GAsyncReadyCallback) web_view_can_execute_editing_command_cb,
+-		action);
+-	tooltip = _("Copy the selection");
+-	gtk_action_set_tooltip (action, tooltip);
++	gtk_action_set_tooltip (action, _("Cut the selection"));
+ 
+ 	action = e_focus_tracker_get_paste_clipboard_action (focus_tracker);
+ 	webkit_web_view_can_execute_editing_command (
+@@ -1861,14 +1861,11 @@ web_view_selectable_update_actions (ESelectable *selectable,
+ 		NULL, /* cancellable */
+ 		(GAsyncReadyCallback) web_view_can_execute_editing_command_cb,
+ 		action);
+-	tooltip = _("Paste the clipboard");
+-	gtk_action_set_tooltip (action, tooltip);
++	gtk_action_set_tooltip (action, _("Paste the clipboard"));
+ 
+ 	action = e_focus_tracker_get_select_all_action (focus_tracker);
+-	sensitive = TRUE;
+-	tooltip = _("Select all text and images");
+-	gtk_action_set_sensitive (action, sensitive);
+-	gtk_action_set_tooltip (action, tooltip);
++	gtk_action_set_sensitive (action, TRUE);
++	gtk_action_set_tooltip (action, _("Select all text and images"));
+ }
+ 
+ static void
+diff --git a/web-extensions/e-web-extension.c b/web-extensions/e-web-extension.c
+index 52177203c6..2a2bb56ee8 100644
+--- a/web-extensions/e-web-extension.c
++++ b/web-extensions/e-web-extension.c
+@@ -51,6 +51,7 @@ struct _EWebExtensionPrivate {
+ 	gboolean initialized;
+ 
+ 	gboolean need_input;
++	guint32 clipboard_flags;
+ };
+ 
+ static const char introspection_xml[] =
+@@ -180,6 +181,7 @@ static const char introspection_xml[] =
+ "      <arg type='b' name='processed' direction='out'/>"
+ "    </method>"
+ "    <property type='b' name='NeedInput' access='readwrite'/>"
++"    <property type='u' name='ClipboardFlags' access='readwrite'/>"
+ "  </interface>"
+ "</node>";
+ 
+@@ -820,9 +822,10 @@ handle_get_property (GDBusConnection *connection,
+ 	EWebExtension *extension = E_WEB_EXTENSION (user_data);
+ 	GVariant *variant = NULL;
+ 
+-	if (g_strcmp0 (property_name, "NeedInput") == 0) {
++	if (g_strcmp0 (property_name, "NeedInput") == 0)
+ 		variant = g_variant_new_boolean (extension->priv->need_input);
+-	}
++	else if (g_strcmp0 (property_name, "ClipboardFlags") == 0)
++		variant = g_variant_new_uint32 (extension->priv->clipboard_flags);
+ 
+ 	return variant;
+ }
+@@ -855,6 +858,18 @@ handle_set_property (GDBusConnection *connection,
+ 			"{sv}",
+ 			"NeedInput",
+ 			g_variant_new_boolean (value));
++	} else if (g_strcmp0 (property_name, "ClipboardFlags") == 0) {
++		guint32 value = g_variant_get_uint32 (variant);
++
++		if (value == extension->priv->clipboard_flags)
++			goto exit;
++
++		extension->priv->clipboard_flags = value;
++
++		g_variant_builder_add (builder,
++			"{sv}",
++			"ClipboardFlags",
++			g_variant_new_uint32 (value));
+ 	}
+ 
+ 	g_dbus_connection_emit_signal (connection,
+@@ -918,6 +933,7 @@ e_web_extension_init (EWebExtension *extension)
+ 
+ 	extension->priv->initialized = FALSE;
+ 	extension->priv->need_input = FALSE;
++	extension->priv->clipboard_flags = 0;
+ }
+ 
+ static gpointer
+@@ -991,6 +1007,40 @@ web_page_document_loaded_cb (WebKitWebPage *web_page,
+ 	}
+ }
+ 
++static void
++web_editor_selection_changed_cb (WebKitWebEditor *web_editor,
++                                 EWebExtension *extension)
++{
++	WebKitWebPage *web_page;
++	WebKitDOMDocument *document;
++	guint32 clipboard_flags = 0;
++
++	web_page = webkit_web_editor_get_page (web_editor);
++
++	document = webkit_web_page_get_dom_document (web_page);
++
++	if (e_dom_utils_document_has_selection (document))
++		clipboard_flags |= E_CLIPBOARD_CAN_COPY;
++
++	g_dbus_connection_call (
++		extension->priv->dbus_connection,
++		E_WEB_EXTENSION_SERVICE_NAME,
++		E_WEB_EXTENSION_OBJECT_PATH,
++		"org.freedesktop.DBus.Properties",
++		"Set",
++		g_variant_new (
++			"(ssv)",
++			E_WEB_EXTENSION_INTERFACE,
++			"ClipboardFlags",
++			g_variant_new_uint32 (clipboard_flags)),
++		NULL,
++		G_DBUS_CALL_FLAGS_NONE,
++		-1,
++		NULL,
++		NULL,
++		NULL);
++}
++
+ static void
+ web_page_created_cb (WebKitWebExtension *wk_extension,
+                      WebKitWebPage *web_page,
+@@ -1006,6 +1056,10 @@ web_page_created_cb (WebKitWebExtension *wk_extension,
+ 		G_CALLBACK (web_page_document_loaded_cb),
+ 		extension, 0);
+ 
++	g_signal_connect_object (
++		webkit_web_page_get_editor (web_page), "selection-changed",
++		G_CALLBACK (web_editor_selection_changed_cb),
++		extension, 0);
+ }
+ 
+ void
+-- 
+2.15.0
+

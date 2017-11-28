@@ -1,0 +1,37 @@
+From 087bb6fd285fc4267abb9bfa47d8055f63ddc68f Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 15 Aug 2016 11:05:24 +0200
+Subject: [PATCH 238/595] Remove the two of FIXME WK2
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index b644666b7a..78cb5e4314 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -3891,9 +3891,6 @@ e_editor_dom_body_key_up_event_process_return_key (EEditorPage *editor_page)
+ 	if (e_editor_page_get_html_mode (editor_page))
+ 		return;
+ 
+-	/* FIXME WK2 this is called twice */
+-	/* e_editor_dom_selection_save (editor_page); */
+-
+ 	document = e_editor_page_get_document (editor_page);
+ 	e_editor_dom_selection_save (editor_page);
+ 
+@@ -10640,8 +10637,8 @@ e_editor_dom_save_history_for_drop (EEditorPage *editor_page)
+ 	 * body_input_event_cb and is wrong as its type is HISTORY_INPUT. */
+ 	/* FIXME we could probably disable the HTML input event callback while
+ 	 * doing DnD within the view */
+-	/* FIXME WK2 - what if e_editor_undo_redo_manager_get_current_history_event() returns NULL? */
+-	if (((EEditorHistoryEvent *) (e_editor_undo_redo_manager_get_current_history_event (manager)))->type == HISTORY_INPUT)
++	event = e_editor_undo_redo_manager_get_current_history_event (manager);
++	if (event && event->type == HISTORY_INPUT)
+ 		e_editor_undo_redo_manager_remove_current_history_event (manager);
+ 
+ 	event = g_new0 (EEditorHistoryEvent, 1);
+-- 
+2.15.0
+

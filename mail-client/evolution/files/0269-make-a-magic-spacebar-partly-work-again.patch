@@ -1,0 +1,89 @@
+From 2d83196dbc1f0c3c6c4569f9a5c67ed079652ee4 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Thu, 18 Aug 2016 16:53:25 +0200
+Subject: [PATCH 269/595] Make a magic-spacebar (partly) work again
+
+The missing part is scrolling of the web view, which doesn't work,
+because WebKit2 doesn't provide accurate numbers. More can be seen
+at https://bugs.webkit.org/show_bug.cgi?id=160958
+---
+ modules/mail/e-mail-shell-view-actions.c | 31 +++++++++++++++++++++++--------
+ 1 file changed, 23 insertions(+), 8 deletions(-)
+
+diff --git a/modules/mail/e-mail-shell-view-actions.c b/modules/mail/e-mail-shell-view-actions.c
+index d843671ff0..e9aea63c8b 100644
+--- a/modules/mail/e-mail-shell-view-actions.c
++++ b/modules/mail/e-mail-shell-view-actions.c
+@@ -1360,6 +1360,25 @@ action_mail_send_receive_send_all_cb (GtkAction *action,
+ 	mail_send_immediately (session);
+ }
+ 
++static GtkAdjustment *
++get_mail_display_scrolling_vadjustment (EMailDisplay *display)
++{
++	GtkWidget *window;
++
++	g_return_val_if_fail (E_IS_MAIL_DISPLAY (display), NULL);
++
++	if (GTK_IS_SCROLLABLE (display))
++		return gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (display));
++
++	window = gtk_widget_get_parent (GTK_WIDGET (display));
++	if (GTK_IS_VIEWPORT (window))
++		window = gtk_widget_get_parent (window);
++	if (!GTK_IS_SCROLLED_WINDOW (window))
++		return NULL;
++
++	return gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (window));
++}
++
+ static void
+ action_mail_smart_backward_cb (GtkAction *action,
+                                EMailShellView *mail_shell_view)
+@@ -1373,7 +1392,6 @@ action_mail_smart_backward_cb (GtkAction *action,
+ 	EMailView *mail_view;
+ 	GtkWidget *message_list;
+ 	GtkToggleAction *toggle_action;
+-	GtkWidget *window;
+ 	GtkAdjustment *adj;
+ 	EMailDisplay *display;
+ 	GSettings *settings;
+@@ -1403,11 +1421,10 @@ action_mail_smart_backward_cb (GtkAction *action,
+ 	toggle_action = GTK_TOGGLE_ACTION (ACTION (MAIL_CARET_MODE));
+ 	caret_mode = gtk_toggle_action_get_active (toggle_action);
+ 
+-	window = gtk_widget_get_parent (GTK_WIDGET (display));
+-	if (!GTK_IS_SCROLLED_WINDOW (window))
++	adj = get_mail_display_scrolling_vadjustment (display);
++	if (!adj)
+ 		return;
+ 
+-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (window));
+ 	value = gtk_adjustment_get_value (adj);
+ 	if (value == 0) {
+ 
+@@ -1457,7 +1474,6 @@ action_mail_smart_forward_cb (GtkAction *action,
+ 	EMailReader *reader;
+ 	EMailView *mail_view;
+ 	GtkWidget *message_list;
+-	GtkWidget *window;
+ 	GtkAdjustment *adj;
+ 	GtkToggleAction *toggle_action;
+ 	EMailDisplay *display;
+@@ -1489,11 +1505,10 @@ action_mail_smart_forward_cb (GtkAction *action,
+ 	toggle_action = GTK_TOGGLE_ACTION (ACTION (MAIL_CARET_MODE));
+ 	caret_mode = gtk_toggle_action_get_active (toggle_action);
+ 
+-	window = gtk_widget_get_parent (GTK_WIDGET (display));
+-	if (!GTK_IS_SCROLLED_WINDOW (window))
++	adj = get_mail_display_scrolling_vadjustment (display);
++	if (!adj)
+ 		return;
+ 
+-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (window));
+ 	value = gtk_adjustment_get_value (adj);
+ 	upper = gtk_adjustment_get_upper (adj);
+ 	if (value + gtk_adjustment_get_page_size (adj) >= upper) {
+-- 
+2.15.0
+

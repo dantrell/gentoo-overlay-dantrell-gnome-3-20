@@ -1,0 +1,76 @@
+From 8beccadeff73a89f3024a5c8b40c39b832b299b0 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Tue, 6 Dec 2016 16:47:20 +0100
+Subject: [PATCH 521/595] Prefer text/plain in plain text mode if using 'Paste
+ Quotation'
+
+---
+ e-util/e-html-editor-actions.c          | 15 +++++++++++----
+ modules/webkit-editor/e-webkit-editor.c | 19 ++++++++++++++-----
+ 2 files changed, 25 insertions(+), 9 deletions(-)
+
+diff --git a/e-util/e-html-editor-actions.c b/e-util/e-html-editor-actions.c
+index 3e2780ae1a..54b9329282 100644
+--- a/e-util/e-html-editor-actions.c
++++ b/e-util/e-html-editor-actions.c
+@@ -645,10 +645,17 @@ action_paste_quote_cb (GtkAction *action,
+ 		gdk_display_get_default (),
+ 		GDK_SELECTION_CLIPBOARD);
+ 
+-	if (e_clipboard_wait_is_html_available (clipboard))
+-		e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
+-	else if (gtk_clipboard_wait_is_text_available (clipboard))
+-		gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
++	if (e_content_editor_get_html_mode (cnt_editor)) {
++		if (e_clipboard_wait_is_html_available (clipboard))
++			e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
++		else if (gtk_clipboard_wait_is_text_available (clipboard))
++			gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
++	} else {
++		if (gtk_clipboard_wait_is_text_available (clipboard))
++			gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
++		else if (e_clipboard_wait_is_html_available (clipboard))
++			e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
++	}
+ }
+ 
+ static void
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index cd98f1c464..f233831309 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5814,17 +5814,26 @@ clipboard_text_received_for_paste_quote (GtkClipboard *clipboard,
+ static void
+ paste_primary_clipboard_quoted (EContentEditor *editor)
+ {
++	EWebKitEditor *wk_editor;
+ 	GtkClipboard *clipboard;
+ 
++	wk_editor = E_WEBKIT_EDITOR (editor);
++
+ 	clipboard = gtk_clipboard_get_for_display (
+ 		gdk_display_get_default (),
+ 		GDK_SELECTION_PRIMARY);
+ 
+-	if (e_clipboard_wait_is_html_available (clipboard))
+-		e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
+-	else if (gtk_clipboard_wait_is_text_available (clipboard))
+-		gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
+-
++       if (wk_editor->priv->html_mode) {
++               if (e_clipboard_wait_is_html_available (clipboard))
++                       e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
++               else if (gtk_clipboard_wait_is_text_available (clipboard))
++                       gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
++       } else {
++               if (gtk_clipboard_wait_is_text_available (clipboard))
++                       gtk_clipboard_request_text (clipboard, clipboard_text_received_for_paste_quote, editor);
++               else if (e_clipboard_wait_is_html_available (clipboard))
++                       e_clipboard_request_html (clipboard, clipboard_html_received_for_paste_quote, editor);
++       }
+ }
+ 
+ static gboolean
+-- 
+2.15.0
+

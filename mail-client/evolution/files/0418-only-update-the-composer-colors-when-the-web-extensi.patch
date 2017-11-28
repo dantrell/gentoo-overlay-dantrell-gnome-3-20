@@ -1,0 +1,35 @@
+From f021f8d53448f8020e085a3038e40fa21d08d08e Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 5 Oct 2016 12:40:17 +0200
+Subject: [PATCH 418/595] Only update the composer colors when the web
+ extension is ready
+
+This fixes warnings printed on the console.
+---
+ modules/webkit-editor/e-webkit-editor.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/modules/webkit-editor/e-webkit-editor.c b/modules/webkit-editor/e-webkit-editor.c
+index 8b898f1081..e3c9763bd2 100644
+--- a/modules/webkit-editor/e-webkit-editor.c
++++ b/modules/webkit-editor/e-webkit-editor.c
+@@ -5483,13 +5483,13 @@ webkit_editor_load_changed_cb (EWebKitEditor *wk_editor,
+ 
+ 	wk_editor->priv->reload_in_progress = FALSE;
+ 
+-	if (webkit_editor_is_ready (E_CONTENT_EDITOR (wk_editor)))
++	if (webkit_editor_is_ready (E_CONTENT_EDITOR (wk_editor))) {
+ 		e_content_editor_emit_load_finished (E_CONTENT_EDITOR (wk_editor));
+-	else
++		webkit_editor_style_updated_cb (wk_editor);
++	} else
+ 		wk_editor->priv->emit_load_finished_when_extension_is_ready = TRUE;
+ 
+ 	dispatch_pending_operations (wk_editor);
+-	webkit_editor_style_updated_cb (wk_editor);
+ }
+ 
+ static void
+-- 
+2.15.0
+

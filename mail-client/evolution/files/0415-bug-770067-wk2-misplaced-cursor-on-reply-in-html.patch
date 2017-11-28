@@ -1,0 +1,56 @@
+From 2ce30021acf978438ebff0d117864df07bc29a5d Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 3 Oct 2016 14:36:40 +0200
+Subject: [PATCH 415/595] Bug 770067 - [WK2] Misplaced cursor on reply in HTML
+
+The wrong code path was chosen because the code determined that the BODY
+already contains an existing paragraph on the end of the content. The
+fix it to not take the credits element into account when determining if the
+BODY already contains the paragraphs.
+---
+ .../webkit-editor/web-extension/e-composer-dom-functions.c    | 11 ++++++++++-
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c  |  3 ++-
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-composer-dom-functions.c b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+index 221c0af145..e5708871cb 100644
+--- a/modules/webkit-editor/web-extension/e-composer-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-composer-dom-functions.c
+@@ -113,10 +113,19 @@ move_caret_after_signature_inserted (EEditorPage *editor_page)
+ 	paragraphs = webkit_dom_document_query_selector_all (document, "[data-evo-paragraph]", NULL);
+ 	signature = webkit_dom_document_query_selector (document, ".-x-evo-signature-wrapper", NULL);
+ 	/* Situation when wrapped paragraph is just in signature and not in message body */
+-	if (webkit_dom_node_list_get_length (paragraphs) == 1)
++	if (webkit_dom_node_list_get_length (paragraphs) == 1) {
++		WebKitDOMNode *node;
++
++		node = webkit_dom_node_list_item (paragraphs, 0);
++
+ 		if (signature && webkit_dom_element_query_selector (signature, "[data-evo-paragraph]", NULL))
+ 			has_paragraphs_in_body = FALSE;
+ 
++		/* Don't take the credentials into account. */
++		if (!webkit_dom_node_get_previous_sibling (node))
++			has_paragraphs_in_body = FALSE;
++	}
++
+ 	/*
+ 	 *
+ 	 * Keeping Signatures in the beginning of composer
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 219f0ffecb..9bb9300fa9 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -9408,7 +9408,8 @@ e_editor_dom_fix_structure_after_delete_before_quoted_content (EEditorPage *edit
+ 				e_editor_dom_selection_restore (editor_page);
+ 				save_history_for_delete_or_backspace (
+ 					editor_page, key_code == HTML_KEY_CODE_DELETE, control_key);
+-			}
++			} else
++				e_editor_dom_selection_restore (editor_page);
+ 
+ 			/* Remove the empty block and move caret to the right place. */
+ 			remove_node (block);
+-- 
+2.15.0
+

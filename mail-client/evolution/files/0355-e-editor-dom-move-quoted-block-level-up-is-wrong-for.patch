@@ -1,0 +1,49 @@
+From a16658cfc225a1aa3715994f766d04278acf63a4 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 5 Sep 2016 14:59:44 +0200
+Subject: [PATCH 355/595] e_editor_dom_move_quoted_block_level_up() is wrong
+ for HTML mode
+
+This function moves a current block in quoted content one level up, but only
+when the caret is in the beginning of block. For HTML we were really not
+checking that and we were just looking whether the current block is indeed a
+citation element.
+---
+ .../web-extension/e-editor-dom-functions.c          | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index b527288b7e..9977f68776 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -4131,9 +4131,24 @@ e_editor_dom_move_quoted_block_level_up (EEditorPage *editor_page)
+ 				success = FALSE;
+ 		}
+ 
+-		if (html_mode)
+-			success = WEBKIT_DOM_IS_HTML_QUOTE_ELEMENT (
+-				webkit_dom_node_get_parent_element (block));
++		if (html_mode) {
++			WebKitDOMNode *prev_sibling;
++
++			webkit_dom_node_normalize (block);
++
++			prev_sibling = webkit_dom_node_get_previous_sibling (
++				WEBKIT_DOM_NODE (selection_start_marker));
++
++			if (prev_sibling)
++				success = FALSE;
++			else {
++				WebKitDOMElement *parent;
++
++				parent = webkit_dom_node_get_parent_element (block);
++				success = WEBKIT_DOM_IS_HTML_QUOTE_ELEMENT (parent);
++				success = success && webkit_dom_element_has_attribute (parent, "type");
++			}
++		}
+ 	}
+ 
+ 	if (!success)
+-- 
+2.15.0
+

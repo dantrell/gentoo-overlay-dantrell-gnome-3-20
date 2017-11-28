@@ -1,0 +1,33 @@
+From 43053f3d5ca2bc98c9145ffb3b0a9e4d9a56d24e Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Wed, 30 Nov 2016 16:40:29 +0100
+Subject: [PATCH 512/595] Bug 775397 - Freeze / lockup trying to delete a
+ hyperlink in a cited html mail
+
+Switch to the safer check whether we are after the ending range when
+refreshing the spell check - compare the ranges start positions and
+quit the loop after we move after the start position of the ending
+range. Previously we needed to get to the exact ending position and that
+was sometimes not possible (it could happen that it was skipped - it
+depends on the DOM structure) and we continued to move the selection
+over and over.
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index f9ade5eb15..2a7529f966 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -642,7 +642,7 @@ perform_spell_check (WebKitDOMDOMSelection *dom_selection,
+ 	/* Go through all words to spellcheck them. To avoid this we have to wait for
+ 	 * http://www.w3.org/html/wg/drafts/html/master/editing.html#dom-forcespellcheck */
+ 	/* We are moving forward word by word until we hit the text on the end. */
+-	while (actual && webkit_dom_range_compare_boundary_points (end_range, WEBKIT_DOM_RANGE_END_TO_END, actual, NULL) != 0) {
++	while (actual && webkit_dom_range_compare_boundary_points (actual, WEBKIT_DOM_RANGE_START_TO_START, end_range, NULL) < 0) {
+ 		if (actual != start_range)
+ 			g_object_unref (actual);
+ 		webkit_dom_dom_selection_modify (
+-- 
+2.15.0
+

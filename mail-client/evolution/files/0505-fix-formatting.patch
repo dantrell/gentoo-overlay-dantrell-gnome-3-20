@@ -1,0 +1,60 @@
+From 3dee4c9bb03a7541fbcad05c97fdb3739433a91b Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Mon, 28 Nov 2016 14:28:07 +0100
+Subject: [PATCH 505/595] Fix formatting
+
+---
+ mail/e-mail-browser.c                    | 2 +-
+ modules/mail/e-mail-shell-view-private.c | 2 +-
+ web-extensions/e-dom-utils.c             | 2 --
+ 3 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/mail/e-mail-browser.c b/mail/e-mail-browser.c
+index 2186a725b3..a47578823c 100644
+--- a/mail/e-mail-browser.c
++++ b/mail/e-mail-browser.c
+@@ -326,7 +326,7 @@ mail_browser_message_list_built_cb (EMailBrowser *browser,
+ static gboolean
+ mail_browser_popup_event_cb (EMailBrowser *browser,
+                              const gchar *uri,
+-			     GdkEvent *event)
++                             GdkEvent *event)
+ {
+ 	EMailReader *reader;
+ 	EWebView *web_view;
+diff --git a/modules/mail/e-mail-shell-view-private.c b/modules/mail/e-mail-shell-view-private.c
+index c7ff3619b3..662989f65e 100644
+--- a/modules/mail/e-mail-shell-view-private.c
++++ b/modules/mail/e-mail-shell-view-private.c
+@@ -360,7 +360,7 @@ mail_shell_view_message_list_right_click_cb (EShellView *shell_view,
+ static gboolean
+ mail_shell_view_popup_event_cb (EMailShellView *mail_shell_view,
+                                 const gchar *uri,
+-				GdkEvent *event)
++                                GdkEvent *event)
+ {
+ 	EMailShellContent *mail_shell_content;
+ 	EMailDisplay *display;
+diff --git a/web-extensions/e-dom-utils.c b/web-extensions/e-dom-utils.c
+index 5913397a30..53640333bc 100644
+--- a/web-extensions/e-dom-utils.c
++++ b/web-extensions/e-dom-utils.c
+@@ -878,7 +878,6 @@ element_focus_cb (WebKitDOMElement *element,
+ 		NULL,
+ 		NULL,
+ 		NULL);
+-
+ }
+ 
+ static void
+@@ -905,7 +904,6 @@ element_blur_cb (WebKitDOMElement *element,
+ 		NULL);
+ }
+ 
+-
+ void
+ e_dom_utils_bind_focus_on_elements (WebKitDOMDocument *document,
+                                     GDBusConnection *connection)
+-- 
+2.15.0
+

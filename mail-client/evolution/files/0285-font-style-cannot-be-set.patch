@@ -1,0 +1,80 @@
+From 9ee8b610346a12857a8cefbb308c20a6f65b8b76 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 15:07:26 +0200
+Subject: [PATCH 285/595] Font style cannot be set
+
+The problem was that the value was set into the page through
+e_editor_page_set_style_flag() and then later when we were manipulating the DOM
+to actually set the style the change was rejected as the value of the style that
+we were trying to set and the value from page was the same.
+---
+ modules/webkit-editor/web-extension/e-editor-page.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-page.c b/modules/webkit-editor/web-extension/e-editor-page.c
+index 6d362e50b2..1053195aa1 100644
+--- a/modules/webkit-editor/web-extension/e-editor-page.c
++++ b/modules/webkit-editor/web-extension/e-editor-page.c
+@@ -425,8 +425,10 @@ e_editor_page_set_bold (EEditorPage *editor_page,
+ {
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	if (e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_BOLD, value))
++	if (e_editor_page_get_bold (editor_page) != value) {
+ 		e_editor_dom_selection_set_bold (editor_page, value);
++	        e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_BOLD, value);
++	}
+ }
+ 
+ gboolean
+@@ -443,8 +445,10 @@ e_editor_page_set_italic (EEditorPage *editor_page,
+ {
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	if (e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_ITALIC, value))
++	if (e_editor_page_get_italic (editor_page) != value) {
+ 		e_editor_dom_selection_set_italic (editor_page, value);
++		e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_ITALIC, value);
++	}
+ }
+ 
+ gboolean
+@@ -461,8 +465,10 @@ e_editor_page_set_underline (EEditorPage *editor_page,
+ {
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	if (e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_UNDERLINE, value))
++	if (e_editor_page_get_underline (editor_page) != value) {
+ 		e_editor_dom_selection_set_underline (editor_page, value);
++		e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_UNDERLINE, value);
++	}
+ }
+ 
+ gboolean
+@@ -479,8 +485,10 @@ e_editor_page_set_monospace (EEditorPage *editor_page,
+ {
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	if (e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_MONOSPACE, value))
++	if (e_editor_page_get_monospace (editor_page) != value) {
+ 		e_editor_dom_selection_set_monospace (editor_page, value);
++		e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_MONOSPACE, value);
++	}
+ }
+ 
+ gboolean
+@@ -497,8 +505,10 @@ e_editor_page_set_strikethrough (EEditorPage *editor_page,
+ {
+ 	g_return_if_fail (E_IS_EDITOR_PAGE (editor_page));
+ 
+-	if (e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_STRIKETHROUGH, value))
++	if (e_editor_page_get_strikethrough (editor_page) != value) {
+ 		e_editor_dom_selection_set_strikethrough (editor_page, value);
++		e_editor_page_set_style_flag (editor_page, E_CONTENT_EDITOR_STYLE_IS_STRIKETHROUGH, value);
++	}
+ }
+ 
+ guint
+-- 
+2.15.0
+

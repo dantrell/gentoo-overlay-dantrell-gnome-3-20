@@ -1,0 +1,35 @@
+From 2a4ddda037123a9c9a7715a9f675b0611c8c8985 Mon Sep 17 00:00:00 2001
+From: Tomas Popela <tpopela@redhat.com>
+Date: Fri, 19 Aug 2016 15:03:47 +0200
+Subject: [PATCH 281/595] Remove special id used for BLOCKQUOTEs when
+ generating the HTML version of the content
+
+---
+ modules/webkit-editor/web-extension/e-editor-dom-functions.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/modules/webkit-editor/web-extension/e-editor-dom-functions.c b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+index 464c0fbae0..27f905c5b5 100644
+--- a/modules/webkit-editor/web-extension/e-editor-dom-functions.c
++++ b/modules/webkit-editor/web-extension/e-editor-dom-functions.c
+@@ -7514,6 +7514,17 @@ process_node_to_html_for_exporting (EEditorPage *editor_page,
+ 		webkit_dom_element_remove_attribute (WEBKIT_DOM_ELEMENT (node), "class");
+ 	}
+ 	g_clear_object (&list);
++
++	list = webkit_dom_element_query_selector_all (
++		WEBKIT_DOM_ELEMENT (source), "#-x-evo-main-cite", NULL);
++	length = webkit_dom_node_list_get_length (list);
++	for (ii = 0; ii < length; ii++) {
++		WebKitDOMNode *node;
++
++		node = webkit_dom_node_list_item (list, ii);
++		webkit_dom_element_remove_attribute (WEBKIT_DOM_ELEMENT (node), "id");
++	}
++	g_clear_object (&list);
+ }
+ 
+ static void
+-- 
+2.15.0
+

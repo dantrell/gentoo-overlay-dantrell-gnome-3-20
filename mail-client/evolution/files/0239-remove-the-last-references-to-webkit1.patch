@@ -1,0 +1,39 @@
+From ec7b4c3793b6afbcd0e7c3c0f720b276566c95ae Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Mon, 15 Aug 2016 12:23:10 +0200
+Subject: [PATCH 239/595] Remove the last references to WebKit1
+
+---
+ README                | 2 +-
+ evolution-shell.pc.in | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/README b/README
+index 8b3cfebc2c..645cd306bf 100644
+--- a/README
++++ b/README
+@@ -51,7 +51,7 @@ dependencies should be compiled in the order they are listed here):
+ 
+              ftp://ftp.gnome.org/pub/gnome/sources/libsoup
+ 
+-        * WebKitGTK+ 2.4.9
++        * WebKitGTK+ 2.13.0
+ 
+              http://webkitgtk.org/releases/
+ 
+diff --git a/evolution-shell.pc.in b/evolution-shell.pc.in
+index 0127017e46..fbc25d626d 100644
+--- a/evolution-shell.pc.in
++++ b/evolution-shell.pc.in
+@@ -18,7 +18,7 @@ execversion=@BASE_VERSION@
+ Name: evolution-shell
+ Description: libraries needed for Evolution shell components
+ Version: @VERSION@
+-Requires: gtk+-3.0 libebackend-1.2 libedataserver-1.2 libedataserverui-1.2 webkitgtk-3.0
++Requires: gtk+-3.0 libebackend-1.2 libedataserver-1.2 libedataserverui-1.2 webkit2gtk-4.0
+ Requires.private: @GNOME_DESKTOP_DEPENDENCY@
+ Libs: -L${privlibdir} -levolution-shell -levolution-util -Wl,-R${privlibdir}
+ Cflags: -I${privincludedir}
+-- 
+2.15.0
+

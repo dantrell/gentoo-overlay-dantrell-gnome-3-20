@@ -1,0 +1,270 @@
+From e22c473bdee2c698fc018a9297d770032cdb21e6 Mon Sep 17 00:00:00 2001
+From: Milan Crha <mcrha@redhat.com>
+Date: Tue, 3 Jan 2017 16:05:25 +0100
+Subject: [PATCH 540/595] Bug 776584 - Remember last selected file chooser
+ folder
+
+---
+ composer/e-composer-actions.c         |  3 ++
+ e-util/e-attachment-store.c           |  7 ++++
+ e-util/e-html-editor-actions.c        |  6 ++++
+ e-util/e-misc-utils.c                 | 62 +++++++++++++++++++++++++++++++++++
+ e-util/e-misc-utils.h                 |  2 ++
+ e-util/e-web-view.c                   |  7 +++-
+ plugins/save-calendar/save-calendar.c |  4 +++
+ shell/e-shell-utils.c                 | 14 ++++++--
+ 8 files changed, 102 insertions(+), 3 deletions(-)
+
+diff --git a/composer/e-composer-actions.c b/composer/e-composer-actions.c
+index fa92322eb9..7db9abbd26 100644
+--- a/composer/e-composer-actions.c
++++ b/composer/e-composer-actions.c
+@@ -237,11 +237,14 @@ action_save_as_cb (GtkAction *action,
+ 	gtk_window_set_icon_name (
+ 		GTK_WINDOW (dialog), "mail-message-new");
+ 
++	e_util_load_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
+ 	response = gtk_dialog_run (GTK_DIALOG (dialog));
+ 
+ 	if (response != GTK_RESPONSE_OK)
+ 		goto exit;
+ 
++	e_util_save_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
++
+ 	editor = e_msg_composer_get_editor (composer);
+ 	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+ 	e_html_editor_set_filename (editor, filename);
+diff --git a/e-util/e-attachment-store.c b/e-util/e-attachment-store.c
+index 05e480983a..8c74d63e93 100644
+--- a/e-util/e-attachment-store.c
++++ b/e-util/e-attachment-store.c
+@@ -725,6 +725,8 @@ e_attachment_store_run_load_dialog (EAttachmentStore *store,
+ 	gtk_file_chooser_set_extra_widget (file_chooser, extra_box_widget);
+ 	gtk_widget_show_all (extra_box_widget);
+ 
++	e_util_load_file_chooser_folder (file_chooser);
++
+ 	response = gtk_dialog_run (GTK_DIALOG (dialog));
+ 
+ #ifdef HAVE_AUTOAR
+@@ -734,6 +736,8 @@ e_attachment_store_run_load_dialog (EAttachmentStore *store,
+ #endif
+ 		goto exit;
+ 
++	e_util_save_file_chooser_folder (file_chooser);
++
+ 	files = gtk_file_chooser_get_files (file_chooser);
+ 	active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (option_display));
+ 	disposition = active ? "inline" : "attachment";
+@@ -897,6 +901,8 @@ e_attachment_store_run_save_dialog (EAttachmentStore *store,
+ 		g_clear_object (&file_info);
+ 	}
+ 
++	e_util_load_file_chooser_folder (file_chooser);
++
+ 	response = gtk_dialog_run (GTK_DIALOG (dialog));
+ 
+ 	if (response == GTK_RESPONSE_OK) {
+@@ -904,6 +910,7 @@ e_attachment_store_run_save_dialog (EAttachmentStore *store,
+ 		gboolean save_self, save_extracted;
+ #endif
+ 
++		e_util_save_file_chooser_folder (file_chooser);
+ 		destination = gtk_file_chooser_get_file (file_chooser);
+ 
+ #ifdef HAVE_AUTOAR
+diff --git a/e-util/e-html-editor-actions.c b/e-util/e-html-editor-actions.c
+index 1110908419..4d125449d7 100644
+--- a/e-util/e-html-editor-actions.c
++++ b/e-util/e-html-editor-actions.c
+@@ -328,9 +328,12 @@ action_insert_html_file_cb (GtkToggleAction *action,
+ 	gtk_file_filter_add_mime_type (filter, "text/html");
+ 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
+ 
++	e_util_load_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
++
+ 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+ 		GFile *file;
+ 
++		e_util_save_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
+ 		file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+ 
+ 		/* XXX Need a way to cancel this. */
+@@ -419,9 +422,12 @@ action_insert_text_file_cb (GtkAction *action,
+ 	gtk_file_filter_add_mime_type (filter, "text/plain");
+ 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter);
+ 
++	e_util_load_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
++
+ 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+ 		GFile *file;
+ 
++		e_util_save_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
+ 		file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+ 
+ 		/* XXX Need a way to cancel this. */
+diff --git a/e-util/e-misc-utils.c b/e-util/e-misc-utils.c
+index ea22732983..dc3884adb9 100644
+--- a/e-util/e-misc-utils.c
++++ b/e-util/e-misc-utils.c
+@@ -3821,3 +3821,65 @@ e_util_invoke_g_dbus_proxy_call_sync_wrapper_full (GDBusProxy *dbus_proxy,
+ 
+ 	return var_result;
+ }
++
++/**
++ * e_util_save_file_chooser_folder:
++ * @file_chooser: a #GtkFileChooser
++ *
++ * Saves the current folder of the @file_chooser, thus it could be used
++ * by e_util_load_file_chooser_folder() to open it in the last chosen folder.
++ *
++ * Since: 3.22.4
++ **/
++void
++e_util_save_file_chooser_folder (GtkFileChooser *file_chooser)
++{
++	GSettings *settings;
++	gchar *uri;
++
++	g_return_if_fail (GTK_IS_FILE_CHOOSER (file_chooser));
++
++	uri = gtk_file_chooser_get_current_folder_uri (file_chooser);
++	if (uri && g_str_has_prefix (uri, "file://")) {
++		settings = e_util_ref_settings ("org.gnome.evolution.shell");
++		g_settings_set_string (settings, "file-chooser-folder", uri);
++		g_object_unref (settings);
++	}
++
++	g_free (uri);
++}
++
++/**
++ * e_util_load_file_chooser_folder:
++ * @file_chooser: a #GtkFileChooser
++ *
++ * Sets the current folder to the @file_chooser to the one previously saved
++ * by e_util_save_file_chooser_folder(). The function does nothing if none
++ * or invalid is saved.
++ *
++ * Since: 3.22.4
++ **/
++void
++e_util_load_file_chooser_folder (GtkFileChooser *file_chooser)
++{
++	GSettings *settings;
++	gchar *uri;
++
++	g_return_if_fail (GTK_IS_FILE_CHOOSER (file_chooser));
++
++	settings = e_util_ref_settings ("org.gnome.evolution.shell");
++	uri = g_settings_get_string (settings, "file-chooser-folder");
++	g_object_unref (settings);
++
++	if (uri && g_str_has_prefix (uri, "file://")) {
++		gchar *filename;
++
++		filename = g_filename_from_uri (uri, NULL, NULL);
++		if (filename && g_file_test (filename, G_FILE_TEST_IS_DIR))
++			gtk_file_chooser_set_current_folder_uri (file_chooser, uri);
++
++		g_free (filename);
++	}
++
++	g_free (uri);
++}
+diff --git a/e-util/e-misc-utils.h b/e-util/e-misc-utils.h
+index f7848ace39..abe7678f35 100644
+--- a/e-util/e-misc-utils.h
++++ b/e-util/e-misc-utils.h
+@@ -328,6 +328,8 @@ GVariant *	e_util_invoke_g_dbus_proxy_call_sync_wrapper_full
+ 						 gint timeout_msec,
+ 						 GCancellable *cancellable,
+ 						 GError **error);
++void		e_util_save_file_chooser_folder	(GtkFileChooser *file_chooser);
++void		e_util_load_file_chooser_folder	(GtkFileChooser *file_chooser);
+ 
+ G_END_DECLS
+ 
+diff --git a/e-util/e-web-view.c b/e-util/e-web-view.c
+index 85f20ec3da..53d9ce7a7c 100644
+--- a/e-util/e-web-view.c
++++ b/e-util/e-web-view.c
+@@ -4115,8 +4115,13 @@ e_web_view_cursor_image_save (EWebView *web_view)
+ 		g_free (suggestion);
+ 	}
+ 
+-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
++	e_util_load_file_chooser_folder (file_chooser);
++
++	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
++		e_util_save_file_chooser_folder (file_chooser);
++
+ 		destination = gtk_file_chooser_get_file (file_chooser);
++	}
+ 
+ 	gtk_widget_destroy (dialog);
+ 
+diff --git a/plugins/save-calendar/save-calendar.c b/plugins/save-calendar/save-calendar.c
+index 723a1c29ef..24c6978663 100644
+--- a/plugins/save-calendar/save-calendar.c
++++ b/plugins/save-calendar/save-calendar.c
+@@ -196,9 +196,13 @@ ask_destination_and_save (ESourceSelector *selector,
+ 	gtk_widget_show (GTK_WIDGET (combo));
+ 	gtk_widget_show (extra_widget);
+ 
++	e_util_load_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
++
+ 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
+ 		gchar *tmp = NULL;
+ 
++		e_util_save_file_chooser_folder (GTK_FILE_CHOOSER (dialog));
++
+ 		if (gtk_combo_box_get_active_iter (combo, &iter))
+ 			gtk_tree_model_get (
+ 				model, &iter,
+diff --git a/shell/e-shell-utils.c b/shell/e-shell-utils.c
+index ddec8856f0..2ae2c15893 100644
+--- a/shell/e-shell-utils.c
++++ b/shell/e-shell-utils.c
+@@ -79,12 +79,17 @@ e_shell_run_open_dialog (EShell *shell,
+ 
+ 	gtk_file_chooser_set_local_only (file_chooser, FALSE);
+ 
++	e_util_load_file_chooser_folder (file_chooser);
++
+ 	/* Allow further customizations before running the dialog. */
+ 	if (customize_func != NULL)
+ 		customize_func (dialog, customize_data);
+ 
+-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
++	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
++		e_util_save_file_chooser_folder (file_chooser);
++
+ 		chosen_file = gtk_file_chooser_get_file (file_chooser);
++	}
+ 
+ 	gtk_widget_destroy (dialog);
+ 
+@@ -206,12 +211,17 @@ e_shell_run_save_dialog (EShell *shell,
+ 		g_strfreev (flts);
+ 	}
+ 
++	e_util_load_file_chooser_folder (file_chooser);
++
+ 	/* Allow further customizations before running the dialog. */
+ 	if (customize_func != NULL)
+ 		customize_func (dialog, customize_data);
+ 
+-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
++	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
++		e_util_save_file_chooser_folder (file_chooser);
++
+ 		chosen_file = gtk_file_chooser_get_file (file_chooser);
++	}
+ 
+ 	gtk_widget_destroy (dialog);
+ 
+-- 
+2.15.0
+
