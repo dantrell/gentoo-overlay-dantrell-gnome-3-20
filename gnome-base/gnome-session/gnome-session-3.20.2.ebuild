@@ -11,7 +11,11 @@ LICENSE="GPL-2 LGPL-2 FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+deprecated doc elibc_FreeBSD gconf ipv6 systemd wayland"
+IUSE="ck consolekit doc elibc_FreeBSD elogind gconf ipv6 systemd wayland"
+REQUIRED_USE="
+	?? ( ck consolekit elogind systemd )
+	wayland? ( || ( elogind systemd ) )
+"
 
 # x11-misc/xdg-user-dirs{,-gtk} are needed to create the various XDG_*_DIRs, and
 # create .config/user-dirs.dirs which is read by glib to get G_USER_DIRECTORY_*
@@ -24,6 +28,7 @@ COMMON_DEPEND="
 	>=dev-libs/json-glib-0.10
 	>=gnome-base/gnome-desktop-3.18:3=
 	elibc_FreeBSD? ( dev-libs/libexecinfo )
+	gconf? ( >=gnome-base/gconf-2:2 )
 	wayland? ( media-libs/mesa[egl,gles2] )
 	!wayland? ( media-libs/mesa[gles2] )
 
@@ -39,7 +44,10 @@ COMMON_DEPEND="
 	x11-misc/xdg-user-dirs-gtk
 	x11-apps/xdpyinfo
 
-	gconf? ( >=gnome-base/gconf-2:2 )
+	ck? ( <sys-auth/consolekit-0.9 )
+	consolekit? ( >=sys-auth/consolekit-0.9 )
+	elogind? ( sys-auth/elogind )
+	systemd? ( >=sys-apps/systemd-186:0= )
 "
 # Pure-runtime deps from the session files should *NOT* be added here
 # Otherwise, things like gdm pull in gnome-shell
@@ -50,15 +58,6 @@ RDEPEND="${COMMON_DEPEND}
 	>=gnome-base/gsettings-desktop-schemas-0.1.7
 	x11-themes/adwaita-icon-theme
 	sys-apps/dbus[X]
-
-	!deprecated? (
-		systemd? ( >=sys-apps/systemd-186:0= )
-	)
-	!systemd? (
-		sys-auth/consolekit
-		>=dev-libs/dbus-glib-0.76
-		deprecated? ( >=sys-power/upower-0.99:=[deprecated] )
-	)
 "
 DEPEND="${COMMON_DEPEND}
 	>=dev-lang/perl-5
@@ -75,7 +74,9 @@ DEPEND="${COMMON_DEPEND}
 # gnome-base/gdm does not provide gnome.desktop anymore
 
 src_prepare() {
-	if use deprecated; then
+	eapply "${FILESDIR}"/${PN}-3.24.1-support-elogind.patch
+
+	if use ck; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
 		eapply "${FILESDIR}"/${PN}-3.16.0-restore-deprecated-code.patch
@@ -86,20 +87,35 @@ src_prepare() {
 }
 
 src_configure() {
-	# 1. Support deprecated upower functionality
+	local myconf=()
+
+	# 1. Avoid automagic on old upower releases
 	# 2. xsltproc is always checked due to man configure
 	#    switch, even if USE=-doc
 	# 3. Enable old gconf support
+	if use ck; then
+		myconf+=(
+			$(use_enable ck consolekit)
+			$(use_enable consolekit)
+		)
+	fi
+
+	if ! use ck; then
+		myconf+=(
+			$(use_enable consolekit)
+			UPOWER_CFLAGS=""
+			UPOWER_LIBS=""
+		)
+	fi
+
 	gnome2_src_configure \
 		--enable-session-selector \
-		$(use_enable deprecated) \
 		$(use_enable doc docbook-docs) \
+		$(use_enable elogind) \
 		$(use_enable gconf) \
 		$(use_enable ipv6) \
 		$(use_enable systemd) \
-		$(use_enable !systemd consolekit)
-		# gnome-session-selector pre-generated man page is missing
-		#$(usex !doc XSLTPROC=$(type -P true))
+		"${myconf[@]}"
 }
 
 src_install() {

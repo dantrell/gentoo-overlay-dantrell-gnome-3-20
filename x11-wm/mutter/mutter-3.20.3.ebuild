@@ -11,7 +11,11 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="debug +deprecated-background +introspection test wayland"
+IUSE="ck debug +deprecated-background elogind +introspection systemd test wayland"
+REQUIRED_USE="
+	?? ( ck elogind systemd )
+	wayland? ( || ( elogind systemd ) )
+"
 
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
@@ -55,8 +59,8 @@ COMMON_DEPEND="
 		>=dev-libs/wayland-protocols-1.1
 		>=media-libs/clutter-1.20[egl,wayland]
 		>=media-libs/mesa-10.3[egl,gbm,wayland]
-		media-libs/cogl:1.0=[kms]
-		sys-apps/systemd
+		media-libs/cogl:1.0=[wayland]
+		|| ( sys-auth/elogind sys-apps/systemd )
 		virtual/libgudev:=
 		x11-base/xorg-server[wayland]
 		x11-libs/libdrm:=
@@ -77,6 +81,10 @@ RDEPEND="${COMMON_DEPEND}
 "
 
 src_prepare() {
+	if use elogind; then
+		eapply "${FILESDIR}"/${PN}-3.20.3-support-elogind.patch
+	fi
+
 	if use deprecated-background; then
 		eapply "${FILESDIR}"/${PN}-3.18.4-restore-deprecated-background-code.patch
 	fi

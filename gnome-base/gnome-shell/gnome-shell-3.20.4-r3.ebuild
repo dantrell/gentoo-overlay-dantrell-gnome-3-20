@@ -13,8 +13,10 @@ LICENSE="GPL-2+ LGPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+bluetooth browser-extension +deprecated +deprecated-background +ibus +networkmanager systemd vanilla-motd vanilla-screen"
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+IUSE="+bluetooth browser-extension ck +deprecated-background elogind +ibus +networkmanager nsplugin systemd vanilla-motd vanilla-screen"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}
+	?? ( ck elogind systemd )
+"
 
 # libXfixes-5.0 needed for pointer barriers
 # FIXME:
@@ -29,7 +31,6 @@ COMMON_DEPEND="
 	dev-libs/libical:=
 	>=x11-libs/gtk+-3.15.0:3[introspection]
 	>=media-libs/clutter-1.21.5:1.0[introspection]
-	>=dev-libs/json-glib-0.13.2
 	>=dev-libs/libcroco-0.6.8:0.6
 	>=gnome-base/gnome-desktop-3.7.90:3=[introspection]
 	>=gnome-base/gsettings-desktop-schemas-3.19.2
@@ -65,6 +66,7 @@ COMMON_DEPEND="
 		app-crypt/libsecret
 		>=gnome-extra/nm-applet-0.9.8
 		>=net-misc/networkmanager-0.9.8:=[introspection] )
+	nsplugin? ( >=dev-libs/json-glib-0.13.2 )
 "
 # Runtime-only deps are probably incomplete and approximate.
 # Introspection deps generated using:
@@ -87,12 +89,9 @@ RDEPEND="${COMMON_DEPEND}
 	>=gnome-base/gnome-session-2.91.91
 	>=gnome-base/gnome-settings-daemon-3.8.3
 
-	!deprecated? (
-		systemd? ( >=sys-apps/systemd-186:0= )
-	)
-	!systemd? (
-		deprecated? ( >=sys-power/upower-0.99:=[deprecated] )
-	)
+	ck? ( >=sys-power/upower-0.99:=[ck] )
+	elogind? ( sys-auth/elogind )
+	systemd? ( >=sys-apps/systemd-186:0= )
 
 	x11-misc/xdg-utils
 
@@ -127,7 +126,7 @@ src_prepare() {
 	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=890a1f112b62d95678f765f71013ee4c2c68ab88
 	eapply "${FILESDIR}"/${PN}-3.20.5-calendar-server-add-back-missing-return-value.patch
 
-	if use deprecated; then
+	if use ck; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
 		eapply "${FILESDIR}"/${PN}-3.14.1-restore-deprecated-code.patch
@@ -163,10 +162,10 @@ src_prepare() {
 src_configure() {
 	# Do not error out on warnings
 	gnome2_src_configure \
-		--enable-browser-plugin \
 		--enable-man \
 		$(use_with bluetooth) \
 		$(use_enable networkmanager) \
+		$(use_enable nsplugin browser-plugin) \
 		$(use_enable systemd) \
 		BROWSER_PLUGIN_DIR="${EPREFIX}"/usr/$(get_libdir)/nsbrowser/plugins
 }
@@ -220,11 +219,9 @@ pkg_postinst() {
 		ewarn "https://wiki.gentoo.org/wiki/Systemd"
 	fi
 
-	if use deprecated; then
-		ewarn "You are enabling 'deprecated' USE flag to skip systemd requirement,"
-		ewarn "this can lead to unexpected problems and is not supported neither by"
-		ewarn "upstream neither by Gnome Gentoo maintainers. If you suffer any problem,"
-		ewarn "you will need to disable this USE flag system wide and retest before"
-		ewarn "opening any bug report."
+	if ! use systemd; then
+		ewarn "You have emerged ${PN} without systemd,"
+		ewarn "if you experience any issues please use the support thread:"
+		ewarn "https://forums.gentoo.org/viewtopic-t-1022050.html"
 	fi
 }

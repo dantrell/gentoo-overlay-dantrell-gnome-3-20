@@ -13,8 +13,9 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="+colord +cups debug +deprecated input_devices_wacom networkmanager policykit smartcard systemd test +udev wayland"
+IUSE="ck +colord +cups debug elogind input_devices_wacom networkmanager policykit smartcard systemd test +udev wayland"
 REQUIRED_USE="
+	?? ( ck elogind systemd )
 	input_devices_wacom? ( udev )
 	smartcard? ( udev )
 "
@@ -74,12 +75,9 @@ RDEPEND="${COMMON_DEPEND}
 	!<gnome-extra/gnome-color-manager-3.1.1
 	!<gnome-extra/gnome-power-manager-3.1.3
 
-	!deprecated? (
-		systemd? ( >=sys-apps/systemd-186:0= )
-	)
-	!systemd? (
-		deprecated? ( >=sys-power/upower-0.99:=[deprecated] )
-	)
+	ck? ( >=sys-power/upower-0.99:=[ck] )
+	elogind? ( sys-auth/elogind )
+	systemd? ( >=sys-apps/systemd-186:0= )
 "
 # xproto-7.0.15 needed for power plugin
 DEPEND="${COMMON_DEPEND}
@@ -112,7 +110,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if use deprecated; then
+	if use ck; then
 		# From Funtoo:
 		# 	https://bugs.funtoo.org/browse/FL-1329
 		eapply "${FILESDIR}"/${PN}-3.18.2-restore-deprecated-code.patch
@@ -129,11 +127,11 @@ src_configure() {
 	gnome2_src_configure \
 		--disable-static \
 		--enable-man \
+		$(use_enable ck deprecated) \
 		$(use_enable colord color) \
 		$(use_enable cups) \
 		$(use_enable debug) \
 		$(use_enable debug more-warnings) \
-		$(use_enable deprecated) \
 		$(use_enable networkmanager network-manager) \
 		$(use_enable smartcard smartcard-support) \
 		$(use_enable udev gudev) \
@@ -158,11 +156,9 @@ pkg_postinst() {
 		ewarn "https://wiki.gentoo.org/wiki/Systemd"
 	fi
 
-	if use deprecated; then
-		ewarn "You are enabling 'deprecated' USE flag to skip systemd requirement,"
-		ewarn "this can lead to unexpected problems and is not supported neither by"
-		ewarn "upstream neither by Gnome Gentoo maintainers. If you suffer any problem,"
-		ewarn "you will need to disable this USE flag system wide and retest before"
-		ewarn "opening any bug report."
+	if ! use systemd; then
+		ewarn "You have emerged ${PN} without systemd,"
+		ewarn "if you experience any issues please use the support thread:"
+		ewarn "https://forums.gentoo.org/viewtopic-t-1022050.html"
 	fi
 }

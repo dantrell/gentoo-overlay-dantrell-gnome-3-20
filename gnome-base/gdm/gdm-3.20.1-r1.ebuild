@@ -18,8 +18,11 @@ LICENSE="
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="accessibility audit branding +deprecated fprint +introspection ipv6 plymouth selinux smartcard systemd tcpd test wayland xinerama"
-REQUIRED_USE="wayland? ( systemd )"
+IUSE="accessibility audit branding ck elogind fprint +introspection ipv6 plymouth selinux smartcard systemd tcpd test wayland xinerama"
+REQUIRED_USE="
+	?? ( ck elogind systemd )
+	wayland? ( || ( elogind systemd ) )
+"
 
 # NOTE: x11-base/xorg-server dep is for X_SERVER_PATH etc, bug #295686
 # nspr used by smartcard extension
@@ -48,13 +51,12 @@ COMMON_DEPEND="
 	>=x11-misc/xdg-utils-1.0.2-r3
 
 	virtual/pam
+
+	ck? ( >=sys-power/upower-0.99:=[ck] )
+	elogind? ( sys-auth/elogind )
 	systemd? ( >=sys-apps/systemd-186:0=[pam] )
-	!systemd? (
-		>=x11-base/xorg-server-1.14.3-r1
-		>=sys-auth/consolekit-0.4.5_p20120320-r2
-		!<sys-apps/openrc-0.12
-	)
-	sys-auth/pambase[systemd?]
+
+	sys-auth/pambase[ck?,elogind?,systemd?]
 
 	audit? ( sys-process/audit )
 	introspection? ( >=dev-libs/gobject-introspection-0.9.12:= )
@@ -122,7 +124,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if use deprecated; then
+	if use ck; then
 		# From GNOME:
 		# 	https://git.gnome.org/browse/gdm/commit/?id=e0e7f2d92d8d26592c44dd12fe56c52414a6bb2a
 		# 	https://git.gnome.org/browse/gdm/commit/?id=a9cacb929470eb82582396984c61d5b611bfeb1a
@@ -150,12 +152,22 @@ src_prepare() {
 	# Show logo when branding is enabled
 	use branding && eapply "${FILESDIR}/${PN}-3.8.4-logo.patch"
 
+	if use elogind; then
+		eapply "${FILESDIR}"/${PN}-3.24.2-support-elogind.patch
+		eapply "${FILESDIR}"/${PN}-3.24.2-enable-elogind.patch
+	fi
+
+	if ! use wayland; then
+		eapply "${FILESDIR}"/${PN}-3.24.2-prioritize-xorg.patch
+	fi
+
 	eautoreconf
 	gnome2_src_prepare
 }
 
 src_configure() {
-	local myconf
+	local myconf=()
+
 	# PAM is the only auth scheme supported
 	# even though configure lists shadow and crypt
 	# they don't have any corresponding code.
@@ -163,7 +175,15 @@ src_configure() {
 	# of https://bugzilla.gnome.org/show_bug.cgi?id=607643#c4
 	# Xevie is obsolete, bug #482304
 	# --with-initial-vt=7 conflicts with plymouth, bug #453392
-	! use plymouth && myconf="${myconf} --with-initial-vt=7"
+	! use plymouth && myconf+=( --with-initial-vt=7 )
+
+	if use ck; then
+		myconf+=(
+			--with-consolekit-directory="${EPREFIX}"/usr/lib/ConsoleKit
+			--without-systemd
+			$(use_with ck console-kit)
+		)
+	fi
 
 	gnome2_src_configure \
 		--enable-gdm-xsession \
@@ -174,20 +194,17 @@ src_configure() {
 		--enable-authentication-scheme=pam \
 		--with-default-pam-config=exherbo \
 		--with-at-spi-registryd-directory="${EPREFIX}"/usr/libexec \
-		--with-consolekit-directory="${EPREFIX}"/usr/lib/ConsoleKit \
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)" \
 		--without-xevie \
 		$(use_with audit libaudit) \
 		$(use_enable ipv6) \
 		$(use_with plymouth) \
 		$(use_with selinux) \
-		$(use_with systemd) \
-		$(use_with !systemd console-kit) \
 		$(use_enable systemd systemd-journal) \
 		$(use_with tcpd tcp-wrappers) \
 		$(use_enable wayland wayland-support) \
 		$(use_with xinerama) \
-		${myconf}
+		"${myconf[@]}"
 }
 
 src_install() {

@@ -1,0 +1,64 @@
+diff '--exclude=.git' -urN a/configure.ac b/configure.ac
+--- a/configure.ac	2016-06-28 18:09:25.000000000 -0400
++++ b/configure.ac	2017-12-05 11:48:00.248892863 -0500
+@@ -189,7 +189,21 @@
+ 
+ PKG_CHECK_MODULES(MUTTER, $MUTTER_PC_MODULES)
+ 
+-MUTTER_NATIVE_BACKEND_MODULES="clutter-egl-1.0 libdrm libsystemd libinput gudev-1.0 gbm >= 10.3"
++PKG_CHECK_MODULES(ELOGIND, [libelogind], [have_elogind=yes], [have_elogind=no])
++
++if test x$have_elogind = xyes; then
++     AC_DEFINE(WITH_ELOGIND, 1, [Define if elogind is used])
++     libsystemd="libelogind"
++fi
++
++PKG_CHECK_MODULES(SYSTEMD, [libsystemd], [have_systemd=yes], [have_systemd=no])
++
++if test x$have_systemd = xyes; then
++     AC_DEFINE(WITH_SYSTEMD, 1, [Define if systemd is used])
++     libsystemd="libsystemd"
++fi
++
++MUTTER_NATIVE_BACKEND_MODULES="clutter-egl-1.0 libdrm $libsystemd libinput gudev-1.0 gbm >= 10.3"
+ 
+ AC_ARG_ENABLE(native-backend,
+   AS_HELP_STRING([--disable-native-backend], [disable mutter native (KMS) backend]),,
+diff '--exclude=.git' -urN a/src/backends/native/meta-launcher.c b/src/backends/native/meta-launcher.c
+--- a/src/backends/native/meta-launcher.c	2016-06-28 12:25:36.000000000 -0400
++++ b/src/backends/native/meta-launcher.c	2017-12-05 11:44:35.106951429 -0500
+@@ -36,7 +36,12 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
++#ifdef WITH_ELOGIND
++#include <elogind/sd-login.h>
++#endif
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
++#endif
+ #include <gudev/gudev.h>
+ 
+ #include "dbus-utils.h"
+diff '--exclude=.git' -urN a/src/core/main.c b/src/core/main.c
+--- a/src/core/main.c	2016-04-21 06:44:27.000000000 -0400
++++ b/src/core/main.c	2017-12-05 11:47:10.082150470 -0500
+@@ -82,9 +82,17 @@
+ #include "wayland/meta-wayland.h"
+ # endif
+ 
+-#if defined(HAVE_NATIVE_BACKEND) && defined(HAVE_WAYLAND)
++#ifdef HAVE_NATIVE_BACKEND
++#include "backends/native/meta-backend-native.h"
++#ifdef HAVE_WAYLAND
++#ifdef WITH_ELOGIND
++#include <elogind/sd-login.h>
++#endif
++#ifdef WITH_SYSTEMD
+ #include <systemd/sd-login.h>
+ #endif
++#endif /* HAVE_WAYLAND */
++#endif /* HAVE_NATIVE_BACKEND */
+ 
+ /*
+  * The exit code we'll return to our parent process when we eventually die.
