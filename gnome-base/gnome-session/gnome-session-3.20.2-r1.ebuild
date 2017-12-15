@@ -96,7 +96,7 @@ src_configure() {
 	if use ck; then
 		myconf+=(
 			$(use_enable ck consolekit)
-			$(use_enable consolekit)
+			$(use_enable ck deprecated)
 		)
 	fi
 
