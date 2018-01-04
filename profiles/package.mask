@@ -231,7 +231,6 @@ x11-themes/gnome-themes-standard::gentoo
 x11-themes/gnome-themes-standard::gnome-kit
 x11-themes/gtk-engines-adwaita::gentoo
 x11-themes/gtk-engines-adwaita::gnome-kit
-x11-wm/metacity::desktop-kit
 x11-wm/metacity::gentoo
 x11-wm/mutter::gentoo
 x11-wm/mutter::gnome-kit
