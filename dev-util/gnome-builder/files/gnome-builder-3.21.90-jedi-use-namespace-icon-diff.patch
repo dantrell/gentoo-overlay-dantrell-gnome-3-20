@@ -1,0 +1,27 @@
+From cbc386fcc859df9a8b8f6fbca585f2839022f2ac Mon Sep 17 00:00:00 2001
+From: Christian Hergert <chergert@redhat.com>
+Date: Mon, 23 May 2016 23:29:30 +0300
+Subject: [PATCH] jedi: use namespace icon
+
+---
+ plugins/jedi/jedi_plugin.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/plugins/jedi/jedi_plugin.py b/plugins/jedi/jedi_plugin.py
+index b9ebc31..44cf196 100644
+--- a/plugins/jedi/jedi_plugin.py
++++ b/plugins/jedi/jedi_plugin.py
+@@ -83,8 +83,8 @@ _ICONS = {
+     _TYPE_CLASS: 'lang-class-symbolic',
+     _TYPE_INSTANCE: 'lang-variable-symbolic',
+     _TYPE_PARAM: 'lang-variable-symbolic',
+-    _TYPE_IMPORT: 'lang-include-symbolic',
+-    _TYPE_MODULE: 'lang-include-symbolic',
++    _TYPE_IMPORT: 'lang-namespace-symbolic',
++    _TYPE_MODULE: 'lang-namespace-symbolic',
+ }
+ 
+ try:
+--
+libgit2 0.26.0
+
