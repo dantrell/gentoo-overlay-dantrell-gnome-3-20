@@ -11,7 +11,7 @@ SLOT="3.0"
 # double check none of the deps are still masked !
 KEYWORDS="*"
 
-IUSE="+bijiben boxes builder california empathy epiphany +evolution flashback +fonts +games geary gnote latexila multiwriter +share +shotwell simple-scan +todo +tracker"
+IUSE="anjuta +bijiben boxes builder california empathy epiphany +evolution flashback +fonts +games geary gnote latexila multiwriter +share +shotwell simple-scan +todo +tracker"
 
 # Note to developers:
 #
@@ -53,6 +53,7 @@ RDEPEND="
 	>=sys-apps/baobab-${PV}
 	>=sys-apps/gnome-disk-utility-${PV}
 
+	anjuta? ( >=dev-util/anjuta-${PV} )
 	bijiben? ( >=app-misc/bijiben-${PV} )
 	boxes? ( >=gnome-extra/gnome-boxes-${PV} )
 	builder? ( >=dev-util/gnome-builder-3.18.0 )
@@ -62,9 +63,9 @@ RDEPEND="
 	evolution? ( >=mail-client/evolution-${PV} )
 	flashback? ( >=gnome-base/gnome-flashback-${PV} )
 	fonts? (
-		>=media-fonts/noto-20160305
-		>=media-fonts/symbola-8.00
-		>=media-fonts/unifont-8.0.01 )
+		>=media-fonts/noto-20170403
+		>=media-fonts/symbola-9.17
+		>=media-fonts/unifont-10.0.06 )
 	games? (
 		>=games-arcade/gnome-nibbles-${PV}
 		>=games-arcade/gnome-robots-${PV}
@@ -86,7 +87,7 @@ RDEPEND="
 		>=games-puzzle/lightsoff-${PV}
 		>=games-puzzle/quadrapassel-${PV}
 		>=games-puzzle/swell-foop-${PV} )
-	geary? ( >=mail-client/geary-0.11.3 )
+	geary? ( >=mail-client/geary-0.12.2 )
 	gnote? ( >=app-misc/gnote-${PV} )
 	latexila? ( >=app-editors/latexila-${PV} )
 	multiwriter? ( >=gnome-extra/gnome-multi-writer-${PV} )
