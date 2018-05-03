@@ -1,0 +1,12 @@
+diff '--exclude=.git' -urN a/src/compositor/meta-shaped-texture.c b/src/compositor/meta-shaped-texture.c
+--- a/src/compositor/meta-shaped-texture.c	2014-12-18 09:17:05.000000000 -0500
++++ b/src/compositor/meta-shaped-texture.c	2018-05-03 03:44:08.286218826 -0400
+@@ -124,7 +124,7 @@
+ 
+   priv->texture = NULL;
+   priv->mask_texture = NULL;
+-  priv->create_mipmaps = TRUE;
++  priv->create_mipmaps = FALSE;
+ }
+ 
+ static void
