@@ -11,7 +11,7 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="ck debug +deprecated-background elogind +introspection systemd test vanilla-mipmapping wayland"
+IUSE="ck debug +deprecated-background elogind +introspection systemd test +vanilla-mipmapping wayland"
 REQUIRED_USE="
 	?? ( ck elogind systemd )
 	wayland? ( || ( elogind systemd ) )
