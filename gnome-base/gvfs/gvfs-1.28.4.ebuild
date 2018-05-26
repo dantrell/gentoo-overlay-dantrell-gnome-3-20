@@ -85,11 +85,9 @@ src_prepare() {
 			-e 's/burn.mount.in/ /' \
 			-e 's/burn.mount/ /' \
 			-i daemon/Makefile.am || die
-
-		# Uncomment when eautoreconf stops being needed always
-		eautoreconf
 	fi
 
+	eautoreconf
 	gnome2_src_prepare
 }
 
