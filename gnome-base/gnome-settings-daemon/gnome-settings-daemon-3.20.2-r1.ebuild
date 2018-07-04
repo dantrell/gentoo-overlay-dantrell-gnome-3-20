@@ -117,6 +117,10 @@ src_prepare() {
 	# Make colord and wacom optional; requires eautoreconf
 	eapply "${FILESDIR}"/${PN}-3.16.0-optional.patch
 
+	# From Ben Wolsieffer:
+	# 	https://bugzilla.gnome.org/show_bug.cgi?id=734964
+	eapply "${FILESDIR}"/${PN}-3.12.0-optionally-allow-suspending-with-multiple-monitors-on-lid-close.patch
+
 	eautoreconf
 	gnome2_src_prepare
 }
