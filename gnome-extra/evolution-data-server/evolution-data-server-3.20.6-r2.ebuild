@@ -89,6 +89,10 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-3.21.90-bug-751588-port-to-webkit2.patch
 	eapply "${FILESDIR}"/${PN}-3.21.91-rename-webkitgtk-minimum-version-to-webkit2gtk-minimum-version.patch
 
+	# From GNOME:
+	# 	https://bugzilla.gnome.org/show_bug.cgi?id=795295
+	eapply "${FILESDIR}"/${PN}-3.13.90-bug-795295-fails-to-compile-after-icu-61-1-upgrade-icuunicodestring.patch
+
 	eautoreconf
 	use vala && vala_src_prepare
 	gnome2_src_prepare
