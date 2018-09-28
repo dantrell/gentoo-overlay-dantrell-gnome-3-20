@@ -131,8 +131,8 @@ src_prepare() {
 		-o "${S}"/tests/libtracker-data/functions/functions-tracker-2.out || die
 
 	eautoreconf # See bug #367975
-	gnome2_src_prepare
 	vala_src_prepare
+	gnome2_src_prepare
 }
 
 src_configure() {

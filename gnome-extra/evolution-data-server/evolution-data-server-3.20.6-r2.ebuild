@@ -76,12 +76,12 @@ pkg_setup() {
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=8a829b614c6d18d9bad74dcb8ed3ba0b2590fb90
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=292c7ef22c60cab709974c0da421666deb6239fb
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=c9da0712f20baf5bdfdd2f1fa9d26e7204c6f685
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=aad7e7c2e78b12dd632623961d51a36f94b6ca37
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=6c3cff9821913913aac2c8391771f0e978e501a9
-	# 	https://git.gnome.org/browse/evolution-data-server/commit/?id=8d07e3f02a63fbc1bc3a381b088ec2913f21c118
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/8a829b614c6d18d9bad74dcb8ed3ba0b2590fb90
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/292c7ef22c60cab709974c0da421666deb6239fb
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/c9da0712f20baf5bdfdd2f1fa9d26e7204c6f685
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/aad7e7c2e78b12dd632623961d51a36f94b6ca37
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/6c3cff9821913913aac2c8391771f0e978e501a9
+	# 	https://gitlab.gnome.org/GNOME/evolution-data-server/commit/8d07e3f02a63fbc1bc3a381b088ec2913f21c118
 	eapply "${FILESDIR}"/${PN}-3.21.2-bug-765646-camel-add-some-missing-annotations.patch
 	eapply "${FILESDIR}"/${PN}-3.21.3-camelgpgcontext-provide-signer-photos-when-available.patch
 	eapply "${FILESDIR}"/${PN}-3.21.4-bug-764065-camel-use-get-methods-for-camelmessageinfo-fields.patch

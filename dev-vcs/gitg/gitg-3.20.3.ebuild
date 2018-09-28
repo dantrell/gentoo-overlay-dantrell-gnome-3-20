@@ -62,8 +62,8 @@ src_prepare() {
 		-e '/CFLAGS/s:-O0::g' \
 		-i configure.ac || die
 
-	gnome2_src_prepare
 	vala_src_prepare
+	gnome2_src_prepare
 }
 
 src_configure() {

@@ -94,7 +94,7 @@ file from /usr/share/applications if you use a different browser)."
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/evolution/log/?h=gnome-3-22
+	# 	https://gitlab.gnome.org/GNOME/evolution/commits/gnome-3-22
 	eapply "${FILESDIR}"
 
 	eautoreconf

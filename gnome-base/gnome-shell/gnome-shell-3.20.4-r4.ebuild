@@ -123,7 +123,7 @@ DEPEND="${COMMON_DEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://git.gnome.org/browse/gnome-shell/commit/?id=890a1f112b62d95678f765f71013ee4c2c68ab88
+	# 	https://gitlab.gnome.org/GNOME/gnome-shell/commit/890a1f112b62d95678f765f71013ee4c2c68ab88
 	eapply "${FILESDIR}"/${PN}-3.20.5-calendar-server-add-back-missing-return-value.patch
 
 	if use ck; then
@@ -228,6 +228,6 @@ pkg_postinst() {
 	if ! use systemd; then
 		ewarn "You have emerged ${PN} without systemd,"
 		ewarn "if you experience any issues please use the support thread:"
-		ewarn "https://forums.gentoo.org/viewtopic-t-1022050.html"
+		ewarn "https://forums.gentoo.org/viewtopic-t-1082226.html"
 	fi
 }
