@@ -3,7 +3,7 @@
 EAPI="6"
 VALA_MAX_API_VERSION="0.34"
 
-inherit gnome2 vala
+inherit autotools gnome2 vala
 
 DESCRIPTION="Simple document scanning utility"
 HOMEPAGE="https://launchpad.net/simple-scan"
@@ -11,7 +11,7 @@ SRC_URI="https://gitlab.gnome.org/GNOME/${PN}/-/archive/${PV}/${P}.tar.bz2"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~*"
+KEYWORDS="*"
 
 IUSE="+colord packagekit"
 
@@ -38,6 +38,7 @@ DEPEND="${COMMON_DEPEND}
 "
 
 src_prepare() {
+	eautoreconf
 	vala_src_prepare
 	gnome2_src_prepare
 }
