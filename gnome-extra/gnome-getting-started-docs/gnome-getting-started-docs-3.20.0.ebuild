@@ -18,7 +18,6 @@ RESTRICT="binchecks strip"
 
 RDEPEND="gnome-extra/gnome-user-docs"
 DEPEND="
-	app-text/yelp-tools
 	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
