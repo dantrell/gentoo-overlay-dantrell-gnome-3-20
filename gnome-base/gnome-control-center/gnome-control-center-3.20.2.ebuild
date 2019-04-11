@@ -22,7 +22,6 @@ REQUIRED_USE="
 QA_CONFIGURE_OPTIONS=".*"
 
 # gnome-session-2.91.6-r1 is needed so that 10-user-dirs-update is run at login
-# g-s-d[policykit] needed for bug #403527
 # kerberos unfortunately means mit-krb5; build fails with heimdal
 # udev could be made optional, only conditions gsd-device-panel
 # (mouse, keyboards, touchscreen, etc)
@@ -32,7 +31,7 @@ COMMON_DEPEND="
 	>=x11-libs/gtk+-3.20.3:3[X,wayland?]
 	>=gnome-base/gsettings-desktop-schemas-3.19.3
 	>=gnome-base/gnome-desktop-3.19.93:3=
-	>=gnome-base/gnome-settings-daemon-3.19.1[colord?,policykit]
+	>=gnome-base/gnome-settings-daemon-3.19.1[colord?]
 
 	>=dev-libs/libpwquality-1.2.2
 	dev-libs/libxml2:2
