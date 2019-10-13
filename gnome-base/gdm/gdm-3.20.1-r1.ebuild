@@ -50,7 +50,7 @@ COMMON_DEPEND="
 	x11-libs/libXft
 	>=x11-misc/xdg-utils-1.0.2-r3
 
-	virtual/pam
+	sys-libs/pam
 
 	ck? ( >=sys-power/upower-0.99:=[ck] )
 	elogind? ( sys-auth/elogind )
