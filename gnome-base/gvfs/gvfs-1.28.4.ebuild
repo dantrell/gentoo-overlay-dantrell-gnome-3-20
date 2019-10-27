@@ -53,7 +53,7 @@ RDEPEND="
 	systemd? ( sys-apps/systemd:0= )
 	udev? (
 		cdda? ( dev-libs/libcdio-paranoia )
-		virtual/libgudev:=
+		dev-libs/libgudev:=
 		virtual/libudev:= )
 	udisks? ( >=sys-fs/udisks-1.97:2 )
 	zeroconf? ( >=net-dns/avahi-0.6[dbus] )

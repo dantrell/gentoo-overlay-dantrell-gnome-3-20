@@ -61,7 +61,7 @@ COMMON_DEPEND="
 		>=media-libs/mesa-10.3[egl,gbm,wayland]
 		media-libs/cogl:1.0=[wayland]
 		|| ( sys-auth/elogind sys-apps/systemd )
-		virtual/libgudev:=
+		dev-libs/libgudev:=
 		x11-base/xorg-server[wayland]
 		x11-libs/libdrm:=
 	)

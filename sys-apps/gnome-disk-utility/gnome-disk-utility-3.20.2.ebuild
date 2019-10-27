@@ -24,7 +24,7 @@ COMMON_DEPEND="
 	systemd? ( >=sys-apps/systemd-209:0= )
 "
 RDEPEND="${COMMON_DEPEND}
-	>=media-libs/libdvdread-4.2.0
+	>=media-libs/libdvdread-4.2.0:0=
 	>=media-libs/libcanberra-0.1[gtk3]
 	>=x11-libs/libnotify-0.7:=
 	x11-themes/adwaita-icon-theme

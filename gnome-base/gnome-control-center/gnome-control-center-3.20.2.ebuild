@@ -45,7 +45,7 @@ COMMON_DEPEND="
 	>=sys-power/upower-0.99:=
 	>=x11-libs/libnotify-0.7.3:0=
 
-	virtual/libgudev
+	dev-libs/libgudev
 	x11-apps/xmodmap
 	x11-libs/cairo
 	x11-libs/libX11
