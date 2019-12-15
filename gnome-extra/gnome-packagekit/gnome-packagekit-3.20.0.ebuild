@@ -13,6 +13,8 @@ KEYWORDS="*"
 
 IUSE="systemd test udev"
 
+RESTRICT="!test? ( test )"
+
 # gdk-pixbuf used in gpk-animated-icon
 # pango used on gpk-common
 RDEPEND="

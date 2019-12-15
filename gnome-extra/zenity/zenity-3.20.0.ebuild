@@ -13,6 +13,8 @@ KEYWORDS="*"
 
 IUSE="debug libnotify test webkit"
 
+RESTRICT="!test? ( test )"
+
 RDEPEND="
 	>=dev-libs/glib-2.8:2
 	x11-libs/gdk-pixbuf:2

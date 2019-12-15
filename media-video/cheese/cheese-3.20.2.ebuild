@@ -14,6 +14,8 @@ KEYWORDS="*"
 
 IUSE="+introspection test"
 
+RESTRICT="!test? ( test )"
+
 # using clutter-gst-2.0.0 results in GLSL errors; bug #478702
 COMMON_DEPEND="
 	>=dev-libs/glib-2.39.90:2

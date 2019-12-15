@@ -13,6 +13,8 @@ KEYWORDS="*"
 
 IUSE="+cairo examples gtk test"
 
+RESTRICT="!test? ( test )"
+
 RDEPEND="
 	>=dev-libs/glib-2.36:2
 	>=dev-libs/gobject-introspection-1.41.4:=

@@ -14,6 +14,8 @@ KEYWORDS="*"
 
 IUSE="test"
 
+RESTRICT="!test? ( test )"
+
 RDEPEND="
 	dev-db/sqlite:3=
 	>=dev-libs/glib-2.40:2

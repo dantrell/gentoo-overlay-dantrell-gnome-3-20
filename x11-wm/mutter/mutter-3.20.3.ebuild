@@ -17,6 +17,8 @@ REQUIRED_USE="
 	wayland? ( || ( elogind systemd ) )
 "
 
+RESTRICT="!test? ( test )"
+
 # libXi-1.7.4 or newer needed per:
 # https://bugzilla.gnome.org/show_bug.cgi?id=738944
 COMMON_DEPEND="

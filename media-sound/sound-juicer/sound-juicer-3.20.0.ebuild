@@ -13,6 +13,8 @@ KEYWORDS="*"
 
 IUSE="debug flac test vorbis"
 
+RESTRICT="!test? ( test )"
+
 COMMON_DEPEND="
 	app-text/iso-codes
 	>=dev-libs/glib-2.38:2[dbus]
