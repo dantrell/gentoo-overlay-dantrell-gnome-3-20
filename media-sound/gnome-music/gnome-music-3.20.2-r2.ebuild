@@ -3,7 +3,7 @@
 EAPI="6"
 PYTHON_COMPAT=( python{3_6,3_7,3_8} )
 
-inherit gnome2 python-r1
+inherit gnome2 python-single-r1
 
 DESCRIPTION="Music management for Gnome"
 HOMEPAGE="https://wiki.gnome.org/Apps/Music"
@@ -18,7 +18,9 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 COMMON_DEPEND="
 	${PYTHON_DEPS}
 	>=app-misc/tracker-1.7.1[introspection(+)]
-	dev-python/pygobject:3[cairo,${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-python/pygobject:3[cairo,${PYTHON_MULTI_USEDEP}]
+	')
 	>=dev-libs/glib-2.28:2
 	>=dev-libs/gobject-introspection-1.35.9:=
 	>=media-libs/grilo-0.3.0:0.3[introspection]
@@ -33,8 +35,10 @@ RDEPEND="${COMMON_DEPEND}
 		app-misc/tracker[ffmpeg]
 	)
 	x11-libs/libnotify[introspection]
-	dev-python/dbus-python[${PYTHON_USEDEP}]
-	dev-python/requests[${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-python/dbus-python[${PYTHON_MULTI_USEDEP}]
+		dev-python/requests[${PYTHON_MULTI_USEDEP}]
+	')
 	media-libs/gstreamer:1.0[introspection]
 	media-libs/gst-plugins-base:1.0[introspection]
 	media-plugins/gst-plugins-meta:1.0
@@ -58,5 +62,5 @@ src_prepare() {
 
 src_install() {
 	gnome2_src_install
-	python_fix_shebang "${D}"usr/bin/gnome-music
+	python_fix_shebang "${D}"/usr/bin/gnome-music
 }
