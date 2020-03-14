@@ -1,9 +1,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
-PYTHON_COMPAT=( python2_7 )
 
-inherit gnome2 python-any-r1 virtualx
+inherit gnome2 virtualx
 
 DESCRIPTION="Gnome install & update software"
 HOMEPAGE="https://wiki.gnome.org/Apps/Software"
@@ -12,9 +11,9 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="test"
+IUSE=""
 
-RESTRICT="!test? ( test )"
+RESTRICT="test"
 
 RDEPEND="
 	>=app-admin/packagekit-base-1.1.0
@@ -36,27 +35,7 @@ DEPEND="${RDEPEND}
 	dev-libs/libxslt
 	>=dev-util/intltool-0.35
 	virtual/pkgconfig
-	test? (
-		${PYTHON_DEPS}
-		$(python_gen_any_dep 'dev-util/dogtail[${PYTHON_USEDEP}]') )
 "
-# test? ( dev-util/valgrind )
-
-python_check_deps() {
-	use test && has_version "dev-util/dogtail[${PYTHON_USEDEP}]"
-}
-
-pkg_setup() {
-	use test && python-any-r1_pkg_setup
-}
-
-src_prepare() {
-	# valgrind fails with SIGTRAP
-	sed -e 's/TESTS = .*/TESTS =/' \
-		-i "${S}"/src/Makefile.{am,in} || die
-
-	gnome2_src_prepare
-}
 
 src_configure() {
 	# FIXME: investigate limba and firmware update support
@@ -67,9 +46,5 @@ src_configure() {
 		--disable-xdg-app \
 		--disable-firmware \
 		--disable-limba \
-		$(use_enable test dogtail)
-}
-
-src_test() {
-	virtx emake check TESTS_ENVIRONMENT="dbus-run-session"
+		--disable-dogtail
 }

@@ -31,7 +31,7 @@ RDEPEND="
 			dev-python/mako[${PYTHON_MULTI_USEDEP}]
 		')
 	)
-	virtual/libffi:=
+	dev-libs/libffi:=
 	virtual/pkgconfig
 	!<dev-lang/vala-0.20.0
 	${PYTHON_DEPS}
