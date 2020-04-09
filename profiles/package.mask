@@ -8,6 +8,7 @@ app-editors/latexila::gentoo
 app-misc/bijiben::gentoo
 app-misc/gnote::gentoo
 app-misc/tracker::gentoo
+app-office/gnome-todo::gentoo
 app-text/evince::gentoo
 dev-cpp/gtkmm::gentoo
 dev-libs/atk::gentoo
@@ -77,7 +78,6 @@ gnome-extra/gnome-shell-extensions::gentoo
 gnome-extra/gnome-shell-frippery::gentoo
 gnome-extra/gnome-software::gentoo
 gnome-extra/gnome-system-monitor::gentoo
-gnome-extra/gnome-todo::gentoo
 gnome-extra/gnome-tweaks::gentoo
 gnome-extra/gnome-user-docs::gentoo
 gnome-extra/nautilus-tracker-tags::gentoo
