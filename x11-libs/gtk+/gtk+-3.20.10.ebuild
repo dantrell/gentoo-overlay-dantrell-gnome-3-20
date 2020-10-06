@@ -68,7 +68,7 @@ DEPEND="${COMMON_DEPEND}
 	>=dev-util/gdbus-codegen-2.38.2
 	>=dev-util/gtk-doc-am-1.20
 	>=sys-devel/gettext-0.18.3[${MULTILIB_USEDEP}]
-	virtual/pkgconfig[${MULTILIB_USEDEP}]
+	virtual/pkgconfig
 	X? ( x11-base/xorg-proto )
 	test? (
 		media-fonts/font-misc-misc

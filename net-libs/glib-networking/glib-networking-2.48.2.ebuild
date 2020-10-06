@@ -30,7 +30,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-util/intltool-0.35.0
 	sys-devel/gettext
-	>=virtual/pkgconfig-0-r1[${MULTILIB_USEDEP}]
+	virtual/pkgconfig
 	test? ( sys-apps/dbus[X] )
 "
 # eautoreconf needs >=sys-devel/autoconf-2.65:2.5
