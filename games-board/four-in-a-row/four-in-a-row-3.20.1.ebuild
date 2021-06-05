@@ -5,7 +5,7 @@ EAPI="6"
 inherit gnome2
 
 DESCRIPTION="Make lines of the same color to win"
-HOMEPAGE="https://wiki.gnome.org/Apps/Four-in-a-row"
+HOMEPAGE="https://wiki.gnome.org/Apps/Four-in-a-row https://gitlab.gnome.org/GNOME/four-in-a-row"
 
 # Code is GPL-2+ but most themes are GPL-3+ and we install them unconditionally
 LICENSE="GPL-3+"

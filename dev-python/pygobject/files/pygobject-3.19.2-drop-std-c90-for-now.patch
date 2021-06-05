@@ -1,0 +1,34 @@
+From 3b1d130174951f7648beceac270daa8ac65939c7 Mon Sep 17 00:00:00 2001
+From: Matthias Clasen <mclasen@redhat.com>
+Date: Fri, 30 Oct 2015 12:15:26 -0400
+Subject: [PATCH] Drop -std=c90 for now
+
+glib headers have a problem with it, and sorting it out on the
+glib side will take a while, so drop this for now.
+---
+ configure.ac | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index c03f3cde..eb8e5c2b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -241,15 +241,6 @@ if test "x$GCC" = "xyes"; then
+   JH_ADD_CFLAG([-Werror=unused-variable])
+   JH_ADD_CFLAG([-fno-strict-aliasing])
+   JH_ADD_CFLAG([-Werror=declaration-after-statement])
+-
+-  case $host_os in
+-  solaris*)
+-    ;;
+-  *)
+-    JH_ADD_CFLAG([-std=c90])
+-    ;;
+-  esac
+-
+ fi
+ 
+ CFLAGS="$CFLAGS $WARN_CFLAGS $CODE_COVERAGE_CFLAGS"
+-- 
+GitLab
+
