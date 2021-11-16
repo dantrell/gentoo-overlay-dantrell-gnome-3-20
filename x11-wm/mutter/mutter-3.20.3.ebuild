@@ -4,7 +4,7 @@ EAPI="6"
 
 inherit autotools gnome2
 
-DESCRIPTION="GNOME 3 compositing window manager based on Clutter"
+DESCRIPTION="GNOME compositing window manager based on Clutter"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/mutter"
 
 LICENSE="GPL-2+"
@@ -60,7 +60,7 @@ COMMON_DEPEND="
 		>=dev-libs/wayland-1.6.90
 		>=dev-libs/wayland-protocols-1.1
 		>=media-libs/clutter-1.20[egl,wayland]
-		>=media-libs/mesa-10.3[egl,gbm,wayland]
+		>=media-libs/mesa-10.3[egl(+),gbm(+),wayland]
 		media-libs/cogl:1.0=[wayland]
 		|| ( sys-auth/elogind sys-apps/systemd )
 		dev-libs/libgudev:=

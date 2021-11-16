@@ -28,7 +28,7 @@ RDEPEND="
 	>=dev-libs/glib-2.$(get_version_component_range 2):2
 	doctool? (
 		$(python_gen_cond_dep '
-			dev-python/mako[${PYTHON_MULTI_USEDEP}]
+			dev-python/mako[${PYTHON_USEDEP}]
 		')
 	)
 	dev-libs/libffi:=
