@@ -12,7 +12,7 @@ LICENSE="GPL-2+ CC-BY-SA-3.0"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="nautilus packagekit"
+IUSE="nautilus"
 
 # gdk-pixbuf used extensively in the source
 # cairo used in eggtreemultidnd.c
@@ -28,7 +28,6 @@ RDEPEND="
 	x11-libs/gdk-pixbuf:2
 	x11-libs/pango
 	nautilus? ( >=gnome-base/nautilus-3 )
-	packagekit? ( app-admin/packagekit-base )
 "
 DEPEND="${RDEPEND}
 	dev-util/desktop-file-utils
@@ -60,6 +59,12 @@ unstuff - app-arch/stuffit
 zoo     - app-arch/zoo"
 
 src_prepare() {
+	# From GNOME (CVE-2020-11736):
+	# 	https://gitlab.gnome.org/GNOME/file-roller/commit/45b2e76e25648961db621f898b4a9eb7c75ef4c0
+	# 	https://gitlab.gnome.org/GNOME/file-roller/commit/8572946d3ebe25f392f110ee838ff5abc7a3e78e
+	eapply "${FILESDIR}"/${PN}-3.32.5-libarchive-do-not-follow-external-links-when-extracting-files.patch
+	eapply "${FILESDIR}"/${PN}-3.32.5-libarchive-overwrite-the-symbolic-link-as-well.patch
+
 	# File providing Gentoo package names for various archivers
 	cp -f "${FILESDIR}"/3.6.0-packages.match data/packages.match || die
 
@@ -78,7 +83,7 @@ src_configure() {
 		--enable-magic \
 		--enable-libarchive \
 		$(use_enable nautilus nautilus-actions) \
-		$(use_enable packagekit)
+		--disable-packagekit
 }
 
 src_install() {

@@ -36,7 +36,7 @@ RDEPEND="
 		>=dev-db/sqlite-3.5:3
 		dev-libs/libunistring:=
 	)
-	tracker? ( app-misc/tracker:= )
+	tracker? ( app-misc/tracker:0= )
 	transcode? (
 		media-libs/gst-plugins-bad:1.0
 		media-plugins/gst-plugins-twolame:1.0

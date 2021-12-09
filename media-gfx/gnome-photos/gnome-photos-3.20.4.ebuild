@@ -16,7 +16,7 @@ IUSE="flickr upnp-av"
 RESTRICT="test"
 
 COMMON_DEPEND="
-	>=app-misc/tracker-1:=[miner-fs]
+	>=app-misc/tracker-1:0=[miner-fs]
 	>=dev-libs/glib-2.39.3:2
 	gnome-base/gnome-desktop:3=
 	>=dev-libs/libgdata-0.15.2:0=[gnome-online-accounts]

@@ -6,6 +6,6 @@
 	<name>Gentoo GNOME Desktop</name>
 </maintainer>
 <use>
-	<flag name="libcanberra">Enable sound event support using <pkg>media-libs/libcanberra</pkg></flag>
+	<flag name="tracker">Build the tracker search bar applet</flag>
 </use>
 </pkgmetadata>

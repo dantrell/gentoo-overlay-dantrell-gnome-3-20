@@ -27,7 +27,9 @@ COMMON_DEPEND="
 	>=gnome-base/gsettings-desktop-schemas-3.5.91
 	introspection? ( >=dev-libs/gobject-introspection-0.9.7:= )
 "
-RDEPEND="${COMMON_DEPEND}"
+RDEPEND="${COMMON_DEPEND}
+	sys-apps/hwdata
+"
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xml-dtd:4.1.2
 	dev-util/gdbus-codegen
@@ -48,6 +50,7 @@ src_configure() {
 		--disable-static \
 		--with-gnome-distributor=Gentoo \
 		--enable-desktop-docs \
+		--with-pnp-ids-path=/usr/share/hwdata/pnp.ids \
 		$(usex debug --enable-debug=yes ' ') \
 		$(use_enable debug debug-tools) \
 		$(use_enable introspection)
