@@ -58,8 +58,7 @@ src_install() {
 	gnome2_src_install -j1
 
 	if use examples; then
-		insinto /usr/share/doc/"${PF}"/examples
-		doins "${S}"/examples/*
+		dodoc -r examples
 	fi
 
 	# Required for gjs-console to run correctly on PaX systems
