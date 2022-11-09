@@ -27,7 +27,7 @@ RESTRICT="test"
 
 # Can use libgphoto-2.5.0 as well. Automagic detection.
 RDEPEND="
-	app-crypt/gcr:=
+	app-crypt/gcr:0=
 	>=dev-libs/glib-2.46.2:2
 	sys-apps/dbus
 	dev-libs/libxml2:2
@@ -48,7 +48,7 @@ RDEPEND="
 		>=app-pda/libimobiledevice-1.2:=
 		>=app-pda/libplist-1:= )
 	mtp? ( >=media-libs/libmtp-1.1.6 )
-	nfs? ( >=net-fs/libnfs-1.9.7 )
+	nfs? ( >=net-fs/libnfs-1.9.7:= )
 	samba? (
 		sys-libs/libunwind:=
 		>=net-fs/samba-4[client] )

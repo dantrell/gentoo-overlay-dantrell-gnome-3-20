@@ -23,7 +23,7 @@ COMMON_DEPEND="
 	dev-libs/libxml2:2
 	>=media-libs/libchamplain-0.12.14:0.12[gtk,introspection]
 	net-libs/rest:0.7
-	>=sci-geosciences/geocode-glib-3.15.2[introspection]
+	>=sci-geosciences/geocode-glib-3.15.2:0[introspection]
 	>=x11-libs/gtk+-3.15.9:3[introspection]
 "
 # Found by grepping imports.gi in ${S}

@@ -11,7 +11,7 @@ LICENSE="GPL-2 LGPL-2 FDL-1.1"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="ck consolekit doc elogind gconf ipv6 systemd wayland"
+IUSE="ck consolekit doc elogind gconf systemd wayland"
 REQUIRED_USE="
 	?? ( ck consolekit elogind systemd )
 	wayland? ( || ( elogind systemd ) )
@@ -112,7 +112,7 @@ src_configure() {
 		$(use_enable doc docbook-docs) \
 		$(use_enable elogind) \
 		$(use_enable gconf) \
-		$(use_enable ipv6) \
+		--enable-ipv6 \
 		$(use_enable systemd) \
 		"${myconf[@]}"
 }

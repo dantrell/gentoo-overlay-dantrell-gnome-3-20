@@ -11,7 +11,7 @@ LICENSE="GPL-2+"
 SLOT="0"
 KEYWORDS="*"
 
-IUSE="crypt debug gnome-keyring ipv6 jpeg ssl +telepathy zeroconf +zlib"
+IUSE="crypt debug gnome-keyring jpeg ssl +telepathy zeroconf +zlib"
 # bug #394611; tight encoding requires zlib encoding
 REQUIRED_USE="jpeg? ( zlib )"
 
@@ -37,7 +37,7 @@ RDEPEND="
 
 	crypt? ( >=dev-libs/libgcrypt-1.1.90:0= )
 	gnome-keyring? ( app-crypt/libsecret )
-	jpeg? ( virtual/jpeg:0= )
+	jpeg? ( media-libs/libjpeg-turbo:0= )
 	ssl? ( >=net-libs/gnutls-2.2.0:= )
 	telepathy? ( >=net-libs/telepathy-glib-0.18 )
 	zeroconf? ( >=net-dns/avahi-0.6:=[dbus] )
@@ -53,7 +53,7 @@ DEPEND="${RDEPEND}
 
 src_configure() {
 	gnome2_src_configure \
-		$(use_enable ipv6) \
+		--enable-ipv6 \
 		$(use_with crypt gcrypt) \
 		$(usex debug --enable-debug=yes ' ') \
 		$(use_with gnome-keyring secret) \
