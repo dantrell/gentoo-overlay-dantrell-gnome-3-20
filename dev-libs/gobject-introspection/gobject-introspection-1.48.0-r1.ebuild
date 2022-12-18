@@ -2,12 +2,15 @@
 
 EAPI="6"
 PYTHON_COMPAT=( python2_7 )
-PYTHON_REQ_USE="xml"
+PYTHON_REQ_USE="xml(+)"
 
 inherit gnome2 python-single-r1 toolchain-funcs versionator
 
+BACKPORT="1.51.2"
+
 DESCRIPTION="Introspection system for GObject-based libraries"
 HOMEPAGE="https://wiki.gnome.org/Projects/GObjectIntrospection"
+SRC_URI+=" mirror://gnome/sources/${GNOME_ORG_MODULE}/$(ver_cut 1-2 ${BACKPORT})/${GNOME_ORG_MODULE}-${BACKPORT}.tar.${GNOME_TARBALL_SUFFIX}"
 
 LICENSE="LGPL-2+ GPL-2+"
 SLOT="0"
@@ -36,7 +39,7 @@ RDEPEND="
 	!<dev-lang/vala-0.20.0
 	${PYTHON_DEPS}
 "
-# Wants real bison, not virtual/yacc
+# Wants real bison, not app-alternatives/yacc
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.19
 	sys-devel/bison
@@ -47,6 +50,19 @@ PDEPEND="cairo? ( x11-libs/cairo[glib] )"
 
 pkg_setup() {
 	python-single-r1_pkg_setup
+}
+
+src_unpack() {
+	if [[ -n ${A} ]]; then
+		unpack ${A}
+	fi
+
+	# From AppStream:
+	# 	https://github.com/ximion/appstream/issues/146
+	# 	https://gitlab.gnome.org/GNOME/gobject-introspection/-/commit/eea2447c4e4c1c98fda3ba212a9a9bbcc8655c90
+	cd "${WORKDIR}" || die "cd failed"
+	rm -rf "${WORKDIR}"/${P}/giscanner || die "rm -rf failed"
+	cp -a "${WORKDIR}"/${PN}-${BACKPORT}/giscanner "${WORKDIR}"/${P} || die "cp failed"
 }
 
 src_configure() {
