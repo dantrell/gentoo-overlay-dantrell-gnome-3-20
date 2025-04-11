@@ -87,7 +87,7 @@ DEPEND="${RDEPEND}
 	$(vala_depend)
 	dev-util/gdbus-codegen
 	>=dev-libs/libxslt-1
-	>=dev-util/gtk-doc-am-1.8
+	>=dev-build/gtk-doc-am-1.8
 	>=dev-util/intltool-0.40.0
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig

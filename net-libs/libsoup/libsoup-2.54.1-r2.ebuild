@@ -2,7 +2,7 @@
 
 EAPI="6"
 GNOME2_LA_PUNT="yes"
-PYTHON_COMPAT=( python{3_9,3_10,3_11} )
+PYTHON_COMPAT=( python{3_10,3_11,3_12,3_13} )
 VALA_USE_DEPEND="vapigen"
 
 inherit gnome2 multilib-minimal python-any-r1 vala
@@ -30,7 +30,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	${PYTHON_DEPS}
-	>=dev-util/gtk-doc-am-1.20
+	>=dev-build/gtk-doc-am-1.20
 	>=dev-util/intltool-0.35
 	sys-devel/gettext
 	virtual/pkgconfig
@@ -46,7 +46,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/libsoup/commit/03c91c76daf70ee227f38304c5e45a155f45073d
+	# 	https://gitlab.gnome.org/GNOME/libsoup/-/commit/03c91c76daf70ee227f38304c5e45a155f45073d
 	"${FILESDIR}"/${PN}-2.59.90.1-libsoup-fix-chunked-decoding-buffer-overrun-cve-2017-2885.patch
 )
 

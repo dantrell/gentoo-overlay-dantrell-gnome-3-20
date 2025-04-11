@@ -109,13 +109,13 @@ DOC_CONTENTS="
 src_prepare() {
 	if use ck; then
 		# From GNOME:
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/e0e7f2d92d8d26592c44dd12fe56c52414a6bb2a
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/a9cacb929470eb82582396984c61d5b611bfeb1a
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/abb46853f824a004e0d7f58b26e068589b121d6b
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/7247ee14cf9db22e6e3608992e02dce16e6c1b59
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/193046dbf37c5abad9af21f0a57743bb6015e413
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/9be58c9ec9a3a411492a5182ac4b0d51fdc3a323
-		# 	https://gitlab.gnome.org/GNOME/gdm/commit/1ac67f522f5690c27023d98096ca817f12f7eb88
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/e0e7f2d92d8d26592c44dd12fe56c52414a6bb2a
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/a9cacb929470eb82582396984c61d5b611bfeb1a
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/abb46853f824a004e0d7f58b26e068589b121d6b
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/7247ee14cf9db22e6e3608992e02dce16e6c1b59
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/193046dbf37c5abad9af21f0a57743bb6015e413
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/9be58c9ec9a3a411492a5182ac4b0d51fdc3a323
+		# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/1ac67f522f5690c27023d98096ca817f12f7eb88
 		# 	https://bugzilla.gnome.org/show_bug.cgi?id=749418
 		eapply "${FILESDIR}"/${PN}-3.20.0-get-seat-id-from-function.patch
 		eapply "${FILESDIR}"/${PN}-3.18.2-restore-deprecated-consolekit-code.patch
@@ -123,7 +123,7 @@ src_prepare() {
 	fi
 
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gdm/commit/c870d47dd828506857f0997a3af3468fc12fc85b
+	# 	https://gitlab.gnome.org/GNOME/gdm/-/commit/c870d47dd828506857f0997a3af3468fc12fc85b
 	eapply "${FILESDIR}"/${PN}-3.20.1-revert-gdm-session-set-pam-tty-when-initialising-pam.patch
 
 	# ssh-agent handling must be done at xinitrc.d, bug #220603

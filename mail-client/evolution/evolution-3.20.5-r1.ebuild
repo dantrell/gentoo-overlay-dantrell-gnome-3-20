@@ -68,7 +68,7 @@ COMMON_DEPEND="
 DEPEND="${COMMON_DEPEND}
 	app-text/docbook-xml-dtd:4.1.2
 	app-text/yelp-tools
-	dev-util/gtk-doc-am
+	dev-build/gtk-doc-am
 	>=dev-util/intltool-0.40.0
 	>=gnome-base/gnome-common-2.12
 	virtual/pkgconfig

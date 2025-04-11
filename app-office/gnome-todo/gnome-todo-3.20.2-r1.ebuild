@@ -32,7 +32,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gnome-todo/commit/6de8adc351b758c1d608ae0ea8acf6d35ed502ea
+	# 	https://gitlab.gnome.org/GNOME/gnome-todo/-/commit/6de8adc351b758c1d608ae0ea8acf6d35ed502ea
 	eapply "${FILESDIR}"/${PN}-3.26.2-eds-build-with-libical-3-0.patch
 
 	# From Arch:

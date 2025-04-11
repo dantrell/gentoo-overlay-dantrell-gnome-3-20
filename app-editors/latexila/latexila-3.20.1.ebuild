@@ -35,7 +35,7 @@ RDEPEND="${COMMON_DEPEND}
 	rubber? ( dev-tex/rubber )
 "
 DEPEND="${COMMON_DEPEND}
-	>=dev-util/gtk-doc-am-1.14
+	>=dev-build/gtk-doc-am-1.14
 	>=dev-util/intltool-0.50.1
 	dev-util/itstool
 	virtual/pkgconfig

@@ -33,7 +33,7 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	test? ( sys-apps/dbus[X] )
 "
-# eautoreconf needs >=sys-devel/autoconf-2.65:2.5
+# eautoreconf needs >=dev-build/autoconf-2.65:2.5
 
 multilib_src_configure() {
 	ECONF_SOURCE=${S} \

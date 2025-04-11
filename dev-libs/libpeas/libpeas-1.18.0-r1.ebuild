@@ -3,7 +3,7 @@
 EAPI="6"
 GNOME2_LA_PUNT="yes"
 GNOME2_EAUTORECONF="yes"
-PYTHON_COMPAT=( python{3_9,3_10,3_11} )
+PYTHON_COMPAT=( python{3_10,3_11,3_12,3_13} )
 
 inherit gnome2 multilib python-single-r1 virtualx
 
@@ -34,7 +34,7 @@ RDEPEND="
 	)
 "
 DEPEND="${RDEPEND}
-	>=dev-util/gtk-doc-am-1.11
+	>=dev-build/gtk-doc-am-1.11
 	>=dev-util/intltool-0.40
 	virtual/pkgconfig
 

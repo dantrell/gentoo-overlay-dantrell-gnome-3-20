@@ -37,7 +37,7 @@ DEPEND="${RDEPEND}
 
 src_prepare() {
 	# From GNOME:
-	# 	https://gitlab.gnome.org/GNOME/gnome-chess/commit/21b0df604c56114eb721765d203f965b504403d7
+	# 	https://gitlab.gnome.org/GNOME/gnome-chess/-/commit/21b0df604c56114eb721765d203f965b504403d7
 	eapply "${FILESDIR}"/${PN}-3.24.1-gnome-chess-drop-use-of-g-module-export.patch
 
 	vala_src_prepare

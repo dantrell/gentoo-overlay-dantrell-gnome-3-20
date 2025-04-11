@@ -41,7 +41,7 @@ RDEPEND="
 "
 # Wants real bison, not app-alternatives/yacc
 DEPEND="${RDEPEND}
-	>=dev-util/gtk-doc-am-1.19
+	>=dev-build/gtk-doc-am-1.19
 	sys-devel/bison
 	sys-devel/flex
 "

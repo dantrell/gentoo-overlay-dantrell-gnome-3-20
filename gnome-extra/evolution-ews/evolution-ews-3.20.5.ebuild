@@ -28,7 +28,7 @@ RDEPEND="
 	>=x11-libs/gtk+-3:3
 "
 DEPEND="${RDEPEND}
-	>=dev-util/gtk-doc-am-1.9
+	>=dev-build/gtk-doc-am-1.9
 	>=dev-util/intltool-0.35.5
 	virtual/pkgconfig
 	test? ( net-libs/uhttpmock:0 )
